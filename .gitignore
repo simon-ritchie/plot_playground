@@ -1,2 +1,10 @@
 *.code-workspace
 /memo.md
+/build
+/dist
+/plot_playground.egg-info
+/.ipynb_checkpoints/tmp_tests-checkpoint.ipynb
+/plot_playground/tmp_test.py
+/tmp_tests.ipynb
+*.pyc
+/.vscode
