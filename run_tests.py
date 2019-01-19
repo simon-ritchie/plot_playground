@@ -43,7 +43,17 @@ def is_jupyter_started():
     return False
 
 
+def stop_jupyter():
+    """
+    Stop Jupyter of the port number used in the test.
+    """
+    os.system('jupyter notebook stop {jupyter_test_port}'.format(
+        jupyter_test_port=JUPYTER_TEST_PORT
+    ))
+
+
 if __name__ == '__main__':
+    stop_jupyter()
     jupyter_process = mp.Process(target=run_jupyter_process)
     jupyter_process.start()
 
@@ -51,4 +61,6 @@ if __name__ == '__main__':
     while not is_jupyter_started():
         time.sleep(1)
     os.system('nosetests -s')
+    stop_jupyter()
     jupyter_process.terminate()
+    os.system('taskkill /im chromedriver.exe /f')

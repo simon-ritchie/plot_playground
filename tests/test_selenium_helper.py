@@ -21,4 +21,3 @@ def test_exit_webdriver():
     assert_not_equal(driver, None)
     selenium_helper.exit_webdriver()
     assert_equal(selenium_helper.driver, None)
-    print(101)
