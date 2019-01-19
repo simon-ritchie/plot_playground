@@ -4,6 +4,7 @@ confirmation of display of D3.js, commands for
 starting Jupyter in another process are also executed.
 """
 
+import argparse
 import os
 import sys
 import time
@@ -53,6 +54,16 @@ def stop_jupyter():
 
 
 if __name__ == '__main__':
+    command_description = 'Command to execute the defined test.'
+    parser = argparse.ArgumentParser(
+        description=command_description)
+    parser.add_argument(
+        '--module_name',
+        default='',
+        help='The specific module name to be tested. Extension names are not included. It must be specified as a character string containing a path. If omitted, all modules are subject to test execution.')
+    args = parser.parse_args()
+    module_name = args.module_name
+
     stop_jupyter()
     jupyter_process = mp.Process(target=run_jupyter_process)
     jupyter_process.start()
@@ -60,7 +71,13 @@ if __name__ == '__main__':
     os.system('python setup.py install')
     while not is_jupyter_started():
         time.sleep(1)
-    os.system('nosetests -s')
+
+    nose_command = 'nosetests'
+    if module_name != '':
+        nose_command += ' %s' % module_name
+    nose_command += ' -s'
+    os.system(nose_command)
+
     stop_jupyter()
     jupyter_process.terminate()
     os.system('taskkill /im chromedriver.exe /f')

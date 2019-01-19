@@ -1,3 +1,8 @@
+"""
+Test command for this module:
+$ python run_tests.py --module_name plot_playground.tests.test_selenium_helper
+"""
+
 from nose.tools import assert_equal, assert_true, \
     assert_not_equal
 

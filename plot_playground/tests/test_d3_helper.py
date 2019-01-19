@@ -1,3 +1,8 @@
+"""
+Test command for this module:
+$ python run_tests.py --module_name plot_playground.tests.test_d3_helper
+"""
+
 from nose.tools import assert_equal, assert_true
 
 from plot_playground.common import d3_helper
