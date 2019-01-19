@@ -1,5 +1,5 @@
 """
-A module that define constans, settings, etc.
+The module that define constans, settings, etc.
 """
 
 import sys
@@ -10,5 +10,4 @@ ROOT_DIR = os.path.abspath(
         os.path.dirname(__file__),
         os.pardir))
 
-D3_PATH = os.path.join(
-    ROOT_DIR, 'd3', '4.13.0', 'd3.min.js')
+D3_VERSION = '4'
