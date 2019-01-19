@@ -1,5 +1,5 @@
 """
-The D3.js common helper module.
+A D3.js common helper module.
 
 Notes
 -----
@@ -7,8 +7,9 @@ Js string is using bracket, that conflict python string format.
 Therefore, r character is required before quotation.
 """
 
-from plot_playground.common import settings
 from IPython.display import display, HTML
+
+from plot_playground.common import settings
 
 
 D3_REQUIRE_HTML = r"""

@@ -1,5 +1,5 @@
 """
-The module that define constans, settings, etc.
+A module that define constans, settings, etc.
 """
 
 import sys
@@ -11,3 +11,5 @@ ROOT_DIR = os.path.abspath(
         os.pardir))
 
 D3_VERSION = '4'
+
+JUPYTER_TEST_PORT = 18080

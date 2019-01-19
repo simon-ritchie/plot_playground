@@ -1,20 +1,27 @@
+"""
+Module for test execution. Since it also includes
+confirmation of display of D3.js, commands for
+starting Jupyter in another process are also executed.
+"""
+
 import os
+import sys
 import time
 import multiprocessing as mp
 import subprocess as sp
 
-JUPYTER_TEST_PORT = 18080
+sys.path.append('./plot_playground/')
+from common.settings import JUPYTER_TEST_PORT
 
 
 def run_jupyter_process():
     """
-    Start Jupyter for testing.
+    Start Jupyter process for testing.
     """
     os.system(
         'jupyter notebook --no-browser --port={jupyter_test_port} &'.format(
             jupyter_test_port=JUPYTER_TEST_PORT
         ))
-    print(200, 100)
 
 
 def is_jupyter_started():
@@ -42,7 +49,6 @@ if __name__ == '__main__':
 
     os.system('python setup.py install')
     while not is_jupyter_started():
-        print('continue')
         time.sleep(1)
     os.system('nosetests -s')
     jupyter_process.terminate()
