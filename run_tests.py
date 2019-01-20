@@ -90,15 +90,10 @@ def run_nose_command(module_name):
     nose_command = 'nosetests'
     if module_name != '':
         nose_command += ' %s' % module_name
-    nose_command += ' -s --with-xunit --xunit-file={xml_path}'.format(
+    nose_command += ' --with-xunit --xunit-file={xml_path} -s -v'.format(
         xml_path=xml_path
     )
-    try:
-        nose_output = sp.check_output(
-            nose_command,
-            shell=True)
-    except Exception:
-        pass
+    os.system(nose_command)
     with open(xml_path, 'r') as f:
         test_xml = f.read()
         xml_root_elem = ET.fromstring(text=test_xml)

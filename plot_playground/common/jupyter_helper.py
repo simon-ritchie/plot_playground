@@ -14,6 +14,10 @@ run_tests.py
 
 import subprocess as sp
 import time
+import json
+import os
+
+from selenium.webdriver.common.keys import Keys
 
 from plot_playground.common import settings
 from plot_playground.common import selenium_helper
@@ -74,6 +78,12 @@ TEST_JUPYTER_NOTE_URL = "http://localhost:{jupyter_test_port}/notebooks/plot_pla
     jupyter_test_port=settings.JUPYTER_TEST_PORT,
     test_jupyter_note_name=TEST_JUPYTER_NOTE_NAME
 )
+TEST_JUPYTER_NOTE_PATH = os.path.join(
+    settings.ROOT_DIR,
+    'tests',
+    'notes',
+    TEST_JUPYTER_NOTE_NAME + '.ipynb',
+)
 
 
 def open_test_jupyter_note_book():
@@ -106,24 +116,45 @@ def open_test_jupyter_note_book():
         time.sleep(1)
 
 
-def run_test_code_on_jupyter(code):
+def get_jupyter_test_code_output_text():
     """
-    Execute specified code on test Jupyter.
+    Get the character string of the output after the
+    test cell execution.
 
-    Parameters
-    ----------
-    code : str
-        The character string of the code to be executed.
+    Returns
+    -------
+    output_text : str
+        The character string of the output.
 
     Raises
     ------
     Exception
         - If Jupyter is not running.
         - If the test notebook is not open.
+        - If output cell does not exist.
+        - If there are multiple output cells.
     """
     _assert_current_page_is_test_notebook()
-    code_cell_elem = _get_test_code_cell_elem()
+    text_output_elem = _get_test_code_text_output_elem()
     pass
+
+
+def update_ipynb_test_source_code(source_code):
+    """
+    Directly update code in JSON of the ipynb file.
+    It is difficult to control Jupyter's input to the
+    cell via selenium, so use this function.
+
+    Parameters
+    ----------
+    source_code : str
+        Source code to set.
+    """
+    source_list = source_code.split('\n')
+    with open(TEST_JUPYTER_NOTE_PATH, 'r') as f:
+        ipynb_json = json.load(f)
+    print('json', ipynb_json)
+    # _assert_code_cell_exists(ipyn)
 
 
 def _get_test_code_cell_elem():

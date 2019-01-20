@@ -3,6 +3,8 @@ Test command for this module:
 $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper
 """
 
+import os
+
 from nose.tools import assert_equal, assert_true, \
     assert_not_equal, assert_raises, assert_false
 from selenium.webdriver.remote.webelement import WebElement
@@ -79,3 +81,20 @@ def test__get_test_code_cell_elem():
     assert_true(
         isinstance(code_cell_elem, WebElement)
     )
+
+
+def test_TEST_JUPYTER_NOTE_PATH():
+    """
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_TEST_JUPYTER_NOTE_PATH
+    """
+    assert_true(
+        os.path.exists(jupyter_helper.TEST_JUPYTER_NOTE_PATH)
+    )
+
+
+def test_update_ipynb_test_source_code():
+    """
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_update_ipynb_test_source_code
+    """
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code='print(100)\nprint(200)')
