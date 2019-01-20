@@ -8,3 +8,5 @@
 /tmp_tests.ipynb
 *.pyc
 /.vscode
+/log_test.xml
+/plot_playground/tests/notes/.ipynb_checkpoints

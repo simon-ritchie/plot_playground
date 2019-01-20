@@ -1,12 +1,13 @@
 # Testing
 
-Please use Windows to run the test.
+Please use Windows10 to run the test.
 
 The following libraries are used for testin:
 
 ```
 $ pip install chromedriver-binary==2.45.0
 $ pip install selenium==3.13.0
+$ pip install win10toast==0.9
 # pip install nose==1.3.7
 ```
 
