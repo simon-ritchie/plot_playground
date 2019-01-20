@@ -3,6 +3,9 @@ Module describing general purpose processing of
 Selenium's webdriver control.
 """
 
+import subprocess as sp
+import os
+
 import chromedriver_binary
 from selenium import webdriver
 
@@ -39,3 +42,32 @@ def exit_webdriver():
         return
     driver.close()
     driver = None
+
+
+def chromedriver_process_exists():
+    """
+    Get a boolean on whether Chromedriver's process exists.
+
+    Returns
+    -------
+    result : bool
+        True is set if it exists.
+    """
+    out = sp.check_output(
+        'tasklist /fi "imagename eq chromedriver.exe"',
+        shell=True)
+    out = str(out)
+    is_in = 'chromedriver.exe' in out
+    if not is_in:
+        return False
+    return True
+
+
+def kill_chromedriver_process():
+    """
+    If the process of running chromedriver remains, stop
+    that process.
+    """
+    if not chromedriver_process_exists():
+        return
+    os.system('taskkill /im chromedriver.exe /f')

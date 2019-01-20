@@ -16,7 +16,7 @@ D3_REQUIRE_HTML = r"""
 <script>
     requirejs.config({
         paths: {
-            'd3': ['https://d3js.org/d3.{d3_version}.min'],
+            'd3': ['https://d3js.org/d3.v{d3_version}.min'],
         },
     });
 </script>

@@ -2,6 +2,12 @@
 Module for test execution. Since it also includes
 confirmation of display of D3.js, commands for
 starting Jupyter in another process are also executed.
+
+Notes
+-----
+Currently, since each command is assumed to be in the
+Windows environment, it is necessary to carry out the
+test also in the Windows environment.
 """
 
 import argparse
@@ -13,6 +19,7 @@ import subprocess as sp
 
 sys.path.append('./plot_playground/')
 from common.settings import JUPYTER_TEST_PORT
+from common import selenium_helper
 
 
 def run_jupyter_process():
@@ -80,4 +87,4 @@ if __name__ == '__main__':
 
     stop_jupyter()
     jupyter_process.terminate()
-    os.system('taskkill /im chromedriver.exe /f')
+    selenium_helper.kill_chromedriver_process()
