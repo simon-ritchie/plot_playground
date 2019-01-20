@@ -4,7 +4,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper
 """
 
 from nose.tools import assert_equal, assert_true, \
-    assert_not_equal, assert_raises
+    assert_not_equal, assert_raises, assert_false
 
 from plot_playground.common import jupyter_helper
 from plot_playground.common import selenium_helper
@@ -27,3 +27,11 @@ def test_get_jupyter_root_url_with_token():
     assert_true(is_in)
     selenium_helper.driver.get(root_url)
     is_in = 'home' in str(selenium_helper.driver.title).lower()
+
+
+def test_get_jupyter_token():
+    token_str = jupyter_helper.get_jupyter_token()
+    assert_true(
+        token_str.startswith('?token='))
+    is_space_in = ' ' in token_str
+    assert_false(is_space_in)

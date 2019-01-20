@@ -36,6 +36,26 @@ def get_jupyter_root_url_with_token():
     Exception
         If Jupyter is not running.
     """
+    token_str = get_jupyter_token()
+    root_url = JUPYTER_ROOT_URL + token_str
+    return root_url
+
+
+def get_jupyter_token():
+    """
+    Get the token string of Jupyter for testing.
+
+    Returns
+    -------
+    token_str : str
+        A string of token including the parameter part of
+        "?token=".
+
+    Raises
+    ------
+    Exception
+        If Jupyter is not running.
+    """
     out = sp.check_output(
         ['jupyter', 'notebook', 'list'])
     out = str(out)
@@ -44,5 +64,4 @@ def get_jupyter_root_url_with_token():
         raise Exception("Jupyter's local server is not running. Please check whether it is started normally in the run_tests.py module.")
     token_str = out.split(JUPYTER_ROOT_URL)[1]
     token_str = token_str.split(' :: ')[0]
-    root_url = JUPYTER_ROOT_URL + token_str
-    return root_url
+    return token_str
