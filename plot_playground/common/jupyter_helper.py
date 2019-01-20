@@ -15,6 +15,7 @@ run_tests.py
 import subprocess as sp
 
 from plot_playground.common import settings
+from plot_playground.common import selenium_helper
 
 JUPYTER_ROOT_URL = 'http://localhost:{jupyter_test_port}/'.format(
     jupyter_test_port=settings.JUPYTER_TEST_PORT
@@ -65,3 +66,35 @@ def get_jupyter_token():
     token_str = out.split(JUPYTER_ROOT_URL)[1]
     token_str = token_str.split(' :: ')[0]
     return token_str
+
+
+TEST_JUPYTER_NOTE_NAME = 'test_on_jupyter'
+TEST_JUPYTER_NOTE_URL = "http://localhost:{jupyter_test_port}/notebooks/plot_playground/tests/notes/{test_jupyter_note_name}.ipynb".format(
+    jupyter_test_port=settings.JUPYTER_TEST_PORT,
+    test_jupyter_note_name=TEST_JUPYTER_NOTE_NAME
+)
+
+
+def open_test_jupyter_note_book():
+    """
+    Open the Jupyter notebook for testing.
+
+    Raises
+    ------
+    Exception
+        If Jupyter is not running.
+
+    Notes
+    -----
+    If the note does not exist in the target path for some
+    reason, add a test notebook to the following path
+    beforehand and place only one code cell.
+
+    plot_playground/tests/notes/test_on_jupyter.ipynb
+    """
+    driver = selenium_helper.start_webdriver()
+    root_url = get_jupyter_root_url_with_token()
+    driver.get(root_url)
+    token_str = get_jupyter_token()
+    test_note_url = TEST_JUPYTER_NOTE_URL + token_str
+    driver.get(test_note_url)

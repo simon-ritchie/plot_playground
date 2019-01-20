@@ -35,3 +35,13 @@ def test_get_jupyter_token():
         token_str.startswith('?token='))
     is_space_in = ' ' in token_str
     assert_false(is_space_in)
+
+
+def test_open_test_jupyter_note_book():
+    jupyter_helper.open_test_jupyter_note_book()
+    assert_equal(
+        selenium_helper.driver.title,
+        jupyter_helper.TEST_JUPYTER_NOTE_URL,
+        'could not open the Jupyter notebook for testing. Please check that the notebook is properly placed in the target path.'
+    )
+    selenium_helper.exit_webdriver()

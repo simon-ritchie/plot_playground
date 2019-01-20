@@ -83,7 +83,7 @@ def run_nose_command(module_name):
     -------
     test_num : int
         Number of tests executed.
-    failure_num : int
+    error_num : int
         Number of failed tests.
     """
     xml_path = 'log_test.xml'
@@ -93,15 +93,18 @@ def run_nose_command(module_name):
     nose_command += ' -s --with-xunit --xunit-file={xml_path}'.format(
         xml_path=xml_path
     )
-    nose_output = sp.check_output(
-        nose_command,
-        shell=True)
+    try:
+        nose_output = sp.check_output(
+            nose_command,
+            shell=True)
+    except Exception:
+        pass
     with open(xml_path, 'r') as f:
         test_xml = f.read()
         xml_root_elem = ET.fromstring(text=test_xml)
     test_num = int(xml_root_elem.attrib['tests'])
-    failure_num = int(xml_root_elem.attrib['failures'])
-    return test_num, failure_num
+    error_num = int(xml_root_elem.attrib['errors'])
+    return test_num, error_num
 
 
 if __name__ == '__main__':
@@ -123,7 +126,7 @@ if __name__ == '__main__':
     while not is_jupyter_started():
         time.sleep(1)
 
-    test_num, failure_num = run_nose_command(
+    test_num, error_num = run_nose_command(
         module_name=module_name)
 
     stop_jupyter()
@@ -133,8 +136,7 @@ if __name__ == '__main__':
     toast_msg = '----------------------------'
     toast_msg += '\n%s' % datetime.now()
     toast_msg += '\ntest num: %s' % test_num
-    toast_msg += '\nfailure num: %s' % failure_num
-    toast_msg += '\n----------------------------'
+    toast_msg += '\nerror num: %s' % error_num
     toast_notifier = ToastNotifier()
     toast_notifier.show_toast(
         title='The test is completed.',
