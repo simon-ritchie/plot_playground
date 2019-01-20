@@ -13,6 +13,7 @@ run_tests.py
 """
 
 import subprocess as sp
+import time
 
 from plot_playground.common import settings
 from plot_playground.common import selenium_helper
@@ -95,6 +96,76 @@ def open_test_jupyter_note_book():
     driver = selenium_helper.start_webdriver()
     root_url = get_jupyter_root_url_with_token()
     driver.get(root_url)
-    token_str = get_jupyter_token()
-    test_note_url = TEST_JUPYTER_NOTE_URL + token_str
+    test_note_url = TEST_JUPYTER_NOTE_URL
     driver.get(test_note_url)
+    loop_count = 0
+    while loop_count < 10:
+        if driver.title == TEST_JUPYTER_NOTE_NAME:
+            break
+        loop_count += 1
+        time.sleep(1)
+
+
+def run_test_code_on_jupyter(code):
+    """
+    Execute specified code on test Jupyter.
+
+    Parameters
+    ----------
+    code : str
+        The character string of the code to be executed.
+
+    Raises
+    ------
+    Exception
+        - If Jupyter is not running.
+        - If the test notebook is not open.
+    """
+    _assert_current_page_is_test_notebook()
+    code_cell_elem = _get_test_code_cell_elem()
+    pass
+
+
+def _get_test_code_cell_elem():
+    """
+    Get the WebElement of the form to be used as a test
+    code cell.
+
+    Raises
+    ------
+    Exception
+        - If the Jupyter code cell does not exist on the
+            current page.
+        - If there are multiple cells of code.
+
+    Returns
+    -------
+    code_cell_elem : selenium.webdriver.remote.webelement.WebElement
+        WebElement of code input form.
+    """
+    _assert_current_page_is_test_notebook()
+    code_cell_elem_list = selenium_helper.driver.find_elements_by_css_selector(
+        'div.CodeMirror.cm-s-ipython')
+    if len(code_cell_elem_list) == 0:
+        raise Exception('Could not find any cell for code input. Please check if Jupyter structure has changed.')
+    if len(code_cell_elem_list) != 1:
+        raise Exception('There are several input cells on the test notebook. Please adjust to only one.')
+    code_cell_elem = code_cell_elem_list[0]
+    return code_cell_elem
+
+
+def _assert_current_page_is_test_notebook():
+    """
+    Check that the page currently open in selenium is a Jupyter
+    notebook for testing.
+
+    Raises
+    ------
+    Exception
+        - If webdriver is not running.
+        - If the test notebook is not open.
+    """
+    if selenium_helper.driver is None:
+        raise Exception('Webdriver is not running.')
+    if selenium_helper.driver.title != TEST_JUPYTER_NOTE_NAME:
+        raise Exception('The test notebook is not open.')

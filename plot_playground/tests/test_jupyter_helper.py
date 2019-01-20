@@ -5,6 +5,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper
 
 from nose.tools import assert_equal, assert_true, \
     assert_not_equal, assert_raises, assert_false
+from selenium.webdriver.remote.webelement import WebElement
 
 from plot_playground.common import jupyter_helper
 from plot_playground.common import selenium_helper
@@ -41,7 +42,40 @@ def test_open_test_jupyter_note_book():
     jupyter_helper.open_test_jupyter_note_book()
     assert_equal(
         selenium_helper.driver.title,
-        jupyter_helper.TEST_JUPYTER_NOTE_URL,
+        jupyter_helper.TEST_JUPYTER_NOTE_NAME,
         'could not open the Jupyter notebook for testing. Please check that the notebook is properly placed in the target path.'
     )
     selenium_helper.exit_webdriver()
+
+
+def test__assert_current_page_is_test_notebook():
+    selenium_helper.exit_webdriver()
+    assert_raises(
+        Exception,
+        jupyter_helper._assert_current_page_is_test_notebook
+    )
+
+    driver = selenium_helper.start_webdriver()
+    driver.get('https://www.google.com/')
+    assert_raises(
+        Exception,
+        jupyter_helper._assert_current_page_is_test_notebook
+    )
+
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper._assert_current_page_is_test_notebook()
+
+
+def test__get_test_code_cell_elem():
+    driver = selenium_helper.start_webdriver()
+    driver.get('https://www.google.com/')
+    assert_raises(
+        Exception,
+        jupyter_helper._get_test_code_cell_elem
+    )
+
+    jupyter_helper.open_test_jupyter_note_book()
+    code_cell_elem = jupyter_helper._get_test_code_cell_elem()
+    assert_true(
+        isinstance(code_cell_elem, WebElement)
+    )
