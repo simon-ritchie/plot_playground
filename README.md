@@ -1,8 +1,6 @@
-plot playground is a plot library that works on Jupyter and Pandas datasets.
+plot playground is a plot library that works on Jupyter and Pandas datasets. This is for making a little unusual plot and playing.
 
-This is for making a little unusual plot and playing.
-
-Notes: currently developing phase.
+**Notes**: currently developing phase.
 
 # Testing
 
