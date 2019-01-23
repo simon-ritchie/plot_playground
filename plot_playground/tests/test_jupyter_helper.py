@@ -20,6 +20,18 @@ def setup():
 
 def teardown():
     selenium_helper.exit_webdriver()
+    _empty_ipynb_code_cell()
+
+
+def _empty_ipynb_code_cell():
+    """
+    Empty the code cell of the test ipynb file.
+    """
+    if not os.path.exists(jupyter_helper.TEST_JUPYTER_NOTE_PATH):
+        return
+
+    # code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx()
+    pass
 
 
 def test_get_jupyter_root_url_with_token():
@@ -137,7 +149,7 @@ def test__assert_only_one_code_cell_exists():
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__assert_only_one_code_cell_exists
     """
     kwargs = {
-        'ipynb_json': {},
+        'ipynb_dict': {},
     }
     assert_raises(
         AssertionError,
@@ -146,7 +158,7 @@ def test__assert_only_one_code_cell_exists():
     )
 
     kwargs = {
-        'ipynb_json': {
+        'ipynb_dict': {
             'cells': [
                 {
                     'cell_type': 'markdown',
@@ -161,7 +173,7 @@ def test__assert_only_one_code_cell_exists():
     )
 
     kwargs = {
-        'ipynb_json': {
+        'ipynb_dict': {
             'cells': [
                 {
                     'cell_type': 'markdown',
@@ -180,7 +192,7 @@ def test__assert_only_one_code_cell_exists():
     )
 
     jupyter_helper._assert_only_one_code_cell_exists(
-        ipynb_json={
+        ipynb_dict={
             'cells': [
                 {
                     'cell_type': 'markdown',
@@ -197,7 +209,7 @@ def test__get_ipynb_code_cell_idx():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__get_ipynb_code_cell_idx
     """
-    ipynb_json = {
+    ipynb_dict = {
         'cells': [
             {
                 'cell_type': 'markdown',
@@ -207,7 +219,7 @@ def test__get_ipynb_code_cell_idx():
         ],
     }
     idx = jupyter_helper._get_ipynb_code_cell_idx(
-        ipynb_json=ipynb_json)
+        ipynb_dict=ipynb_dict)
     assert_equal(idx, 1)
 
 
@@ -217,7 +229,7 @@ def test__replace_ipynb_code_cell():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__replace_ipynb_code_cell
     """
-    ipynb_json = {
+    ipynb_dict = {
         'cells': [
             {
                 'cell_type': 'markdown',
@@ -231,10 +243,47 @@ def test__replace_ipynb_code_cell():
 print(1)
 print(2)
     """
-    ipynb_json = jupyter_helper._replace_ipynb_code_cell(
-        ipynb_json=ipynb_json,
+    ipynb_dict = jupyter_helper._replace_ipynb_code_cell(
+        ipynb_dict=ipynb_dict,
         source_code=source_code,
         code_cell_idx=1)
     assert_equal(
-        ipynb_json['cells'][1]['source'],
+        ipynb_dict['cells'][1]['source'],
         ['print(1)', 'print(2)'])
+
+
+def test__read_test_ipynb_dict():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__read_test_ipynb_dict
+    """
+    if not os.path.exists(jupyter_helper.TEST_JUPYTER_NOTE_PATH):
+        return
+    ipynb_dict = jupyter_helper._read_test_ipynb_dict()
+    assert_true(isinstance(ipynb_dict, dict))
+    has_key = 'cells' in ipynb_dict
+    assert_true(has_key)
+
+
+def test__save_test_ipynb_dict():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__save_test_ipynb_dict
+    """
+    _empty_ipynb_code_cell()
+    ipynb_dict = jupyter_helper._read_test_ipynb_dict()
+    code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx(
+        ipynb_dict=ipynb_dict)
+    ipynb_dict = jupyter_helper._replace_ipynb_code_cell(
+        ipynb_dict=ipynb_dict,
+        source_code='print(1)',
+        code_cell_idx=code_cell_idx)
+    jupyter_helper._save_test_ipynb_dict(ipynb_dict=ipynb_dict)
+    ipynb_dict = jupyter_helper._read_test_ipynb_dict()
+    assert_equal(
+        ipynb_dict['cells'][code_cell_idx]['source'][0],
+        'print(1)'
+    )
+    _empty_ipynb_code_cell()

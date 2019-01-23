@@ -151,26 +151,54 @@ def update_ipynb_test_source_code(source_code):
         Source code to set.
     """
     source_list = source_code.split('\n')
-    with open(TEST_JUPYTER_NOTE_PATH, 'r') as f:
-        ipynb_json = json.load(f)
+    ipynb_dict = _read_test_ipynb_dict()
     _assert_only_one_code_cell_exists(
-        ipynb_json=ipynb_json)
+        ipynb_dict=ipynb_dict)
     code_cell_idx = _get_ipynb_code_cell_idx(
-        ipynb_json=ipynb_json)
-    ipynb_json = _replace_ipynb_code_cell(
-        ipynb_json=ipynb_json, source_code=source_code,
+        ipynb_dict=ipynb_dict)
+    ipynb_dict = _replace_ipynb_code_cell(
+        ipynb_dict=ipynb_dict, source_code=source_code,
         code_cell_idx=code_cell_idx)
-    pass
+    _save_test_ipynb_dict(ipynb_dict=ipynb_dict)
 
 
-def _replace_ipynb_code_cell(ipynb_json, source_code, code_cell_idx):
+def _save_test_ipynb_dict(ipynb_dict):
+    """
+    Save the dictionary data of the test ipynb file.
+
+    Parameters
+    ----------
+    ipynb_dict : dict
+        Dictionary to be saved.
+    """
+    ipynb_json_str = json.dumps(ipynb_dict)
+    with open(TEST_JUPYTER_NOTE_PATH, 'w') as f:
+        f.write(ipynb_json_str)
+
+
+def _read_test_ipynb_dict():
+    """
+    Read the dictionary data of the test ipynb file.
+
+    Returns
+    -------
+    ipynb_dict : dict
+        Dictionary of loaded data.
+    """
+    with open(TEST_JUPYTER_NOTE_PATH, 'r') as f:
+        ipynb_json_str = f.read()
+    ipynb_dict = json.loads(ipynb_json_str)
+    return ipynb_dict
+
+
+def _replace_ipynb_code_cell(ipynb_dict, source_code, code_cell_idx):
     """
     Replace the source code of the code cell of the specified
     index.
 
     Parameters
     ----------
-    ipynb_json : dict
+    ipynb_dict : dict
         Dictionary of notebook data.
     source_code : str
         Source code to set.
@@ -179,23 +207,23 @@ def _replace_ipynb_code_cell(ipynb_json, source_code, code_cell_idx):
 
     Returns
     -------
-    ipynb_json : dict
+    ipynb_dict : dict
         Dictionary of notebook after replacement.
     """
-    cell_dict = ipynb_json['cells'][code_cell_idx]
+    cell_dict = ipynb_dict['cells'][code_cell_idx]
     source_code = source_code.strip()
     source_code_line_list = source_code.split('\n')
     cell_dict['source'] = source_code_line_list
-    return ipynb_json
+    return ipynb_dict
 
 
-def _get_ipynb_code_cell_idx(ipynb_json):
+def _get_ipynb_code_cell_idx(ipynb_dict):
     """
     Get the index of the code cell.
 
     Parameters
     ----------
-    ipynb_json : dict
+    ipynb_dict : dict
         Dictionary of notebook data.
 
     Returns
@@ -204,7 +232,7 @@ def _get_ipynb_code_cell_idx(ipynb_json):
         The index of the code cell.
     """
     idx = 0
-    cells_list = ipynb_json['cells']
+    cells_list = ipynb_dict['cells']
     for cell_dict in cells_list:
         if cell_dict['cell_type'] != 'code':
             idx += 1
@@ -213,13 +241,13 @@ def _get_ipynb_code_cell_idx(ipynb_json):
     return idx
 
 
-def _assert_only_one_code_cell_exists(ipynb_json):
+def _assert_only_one_code_cell_exists(ipynb_dict):
     """
     Check that there is only one code cell in ipynb.
 
     Parameters
     ----------
-    ipynb_json : dict
+    ipynb_dict : dict
         Dictionary of notebook data.
 
     Raises
@@ -229,11 +257,11 @@ def _assert_only_one_code_cell_exists(ipynb_json):
         - If there are multiple code cells.
     """
     code_cell_num = 0
-    is_in = 'cells' in ipynb_json
+    is_in = 'cells' in ipynb_dict
     if not is_in:
         raise AssertionError(
             'There is no cell in the notebook.')
-    cells_list = ipynb_json['cells']
+    cells_list = ipynb_dict['cells']
     for cell_dict in cells_list:
         if cell_dict['cell_type'] != 'code':
             continue
