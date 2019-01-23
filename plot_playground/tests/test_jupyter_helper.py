@@ -128,3 +128,64 @@ def test_update_ipynb_test_source_code():
     """
     jupyter_helper.update_ipynb_test_source_code(
         source_code='print(100)\nprint(200)')
+
+
+def test__assert_only_one_code_cell_exists():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__assert_only_one_code_cell_exists
+    """
+    kwargs = {
+        'ipynb_json': {},
+    }
+    assert_raises(
+        AssertionError,
+        jupyter_helper._assert_only_one_code_cell_exists,
+        **kwargs,
+    )
+
+    kwargs = {
+        'ipynb_json': {
+            'cells': [
+                {
+                    'cell_type': 'markdown',
+                },
+            ],
+        },
+    }
+    assert_raises(
+        AssertionError,
+        jupyter_helper._assert_only_one_code_cell_exists,
+        **kwargs
+    )
+
+    kwargs = {
+        'ipynb_json': {
+            'cells': [
+                {
+                    'cell_type': 'markdown',
+                }, {
+                    'cell_type': 'code',
+                }, {
+                    'cell_type': 'code',
+                }
+            ],
+        },
+    }
+    assert_raises(
+        AssertionError,
+        jupyter_helper._assert_only_one_code_cell_exists,
+        **kwargs
+    )
+
+    jupyter_helper._assert_only_one_code_cell_exists(
+        ipynb_json={
+            'cells': [
+                {
+                    'cell_type': 'markdown',
+                }, {
+                    'cell_type': 'code',
+                },
+            ],
+        })

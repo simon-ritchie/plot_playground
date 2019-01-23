@@ -153,8 +153,44 @@ def update_ipynb_test_source_code(source_code):
     source_list = source_code.split('\n')
     with open(TEST_JUPYTER_NOTE_PATH, 'r') as f:
         ipynb_json = json.load(f)
-    print('json', ipynb_json)
-    # _assert_code_cell_exists(ipyn)
+    _assert_only_one_code_cell_exists(
+        ipynb_json=ipynb_json)
+    pass
+
+
+def _assert_only_one_code_cell_exists(ipynb_json):
+    """
+    Check that there is only one code cell in ipynb.
+
+    Parameters
+    ----------
+    ipynb_json : dict
+        Dictionary of notebook data.
+
+    Raises
+    ------
+    AssertionError
+        - If the code cell does not exist.
+        - If there are multiple code cells.
+    """
+    code_cell_num = 0
+    is_in = 'cells' in ipynb_json
+    if not is_in:
+        raise AssertionError(
+            'There is no cell in the notebook.')
+    cells_list = ipynb_json['cells']
+    for cell_dict in cells_list:
+        if cell_dict['cell_type'] != 'code':
+            continue
+        code_cell_num += 1
+
+    if code_cell_num == 0:
+        raise AssertionError(
+            'There is no code cell in the notebook.')
+    if code_cell_num != 1:
+        raise AssertionError(
+            'Multiple code cells are not acceptable.')
+
 
 
 def _get_test_code_cell_elem():
