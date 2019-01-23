@@ -209,3 +209,32 @@ def test__get_ipynb_code_cell_idx():
     idx = jupyter_helper._get_ipynb_code_cell_idx(
         ipynb_json=ipynb_json)
     assert_equal(idx, 1)
+
+
+def test__replace_ipynb_code_cell():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__replace_ipynb_code_cell
+    """
+    ipynb_json = {
+        'cells': [
+            {
+                'cell_type': 'markdown',
+            }, {
+                'cell_type': 'code',
+                'source': [],
+            }
+        ]
+    }
+    source_code = """
+print(1)
+print(2)
+    """
+    ipynb_json = jupyter_helper._replace_ipynb_code_cell(
+        ipynb_json=ipynb_json,
+        source_code=source_code,
+        code_cell_idx=1)
+    assert_equal(
+        ipynb_json['cells'][1]['source'],
+        ['print(1)', 'print(2)'])

@@ -135,7 +135,7 @@ def get_jupyter_test_code_output_text():
         - If there are multiple output cells.
     """
     _assert_current_page_is_test_notebook()
-    text_output_elem = _get_test_code_text_output_elem()
+    # text_output_elem = _get_test_code_text_output_elem()
     pass
 
 
@@ -157,8 +157,36 @@ def update_ipynb_test_source_code(source_code):
         ipynb_json=ipynb_json)
     code_cell_idx = _get_ipynb_code_cell_idx(
         ipynb_json=ipynb_json)
-    
+    ipynb_json = _replace_ipynb_code_cell(
+        ipynb_json=ipynb_json, source_code=source_code,
+        code_cell_idx=code_cell_idx)
     pass
+
+
+def _replace_ipynb_code_cell(ipynb_json, source_code, code_cell_idx):
+    """
+    Replace the source code of the code cell of the specified
+    index.
+
+    Parameters
+    ----------
+    ipynb_json : dict
+        Dictionary of notebook data.
+    source_code : str
+        Source code to set.
+    code_cell_idx : int
+        The index of the target code cell.
+
+    Returns
+    -------
+    ipynb_json : dict
+        Dictionary of notebook after replacement.
+    """
+    cell_dict = ipynb_json['cells'][code_cell_idx]
+    source_code = source_code.strip()
+    source_code_line_list = source_code.split('\n')
+    cell_dict['source'] = source_code_line_list
+    return ipynb_json
 
 
 def _get_ipynb_code_cell_idx(ipynb_json):
