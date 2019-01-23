@@ -155,7 +155,34 @@ def update_ipynb_test_source_code(source_code):
         ipynb_json = json.load(f)
     _assert_only_one_code_cell_exists(
         ipynb_json=ipynb_json)
+    code_cell_idx = _get_ipynb_code_cell_idx(
+        ipynb_json=ipynb_json)
+    
     pass
+
+
+def _get_ipynb_code_cell_idx(ipynb_json):
+    """
+    Get the index of the code cell.
+
+    Parameters
+    ----------
+    ipynb_json : dict
+        Dictionary of notebook data.
+
+    Returns
+    -------
+    idx : int
+        The index of the code cell.
+    """
+    idx = 0
+    cells_list = ipynb_json['cells']
+    for cell_dict in cells_list:
+        if cell_dict['cell_type'] != 'code':
+            idx += 1
+            continue
+        break
+    return idx
 
 
 def _assert_only_one_code_cell_exists(ipynb_json):

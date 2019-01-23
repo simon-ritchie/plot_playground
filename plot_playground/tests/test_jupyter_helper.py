@@ -189,3 +189,23 @@ def test__assert_only_one_code_cell_exists():
                 },
             ],
         })
+
+
+def test__get_ipynb_code_cell_idx():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__get_ipynb_code_cell_idx
+    """
+    ipynb_json = {
+        'cells': [
+            {
+                'cell_type': 'markdown',
+            }, {
+                'cell_type': 'code',
+            },
+        ],
+    }
+    idx = jupyter_helper._get_ipynb_code_cell_idx(
+        ipynb_json=ipynb_json)
+    assert_equal(idx, 1)
