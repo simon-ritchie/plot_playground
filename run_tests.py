@@ -84,7 +84,9 @@ def run_nose_command(module_name):
     test_num : int
         Number of tests executed.
     error_num : int
-        Number of failed tests.
+        Number of errors.
+    failures_num : int
+        Number of tests failed.
     """
     xml_path = 'log_test.xml'
     nose_command = 'nosetests'
@@ -99,7 +101,8 @@ def run_nose_command(module_name):
         xml_root_elem = ET.fromstring(text=test_xml)
     test_num = int(xml_root_elem.attrib['tests'])
     error_num = int(xml_root_elem.attrib['errors'])
-    return test_num, error_num
+    failures_num = int(xml_root_elem.attrib['failures'])
+    return test_num, error_num, failures_num
 
 
 if __name__ == '__main__':
@@ -121,7 +124,7 @@ if __name__ == '__main__':
     while not is_jupyter_started():
         time.sleep(1)
 
-    test_num, error_num = run_nose_command(
+    test_num, error_num, failures_num = run_nose_command(
         module_name=module_name)
 
     stop_jupyter()
@@ -129,9 +132,9 @@ if __name__ == '__main__':
     selenium_helper.kill_chromedriver_process()
 
     toast_msg = '----------------------------'
-    toast_msg += '\n%s' % datetime.now()
     toast_msg += '\ntest num: %s' % test_num
     toast_msg += '\nerror num: %s' % error_num
+    toast_msg += '\nfailures num: %s' % failures_num
     toast_notifier = ToastNotifier()
     toast_notifier.show_toast(
         title='The test is completed.',
