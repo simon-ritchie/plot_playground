@@ -16,6 +16,7 @@ from plot_playground.common import selenium_helper
 
 def setup():
     selenium_helper.start_webdriver()
+    _empty_ipynb_code_cell
 
 
 def teardown():
@@ -30,8 +31,12 @@ def _empty_ipynb_code_cell():
     if not os.path.exists(jupyter_helper.TEST_JUPYTER_NOTE_PATH):
         return
 
-    # code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx()
-    pass
+    ipynb_dict = jupyter_helper._read_test_ipynb_dict()
+    code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx(
+        ipynb_dict=ipynb_dict)
+    ipynb_dict = jupyter_helper.update_ipynb_test_source_code(
+        source_code='')
+    jupyter_helper._save_test_ipynb_dict(ipynb_dict=ipynb_dict)
 
 
 def test_get_jupyter_root_url_with_token():
