@@ -1,5 +1,6 @@
 """
-Test command for this module:
+Test Command
+------------
 $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper
 """
 
@@ -14,6 +15,11 @@ def teardown():
 
 
 def test_start_webdriver():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper:test_start_webdriver
+    """
     driver = selenium_helper.start_webdriver()
     driver.get('https://www.google.com/')
     assert_equal(
@@ -35,6 +41,10 @@ def test_chromedriver_process_exists():
     If test this process with selenium running, it will be
     disconnected from the browser and will need to close
     it manually, so will not do such a test pattern.
+
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper:test_chromedriver_process_exists
     """
     selenium_helper.kill_chromedriver_process()
     result_bool = selenium_helper.chromedriver_process_exists()
@@ -48,6 +58,10 @@ def test_kill_chromedriver_process():
     If test this process with selenium running, it will be
     disconnected from the browser and will need to close
     it manually, so will not do such a test pattern.
+
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper:test_kill_chromedriver_process
     """
     selenium_helper.kill_chromedriver_process()
     result_bool = selenium_helper.chromedriver_process_exists()

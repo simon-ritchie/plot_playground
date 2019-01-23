@@ -1,5 +1,6 @@
 """
-Test command for this module:
+Test Command
+------------
 $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper
 """
 
@@ -22,6 +23,11 @@ def teardown():
 
 
 def test_get_jupyter_root_url_with_token():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_get_jupyter_root_url_with_token
+    """
     root_url = jupyter_helper.get_jupyter_root_url_with_token()
     assert_true(
         root_url.startswith(jupyter_helper.JUPYTER_ROOT_URL)
@@ -33,6 +39,11 @@ def test_get_jupyter_root_url_with_token():
 
 
 def test_get_jupyter_token():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_get_jupyter_token
+    """
     token_str = jupyter_helper.get_jupyter_token()
     assert_true(
         token_str.startswith('?token='))
@@ -41,6 +52,11 @@ def test_get_jupyter_token():
 
 
 def test_open_test_jupyter_note_book():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_open_test_jupyter_note_book
+    """
     jupyter_helper.open_test_jupyter_note_book()
     assert_equal(
         selenium_helper.driver.title,
@@ -51,6 +67,11 @@ def test_open_test_jupyter_note_book():
 
 
 def test__assert_current_page_is_test_notebook():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__assert_current_page_is_test_notebook
+    """
     selenium_helper.exit_webdriver()
     assert_raises(
         Exception,
@@ -69,6 +90,11 @@ def test__assert_current_page_is_test_notebook():
 
 
 def test__get_test_code_cell_elem():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__get_test_code_cell_elem
+    """
     driver = selenium_helper.start_webdriver()
     driver.get('https://www.google.com/')
     assert_raises(
@@ -85,6 +111,8 @@ def test__get_test_code_cell_elem():
 
 def test_TEST_JUPYTER_NOTE_PATH():
     """
+    Test Command
+    ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_TEST_JUPYTER_NOTE_PATH
     """
     assert_true(
@@ -94,6 +122,8 @@ def test_TEST_JUPYTER_NOTE_PATH():
 
 def test_update_ipynb_test_source_code():
     """
+    Test Command
+    ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_update_ipynb_test_source_code
     """
     jupyter_helper.update_ipynb_test_source_code(

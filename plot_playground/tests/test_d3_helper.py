@@ -1,5 +1,6 @@
 """
-Test command for this module:
+Test Command
+------------
 $ python run_tests.py --module_name plot_playground.tests.test_d3_helper
 """
 
