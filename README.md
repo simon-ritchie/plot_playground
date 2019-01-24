@@ -6,7 +6,7 @@ plot playground is a plot library that works on Jupyter and Pandas datasets. Thi
 
 Please use Windows10 to run the test.
 
-The following libraries are used for testin:
+The following libraries are used for testing:
 
 ```
 $ pip install chromedriver-binary==2.45.0
