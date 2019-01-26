@@ -14,3 +14,5 @@ ROOT_DIR = os.path.abspath(
 D3_VERSION = '4'
 
 JUPYTER_TEST_PORT = 18080
+
+TEST_SVG_ELEM_ID = 'test_svg'

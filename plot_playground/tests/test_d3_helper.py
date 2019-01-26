@@ -25,7 +25,7 @@ def teardown():
     jupyter_helper.empty_test_ipynb_code_cell()
 
 
-def _read_jupyter_test_python_script(script_file_name):
+def read_jupyter_test_python_script(script_file_name):
     """
     Read the character string of Python script used on
     Jupyter.
@@ -68,7 +68,7 @@ def test_exec_d3_js_script_on_jupyter():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_exec_d3_js_script_on_jupyter
     """
-    script_str = _read_jupyter_test_python_script(
+    script_str = read_jupyter_test_python_script(
         script_file_name='exec_d3_js_script_on_jupyter')
     jupyter_helper.update_ipynb_test_source_code(
         source_code=script_str)

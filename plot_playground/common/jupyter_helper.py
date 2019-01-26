@@ -430,3 +430,13 @@ def _assert_current_page_is_test_notebook():
         raise Exception('Webdriver is not running.')
     if selenium_helper.driver.title != TEST_JUPYTER_NOTE_NAME:
         raise Exception('The test notebook is not open.')
+
+
+def hide_input_cell():
+    """
+    Hide the input cells.
+    """
+    _assert_current_page_is_test_notebook()
+    driver = selenium_helper.driver
+    script = '$(".input").css("display", "none");'
+    driver.execute_script(script)

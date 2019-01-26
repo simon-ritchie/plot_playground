@@ -4,6 +4,7 @@ Test Command
 $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper
 """
 
+import time
 import os
 
 from nose.tools import assert_equal, assert_true, \
@@ -374,3 +375,18 @@ def test_get_test_code_text_output():
     jupyter_helper.run_test_code()
     text_output = jupyter_helper.get_test_code_text_output()
     assert_equal(text_output, '100')
+
+
+def test_hide_input_cell():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_hide_input_cell
+    """
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.hide_input_cell()
+    time.sleep(3)
+    driver = jupyter_helper.selenium_helper.driver
+    script = 'return $(".input").css("display");'
+    display_style_str = driver.execute_script(script)
+    assert_equal(display_style_str, 'none')
