@@ -27,6 +27,19 @@ JUPYTER_ROOT_URL = 'http://localhost:{jupyter_test_port}/'.format(
 )
 
 
+def empty_test_ipynb_code_cell():
+    """
+    Empty the code cell of the test ipynb file.
+    """
+    if not os.path.exists(TEST_JUPYTER_NOTE_PATH):
+        return
+
+    ipynb_dict = _read_test_ipynb_dict()
+    code_cell_idx = _get_ipynb_code_cell_idx(
+        ipynb_dict=ipynb_dict)
+    update_ipynb_test_source_code(source_code='')
+
+
 def get_jupyter_root_url_with_token():
     """
     Get root URL of Jupyter's local server including
@@ -198,6 +211,23 @@ def get_test_code_text_output():
     )
     output_text = output_cell_elem.text
     return output_text
+
+
+def output_text_cell_exists():
+    """
+    Get boolean as to whether output cell exists.
+
+    Returns
+    -------
+    result : bool
+        If the cell exists, it is set to true.
+    """
+    driver = selenium_helper.driver
+    output_cell_elem_list = driver.find_elements_by_class_name(
+        OUTPUT_TEXT_SELECTOR_CLASS_STR)
+    if not output_cell_elem_list:
+        return False
+    return True
 
 
 def _assert_only_one_output_cell_exists():

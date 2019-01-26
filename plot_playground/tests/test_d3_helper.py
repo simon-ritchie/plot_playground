@@ -22,6 +22,7 @@ def setup():
 
 def teardown():
     selenium_helper.exit_webdriver()
+    jupyter_helper.empty_test_ipynb_code_cell()
 
 
 def _read_jupyter_test_python_script(script_file_name):
@@ -76,6 +77,5 @@ def test_exec_d3_js_script_on_jupyter():
     time.sleep(3)
 
     jupyter_helper.run_test_code(sleep_seconds=3)
-    time.sleep(5)
     pass
 

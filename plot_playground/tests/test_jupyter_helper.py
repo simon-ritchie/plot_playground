@@ -15,26 +15,45 @@ from plot_playground.common import selenium_helper
 
 
 def setup():
-    _empty_ipynb_code_cell
+    jupyter_helper.empty_test_ipynb_code_cell
 
 
 def teardown():
     selenium_helper.exit_webdriver()
-    _empty_ipynb_code_cell()
+    jupyter_helper.empty_test_ipynb_code_cell()
 
 
-def _empty_ipynb_code_cell():
+def test_empty_test_ipynb_code_cell():
     """
-    Empty the code cell of the test ipynb file.
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_empty_test_ipynb_code_cell
     """
-    if not os.path.exists(jupyter_helper.TEST_JUPYTER_NOTE_PATH):
-        return
-
-    ipynb_dict = jupyter_helper._read_test_ipynb_dict()
-    code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx(
-        ipynb_dict=ipynb_dict)
     jupyter_helper.update_ipynb_test_source_code(
-        source_code='')
+        source_code='print(1)')
+    jupyter_helper.empty_test_ipynb_code_cell()
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code()
+    assert_false(
+        jupyter_helper.output_text_cell_exists()
+    )
+
+
+def test_output_text_cell_exists():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_output_text_cell_exists
+    """
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code='print(100)')
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code()
+    assert_true(jupyter_helper.output_text_cell_exists())
+    jupyter_helper.empty_test_ipynb_code_cell()
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code()
+    assert_false(jupyter_helper.output_text_cell_exists())
 
 
 def test_get_jupyter_root_url_with_token():
@@ -283,7 +302,7 @@ def test__save_test_ipynb_dict():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__save_test_ipynb_dict
     """
-    _empty_ipynb_code_cell()
+    jupyter_helper.empty_test_ipynb_code_cell()
     ipynb_dict = jupyter_helper._read_test_ipynb_dict()
     code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx(
         ipynb_dict=ipynb_dict)
@@ -297,7 +316,7 @@ def test__save_test_ipynb_dict():
         ipynb_dict['cells'][code_cell_idx]['source'][0],
         'print(1)\n'
     )
-    _empty_ipynb_code_cell()
+    jupyter_helper.empty_test_ipynb_code_cell()
 
 
 def test_display_cell_menu():
