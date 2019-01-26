@@ -15,7 +15,6 @@ from plot_playground.common import selenium_helper
 
 
 def setup():
-    selenium_helper.start_webdriver()
     _empty_ipynb_code_cell
 
 
@@ -34,9 +33,8 @@ def _empty_ipynb_code_cell():
     ipynb_dict = jupyter_helper._read_test_ipynb_dict()
     code_cell_idx = jupyter_helper._get_ipynb_code_cell_idx(
         ipynb_dict=ipynb_dict)
-    ipynb_dict = jupyter_helper.update_ipynb_test_source_code(
+    jupyter_helper.update_ipynb_test_source_code(
         source_code='')
-    jupyter_helper._save_test_ipynb_dict(ipynb_dict=ipynb_dict)
 
 
 def test_get_jupyter_root_url_with_token():
@@ -157,7 +155,7 @@ def test__assert_only_one_code_cell_exists():
         'ipynb_dict': {},
     }
     assert_raises(
-        AssertionError,
+        Exception,
         jupyter_helper._assert_only_one_code_cell_exists,
         **kwargs,
     )
@@ -172,7 +170,7 @@ def test__assert_only_one_code_cell_exists():
         },
     }
     assert_raises(
-        AssertionError,
+        Exception,
         jupyter_helper._assert_only_one_code_cell_exists,
         **kwargs
     )
@@ -191,7 +189,7 @@ def test__assert_only_one_code_cell_exists():
         },
     }
     assert_raises(
-        AssertionError,
+        Exception,
         jupyter_helper._assert_only_one_code_cell_exists,
         **kwargs
     )
@@ -292,3 +290,48 @@ def test__save_test_ipynb_dict():
         'print(1)'
     )
     _empty_ipynb_code_cell()
+
+
+def test_display_cell_menu():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_display_cell_menu
+    """
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.display_cell_menu()
+    driver = jupyter_helper.selenium_helper.driver
+    script = 'return $("#{cell_menu_selector_id_str}").css("display");'.format(
+        cell_menu_selector_id_str=jupyter_helper.CELL_MENU_SELECTOR_ID_STR
+    )
+    display_style = driver.execute_script(script)
+    assert_equal(display_style, 'block')
+
+
+def test__assert_only_one_output_cell_exists():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__assert_only_one_output_cell_exists
+    """
+    _empty_ipynb_code_cell()
+    jupyter_helper.open_test_jupyter_note_book()
+    pass
+
+
+def test_get_test_code_text_output():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_get_test_code_text_output
+    """
+    pass
+
+
+def test_run_jupyter_test_code():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_run_jupyter_test_code
+    """
+    pass

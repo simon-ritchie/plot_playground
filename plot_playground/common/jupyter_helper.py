@@ -116,15 +116,63 @@ def open_test_jupyter_note_book():
         time.sleep(1)
 
 
-def get_jupyter_test_code_output_text():
+def run_test_code():
     """
-    Get the character string of the output after the
-    test cell execution.
+    Execute the code of the test cell.
+
+    Raises
+    ------
+    Exception
+        - If Jupyter is not running.
+        - If the test notebook is not open.
+    """
+    _assert_current_page_is_test_notebook()
+    display_cell_menu()
+    pass
+
+
+CELL_MENU_SELECTOR_ID_STR = 'cell_menu'
+
+
+def display_cell_menu():
+    """
+    Display the menu of the cell.
+
+    Raises
+    ------
+    Exception
+        - If Jupyter is not running.
+        - If the test notebook is not open.
+        - If the menu of the cell does not exist.
+        - If there are multiple menu of cells.
+    """
+    _assert_current_page_is_test_notebook()
+    driver = selenium_helper.driver
+    cell_menu_elem_list = driver.find_elements_by_id(
+        CELL_MENU_SELECTOR_ID_STR
+    )
+    if not cell_menu_elem_list:
+        raise Exception('The menu element of the cell does not exist.')
+    if len(cell_menu_elem_list) != 1:
+        raise Exception('There are two or more cell menu elements.')
+    script = '$("#{cell_menu_selector_id_str}").css("display", "block");'.format(
+        cell_menu_selector_id_str=CELL_MENU_SELECTOR_ID_STR
+    )
+    driver.execute_script(script)
+
+
+
+OUTPUT_TEXT_SELECTOR_CLASS_STR = 'output_subarea'
+
+
+def get_test_code_text_output():
+    """
+    Get the text of the output.
 
     Returns
     -------
     output_text : str
-        The character string of the output.
+        Text on the output cell.
 
     Raises
     ------
@@ -135,8 +183,32 @@ def get_jupyter_test_code_output_text():
         - If there are multiple output cells.
     """
     _assert_current_page_is_test_notebook()
-    # text_output_elem = _get_test_code_text_output_elem()
-    pass
+    _assert_only_one_output_cell_exists()
+    driver = selenium_helper.driver
+    output_cell_elem = driver.find_element_by_class_name(
+        OUTPUT_TEXT_SELECTOR_CLASS_STR
+    )
+    output_text = output_cell_elem.text
+    return output_text
+
+
+def _assert_only_one_output_cell_exists():
+    """
+    Check that there is only one output cell.
+
+    Raises
+    ------
+    Exception
+        - If output cell does not exist.
+        - If there are two or more output cells.
+    """
+    driver = selenium_helper.driver
+    output_cell_elem_list = driver.find_elements_by_class_name(
+        OUTPUT_TEXT_SELECTOR_CLASS_STR)
+    if not output_cell_elem_list:
+        raise Exception('The cell of the output does not exist.')
+    if len(output_cell_elem_list) != 1:
+        raise Exception('There are two or more output cells.')
 
 
 def update_ipynb_test_source_code(source_code):
@@ -252,14 +324,14 @@ def _assert_only_one_code_cell_exists(ipynb_dict):
 
     Raises
     ------
-    AssertionError
+    Exception
         - If the code cell does not exist.
         - If there are multiple code cells.
     """
     code_cell_num = 0
     is_in = 'cells' in ipynb_dict
     if not is_in:
-        raise AssertionError(
+        raise Exception(
             'There is no cell in the notebook.')
     cells_list = ipynb_dict['cells']
     for cell_dict in cells_list:
@@ -268,10 +340,10 @@ def _assert_only_one_code_cell_exists(ipynb_dict):
         code_cell_num += 1
 
     if code_cell_num == 0:
-        raise AssertionError(
+        raise Exception(
             'There is no code cell in the notebook.')
     if code_cell_num != 1:
-        raise AssertionError(
+        raise Exception(
             'Multiple code cells are not acceptable.')
 
 
