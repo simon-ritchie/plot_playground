@@ -114,6 +114,10 @@ def open_test_jupyter_note_book():
             break
         loop_count += 1
         time.sleep(1)
+    time.sleep(3)
+
+
+RUN_ALL_CELLS_SELECTOR_ID_STR = 'run_all_cells'
 
 
 def run_test_code():
@@ -123,12 +127,21 @@ def run_test_code():
     Raises
     ------
     Exception
-        - If Jupyter is not running.
-        - If the test notebook is not open.
+        - If the menu element for cell execution can not be found.
+        - If more than one menu element for cell execution is found.
     """
     _assert_current_page_is_test_notebook()
     display_cell_menu()
-    pass
+    driver = selenium_helper.driver
+    run_all_menu_elem_list = driver.find_elements_by_id(
+        RUN_ALL_CELLS_SELECTOR_ID_STR
+    )
+    if not run_all_menu_elem_list:
+        raise Exception('No menu element for cell execution was found.')
+    if len(run_all_menu_elem_list) != 1:
+        raise Exception('More than one menu element for cell execution was found.')
+    run_all_menu_elem = run_all_menu_elem_list[0]
+    run_all_menu_elem.click()
 
 
 CELL_MENU_SELECTOR_ID_STR = 'cell_menu'
@@ -141,8 +154,6 @@ def display_cell_menu():
     Raises
     ------
     Exception
-        - If Jupyter is not running.
-        - If the test notebook is not open.
         - If the menu of the cell does not exist.
         - If there are multiple menu of cells.
     """
@@ -173,14 +184,6 @@ def get_test_code_text_output():
     -------
     output_text : str
         Text on the output cell.
-
-    Raises
-    ------
-    Exception
-        - If Jupyter is not running.
-        - If the test notebook is not open.
-        - If output cell does not exist.
-        - If there are multiple output cells.
     """
     _assert_current_page_is_test_notebook()
     _assert_only_one_output_cell_exists()

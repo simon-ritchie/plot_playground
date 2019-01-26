@@ -8,6 +8,11 @@ import os
 
 import chromedriver_binary
 from selenium import webdriver
+import logging
+
+selenium_logger = logging.getLogger(
+    'selenium.webdriver.remote.remote_connection')
+selenium_logger.setLevel(logging.WARNING)
 
 driver = None
 
