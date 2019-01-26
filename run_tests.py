@@ -115,12 +115,10 @@ if __name__ == '__main__':
         help='The specific module name to be tested. Extension names are not included. It must be specified as a character string containing a path. If omitted, all modules are subject to test execution.')
     args = parser.parse_args()
     module_name = args.module_name
-
     stop_jupyter()
+
     jupyter_process = mp.Process(target=run_jupyter_process)
     jupyter_process.start()
-
-    os.system('python setup.py install')
     while not is_jupyter_started():
         time.sleep(1)
 

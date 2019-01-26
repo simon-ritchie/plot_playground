@@ -43,6 +43,7 @@ def test_get_jupyter_root_url_with_token():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_get_jupyter_root_url_with_token
     """
+    jupyter_helper.selenium_helper.start_webdriver()
     root_url = jupyter_helper.get_jupyter_root_url_with_token()
     assert_true(
         root_url.startswith(jupyter_helper.JUPYTER_ROOT_URL)
@@ -143,6 +144,13 @@ def test_update_ipynb_test_source_code():
     """
     jupyter_helper.update_ipynb_test_source_code(
         source_code='print(100)\nprint(200)')
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code()
+    text_output = jupyter_helper.get_test_code_text_output()
+    is_in = '100' in text_output
+    assert_true(is_in)
+    is_in = '200' in text_output
+    assert_true(is_in)
 
 
 def test__assert_only_one_code_cell_exists():
@@ -252,7 +260,7 @@ print(2)
         code_cell_idx=1)
     assert_equal(
         ipynb_dict['cells'][1]['source'],
-        ['print(1)', 'print(2)'])
+        ['print(1)\n', 'print(2)\n'])
 
 
 def test__read_test_ipynb_dict():
@@ -287,7 +295,7 @@ def test__save_test_ipynb_dict():
     ipynb_dict = jupyter_helper._read_test_ipynb_dict()
     assert_equal(
         ipynb_dict['cells'][code_cell_idx]['source'][0],
-        'print(1)'
+        'print(1)\n'
     )
     _empty_ipynb_code_cell()
 

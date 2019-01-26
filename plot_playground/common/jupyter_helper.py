@@ -74,14 +74,12 @@ def get_jupyter_token():
 
 
 TEST_JUPYTER_NOTE_NAME = 'test_on_jupyter'
-TEST_JUPYTER_NOTE_URL = "http://localhost:{jupyter_test_port}/notebooks/plot_playground/tests/notes/{test_jupyter_note_name}.ipynb".format(
+TEST_JUPYTER_NOTE_URL = "http://localhost:{jupyter_test_port}/notebooks/{test_jupyter_note_name}.ipynb".format(
     jupyter_test_port=settings.JUPYTER_TEST_PORT,
     test_jupyter_note_name=TEST_JUPYTER_NOTE_NAME
 )
 TEST_JUPYTER_NOTE_PATH = os.path.join(
     settings.ROOT_DIR,
-    'tests',
-    'notes',
     TEST_JUPYTER_NOTE_NAME + '.ipynb',
 )
 
@@ -232,7 +230,6 @@ def update_ipynb_test_source_code(source_code):
     source_code : str
         Source code to set.
     """
-    source_list = source_code.split('\n')
     ipynb_dict = _read_test_ipynb_dict()
     _assert_only_one_code_cell_exists(
         ipynb_dict=ipynb_dict)
@@ -295,6 +292,8 @@ def _replace_ipynb_code_cell(ipynb_dict, source_code, code_cell_idx):
     cell_dict = ipynb_dict['cells'][code_cell_idx]
     source_code = source_code.strip()
     source_code_line_list = source_code.split('\n')
+    for i, source_code in enumerate(source_code_line_list):
+        source_code_line_list[i] = source_code + '\n'
     cell_dict['source'] = source_code_line_list
     return ipynb_dict
 

@@ -10,3 +10,4 @@
 /.vscode
 /log_test.xml
 /plot_playground/tests/notes/.ipynb_checkpoints
+*.log
