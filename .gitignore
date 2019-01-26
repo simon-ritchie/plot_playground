@@ -11,3 +11,5 @@
 /log_test.xml
 /plot_playground/tests/notes/.ipynb_checkpoints
 *.log
+/plot_playground/tests/tmp_test_img.png
+/.ipynb_checkpoints

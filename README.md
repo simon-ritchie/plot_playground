@@ -12,6 +12,9 @@ The following libraries are used for testing:
 $ pip install chromedriver-binary==2.45.0
 $ pip install selenium==3.13.0
 $ pip install win10toast==0.9
+$ pip install Pillow==5.2.0
+$ pip install jupyter==1.0.0
+$ pip install notebook==5.5.0
 # pip install nose==1.3.7
 ```
 

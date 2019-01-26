@@ -4,14 +4,21 @@ Test Command
 $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper
 """
 
+import time
+
 from nose.tools import assert_equal, assert_true, \
     assert_not_equal, assert_false
 
 from plot_playground.common import selenium_helper
+from plot_playground.common import jupyter_helper
+from plot_playground.tests.test_d3_helper \
+    import read_jupyter_test_python_script
+from plot_playground.common import settings
 
 
 def teardown():
     selenium_helper.exit_webdriver()
+    jupyter_helper.empty_test_ipynb_code_cell()
 
 
 def test_start_webdriver():
@@ -66,3 +73,27 @@ def test_kill_chromedriver_process():
     selenium_helper.kill_chromedriver_process()
     result_bool = selenium_helper.chromedriver_process_exists()
     assert_false(result_bool)
+
+
+def test_save_target_elem_screenshot():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_selenium_helper:test_save_target_elem_screenshot
+    """
+
+    script_str = read_jupyter_test_python_script(
+        script_file_name='exec_d3_js_script_on_jupyter')
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code=script_str)
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code(sleep_seconds=3)
+    driver = selenium_helper.driver
+    jupyter_helper.hide_input_cell()
+    jupyter_helper.hide_header()
+    target_elem = driver.find_element_by_id(
+        settings.TEST_SVG_ELEM_ID
+    )
+    selenium_helper.save_target_elem_screenshot(
+        target_elem=target_elem)
+    pass

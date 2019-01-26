@@ -5,10 +5,15 @@ Selenium's webdriver control.
 
 import subprocess as sp
 import os
+from io import BytesIO
 
 import chromedriver_binary
 from selenium import webdriver
 import logging
+from PIL import Image
+from selenium.webdriver.common.keys import Keys
+
+from plot_playground.common import settings
 
 selenium_logger = logging.getLogger(
     'selenium.webdriver.remote.remote_connection')
@@ -76,3 +81,40 @@ def kill_chromedriver_process():
     if not chromedriver_process_exists():
         return
     os.system('taskkill /im chromedriver.exe /f')
+
+
+DEFAULT_TEST_IMG_PATH = os.path.join(
+    settings.ROOT_DIR,
+    'plot_playground',
+    'tests',
+    'tmp_test_img.png'
+)
+
+
+def save_target_elem_screenshot(
+        target_elem, img_path=DEFAULT_TEST_IMG_PATH):
+    """
+    Save screenshot of target element.
+
+    Parameters
+    ----------
+    target_elem : selenium.webdriver.remote.webelement.WebElement
+        The WebElement for which screen shots are to be taken.
+    img_path : str, default DEFAULT_TEST_IMG_PATH
+        The destination path.
+    """
+
+    driver.find_element_by_tag_name('body').send_keys(
+        Keys.CONTROL + Keys.HOME)
+    location_dict = target_elem.location
+    size_dict = target_elem.size
+    elem_x = location_dict['x']
+    left = location_dict['x']
+    top = location_dict['y']
+    right = location_dict['x'] + size_dict['width']
+    bottom = location_dict['y'] + size_dict['height']
+    screenshot_png = driver.get_screenshot_as_png()
+    img = Image.open(BytesIO(screenshot_png))
+    img = img.crop((left, top, right, bottom))
+    img.save(img_path)
+    img.close()
