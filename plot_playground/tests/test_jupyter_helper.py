@@ -328,9 +328,11 @@ def test__assert_only_one_output_cell_exists():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test__assert_only_one_output_cell_exists
     """
-    _empty_ipynb_code_cell()
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code='print(1)')
     jupyter_helper.open_test_jupyter_note_book()
-    pass
+    jupyter_helper.run_test_code()
+    jupyter_helper._assert_only_one_output_cell_exists()
 
 
 def test_get_test_code_text_output():
@@ -339,13 +341,9 @@ def test_get_test_code_text_output():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_get_test_code_text_output
     """
-    pass
-
-
-def test_run_jupyter_test_code():
-    """
-    Test Command
-    ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_run_jupyter_test_code
-    """
-    pass
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code='print(100)')
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code()
+    text_output = jupyter_helper.get_test_code_text_output()
+    assert_equal(text_output, '100')

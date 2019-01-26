@@ -120,9 +120,15 @@ def open_test_jupyter_note_book():
 RUN_ALL_CELLS_SELECTOR_ID_STR = 'run_all_cells'
 
 
-def run_test_code():
+def run_test_code(sleep_seconds=1):
     """
     Execute the code of the test cell.
+
+    Parameters
+    ----------
+    sleep_seconds : int, default 1
+        The number of seconds to sleep after starting execution
+        of code cells.
 
     Raises
     ------
@@ -142,6 +148,7 @@ def run_test_code():
         raise Exception('More than one menu element for cell execution was found.')
     run_all_menu_elem = run_all_menu_elem_list[0]
     run_all_menu_elem.click()
+    time.sleep(sleep_seconds)
 
 
 CELL_MENU_SELECTOR_ID_STR = 'cell_menu'
