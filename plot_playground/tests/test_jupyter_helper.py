@@ -385,8 +385,34 @@ def test_hide_input_cell():
     """
     jupyter_helper.open_test_jupyter_note_book()
     jupyter_helper.hide_input_cell()
-    time.sleep(3)
     driver = jupyter_helper.selenium_helper.driver
-    script = 'return $(".input").css("display");'
+    script = 'return $(".{input_selector_class_str}").css("display");'.format(
+        input_selector_class_str=jupyter_helper.INPUT_SELECTOR_CLASS_STR
+    )
+    display_style_str = driver.execute_script(script)
+    assert_equal(display_style_str, 'none')
+
+
+def test_hide_header():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_jupyter_helper:test_hide_header
+    """
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.hide_header()
+    time.sleep(5)
+    driver = jupyter_helper.selenium_helper.driver
+
+    script = 'return $("#{header_container_id}").css("display");'.format(
+        header_container_id=jupyter_helper.HEADER_CONTAINER_SELECTOR_ID_STR
+    )
+    display_style_str = driver.execute_script(script)
+    assert_equal(display_style_str, 'none')
+
+    script = 'return $("#{menu_bar_container_id}").css("display");'.format(
+        menu_bar_container_id=jupyter_helper.\
+            MENU_BAR_CONTAINER_SELECTOR_ID_STR
+    )
     display_style_str = driver.execute_script(script)
     assert_equal(display_style_str, 'none')

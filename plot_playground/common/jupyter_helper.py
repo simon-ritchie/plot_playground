@@ -26,6 +26,13 @@ JUPYTER_ROOT_URL = 'http://localhost:{jupyter_test_port}/'.format(
     jupyter_test_port=settings.JUPYTER_TEST_PORT
 )
 
+RUN_ALL_CELLS_SELECTOR_ID_STR = 'run_all_cells'
+OUTPUT_TEXT_SELECTOR_CLASS_STR = 'output_subarea'
+CELL_MENU_SELECTOR_ID_STR = 'cell_menu'
+INPUT_SELECTOR_CLASS_STR = 'input'
+HEADER_CONTAINER_SELECTOR_ID_STR = 'header-container'
+MENU_BAR_CONTAINER_SELECTOR_ID_STR = 'menubar-container'
+
 
 def empty_test_ipynb_code_cell():
     """
@@ -128,9 +135,6 @@ def open_test_jupyter_note_book():
     time.sleep(3)
 
 
-RUN_ALL_CELLS_SELECTOR_ID_STR = 'run_all_cells'
-
-
 def run_test_code(sleep_seconds=1):
     """
     Execute the code of the test cell.
@@ -162,9 +166,6 @@ def run_test_code(sleep_seconds=1):
     time.sleep(sleep_seconds)
 
 
-CELL_MENU_SELECTOR_ID_STR = 'cell_menu'
-
-
 def display_cell_menu():
     """
     Display the menu of the cell.
@@ -188,10 +189,6 @@ def display_cell_menu():
         cell_menu_selector_id_str=CELL_MENU_SELECTOR_ID_STR
     )
     driver.execute_script(script)
-
-
-
-OUTPUT_TEXT_SELECTOR_CLASS_STR = 'output_subarea'
 
 
 def get_test_code_text_output():
@@ -438,5 +435,22 @@ def hide_input_cell():
     """
     _assert_current_page_is_test_notebook()
     driver = selenium_helper.driver
-    script = '$(".input").css("display", "none");'
+    script = '$(".{input_selector_class_str}").css("display", "none");'.format(
+        input_selector_class_str=INPUT_SELECTOR_CLASS_STR
+    )
     driver.execute_script(script)
+
+
+def hide_header():
+    """
+    Hide the elements such as the menu at the top of the note.
+    """
+    script = '$("#{header_container_id}").css("display", "none")'.format(
+        header_container_id=HEADER_CONTAINER_SELECTOR_ID_STR
+    )
+    selenium_helper.driver.execute_script(script)
+
+    script = '$("#{menu_bar_container_id}").css("display", "none")'.format(
+        menu_bar_container_id=MENU_BAR_CONTAINER_SELECTOR_ID_STR
+    )
+    selenium_helper.driver.execute_script(script)
