@@ -2,7 +2,7 @@
 A module that handles the vertical axis elements of D3.js.
 """
 
-from plot_playground.common.format import FORMAT
+from plot_playground.common.format import FORMAT, convert_list_value_by_format
 
 
 def get_vaxis_script_str(
@@ -41,4 +41,5 @@ def get_vaxis_script_str(
         to the setting.
     """
     format = FORMAT(format)
+    data_list = convert_list_value_by_format(data_list=data_list, format=format)
     pass

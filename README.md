@@ -2,6 +2,10 @@ plot playground is a plot library that works on Jupyter and Pandas datasets. Thi
 
 **Notes**: currently developing phase.
 
+# Comparability notes
+
+It is compatible with Python 3.4 or later version.
+
 # Testing
 
 Please use Windows10 to run the test.
