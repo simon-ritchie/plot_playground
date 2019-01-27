@@ -77,7 +77,7 @@ def test_exec_d3_js_script_on_jupyter():
     jupyter_helper.selenium_helper.driver.refresh()
     time.sleep(3)
 
-    jupyter_helper.run_test_code(sleep_seconds=3)
+    jupyter_helper.run_test_code(sleep_seconds=5)
     driver = selenium_helper.driver
     svg_elem = driver.find_element_by_id(
         settings.TEST_SVG_ELEM_ID

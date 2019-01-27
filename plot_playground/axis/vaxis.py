@@ -6,11 +6,23 @@ import numpy as np
 
 from plot_playground.common.format import FORMAT, convert_list_value_by_format
 from plot_playground.common import d3_helper
+from plot_playground.common import style
+
+AXIS_JS_STR = r"""
+var svg = d3.select("#{svg_id}");
+var yAxisScale = d3.scaleLinear()
+    .domain([{y_axis_min, y_axis_max}])
+    .range([{svg_height} - {outer_margin}, {outer_margin}]);
+var yAxis = d3.axisLeft()
+    .scale(yAxisScale);
+var yAxisGroup = svg.append("g")
+    .call(yAxis);
+""".replace('{outer_margin}', style.OUTER_MARGIN)
 
 
 def get_vaxis_script_str(
-        svg_id, data_list, ticks=None, format=None, prefix_str=None,
-        suffix_str=None):
+        svg_id, data_list, y_label=None, ticks=None, format=None,
+        prefix_str=None, suffix_str=None):
     """
     Get the character string of the script for setting the vertical axis.
 
@@ -23,15 +35,17 @@ def get_vaxis_script_str(
     ticks : int or None, default None
         Number of axis ticks. When specifying, it is not necessarily the
         same number. It is set with easy-to-see numbers.
+    y_label : str or None
+        y-axis label.
     format : int or None
         Number format. To make it easy to see, set a suitable value according
-        6to dataset. The following types are allowed.
+        to dataset. The following types are allowed.
         - FORMAT.INT -> e.g. 10
         - FORMAT.FLOAT_1 -> e.g. 10.5
         - FORMAT.FLOAT_2 -> e.g. 10.55
         - FORMAT.FLOAT_3 -> e.g. 10.555
     prefix_str : str or None
-        A character string given to the beginning of the axis. For example,
+        A character string given to the beginning of the axis label. For example,
         if you set the '$' symbol, the axis labels are displayed like $ 100.
     suffix_str : str or None
         A character string appended to the end of the axis label. For example,
@@ -46,6 +60,7 @@ def get_vaxis_script_str(
     format = FORMAT(format)
     data_list = convert_list_value_by_format(data_list=data_list, format=format)
     y_baseline = _get_y_baseline(data_list=data_list)
+    y_max = max(data_list)
     pass
 
 

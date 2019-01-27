@@ -88,7 +88,7 @@ def test_save_target_elem_screenshot():
     jupyter_helper.update_ipynb_test_source_code(
         source_code=script_str)
     jupyter_helper.open_test_jupyter_note_book()
-    jupyter_helper.run_test_code(sleep_seconds=3)
+    jupyter_helper.run_test_code(sleep_seconds=5)
     driver = selenium_helper.driver
     jupyter_helper.hide_input_cell()
     jupyter_helper.hide_header()
