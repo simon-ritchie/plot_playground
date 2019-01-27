@@ -2,7 +2,10 @@
 A module that handles the vertical axis elements of D3.js.
 """
 
+import numpy as np
+
 from plot_playground.common.format import FORMAT, convert_list_value_by_format
+from plot_playground.common import d3_helper
 
 
 def get_vaxis_script_str(
@@ -42,4 +45,24 @@ def get_vaxis_script_str(
     """
     format = FORMAT(format)
     data_list = convert_list_value_by_format(data_list=data_list, format=format)
+    y_baseline = _get_y_baseline(data_list=data_list)
     pass
+
+
+def _get_y_baseline(data_list):
+    """
+    Get the baseline value of Y axis.
+
+    Parameters
+    ----------
+    data_list : list
+        A one-dimensional list containing numbers.
+
+    Returns
+    -------
+    y_baseline : int or float
+        The smallest value among the numbers in the list and 0.
+    """
+    list_min_value = min(data_list)
+    y_baseline = min(list_min_value, 0)
+    return y_baseline
