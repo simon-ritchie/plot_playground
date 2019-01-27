@@ -85,3 +85,14 @@ def test_compare_img_hist():
     assert_less_equal(similarity, 0.5)
 
     _remove_test_img()
+
+
+def test_get_test_expected_img_path():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_get_test_expected_img_path
+    """
+    img_path = img_helper.get_test_expected_img_path(
+        file_name='exec_d3_js_script_on_jupyter')
+    assert_true(os.path.exists(img_path))

@@ -7,6 +7,8 @@ import os
 import numpy as np
 import cv2
 
+from plot_playground.common import settings
+
 
 def assert_img_exists(img_path):
     """
@@ -76,3 +78,27 @@ def compare_img_hist(img_path_1, img_path_2):
         similarity_list.append(similarity_unit)
     similarity = np.mean(similarity_list)
     return similarity
+
+
+def get_test_expected_img_path(file_name):
+    """
+    Get the path of the assumed image for the test.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name of the target excluding the extension.
+
+    Returns
+    -------
+    img_path : str
+        Path of target image.
+    """
+    img_path = os.path.join(
+        settings.ROOT_DIR,
+        'plot_playground',
+        'tests',
+        'expected_img',
+        '%s.png' % file_name,
+    )
+    return img_path
