@@ -4,6 +4,7 @@ A module that provides image helper functions.
 
 import os
 
+import numpy as np
 import cv2
 
 
@@ -27,7 +28,7 @@ def assert_img_exists(img_path):
     raise AssertionError(err_msg)
 
 
-def compare_img_hist(img_path_1, img_path_2, img_width, img_height):
+def compare_img_hist(img_path_1, img_path_2):
     """
     Get the comparison result of the similarity by the histogram of the
     two images. This is suitable for checking whether the image is close
@@ -40,15 +41,38 @@ def compare_img_hist(img_path_1, img_path_2, img_width, img_height):
         The path of the first image for comparison.
     img_path_2 : str
         The path of the second image for comparison.
-    img_width : int
-        Image width.
-    img_height : int
-        Image height.
 
     Returns
     -------
     similarity : float
         Similarity between two images. The maximum is set to 1.0, and the
-        closer to 1.0, the higher the similarity.
+        closer to 1.0, the higher the similarity. It is set by the mean
+        value of the histogram of RGB channels.
     """
-    pass
+    assert_img_exists(img_path=img_path_1)
+    assert_img_exists(img_path=img_path_2)
+    img_1 = cv2.imread(img_path_1)
+    img_2 = cv2.imread(img_path_2)
+    channels_list = [[0], [1], [2]]
+    similarity_list = []
+
+    for channels in channels_list:
+        img_1_hist = cv2.calcHist(
+            images=[img_1],
+            channels=channels,
+            mask=None,
+            histSize=[256],
+            ranges=[0, 256]
+        )
+        img_2_hist = cv2.calcHist(
+            images=[img_2],
+            channels=channels,
+            mask=None,
+            histSize=[256],
+            ranges=[0, 256]
+        )
+        similarity_unit = cv2.compareHist(
+            H1=img_1_hist, H2=img_2_hist, method=cv2.HISTCMP_CORREL)
+        similarity_list.append(similarity_unit)
+    similarity = np.mean(similarity_list)
+    return similarity

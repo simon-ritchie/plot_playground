@@ -6,7 +6,9 @@ $ python run_tests.py --module_name plot_playground.tests.test_img_helper
 
 import os
 
-from nose.tools import assert_equal, assert_true, assert_raises
+from nose.tools import assert_equal, assert_true, assert_raises, \
+    assert_less_equal
+from PIL import Image
 
 from plot_playground.common import img_helper
 from plot_playground.common import settings
@@ -54,4 +56,32 @@ def test_assert_img_exists():
 
     open(TEST_IMG_PATH_1, 'a').close()
     img_helper.assert_img_exists(TEST_IMG_PATH_1)
+    _remove_test_img()
+
+
+def test_compare_img_hist():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_compare_img_hist
+    """
+    _remove_test_img()
+
+    img = Image.new(mode='RGB', size=(50, 50), color='#ff0000')
+    img.save(TEST_IMG_PATH_1)
+    img.save(TEST_IMG_PATH_2)
+    img.close()
+    similarity = img_helper.compare_img_hist(
+        img_path_1=TEST_IMG_PATH_1,
+        img_path_2=TEST_IMG_PATH_2)
+    assert_equal(similarity, 1.0)
+
+    img = Image.new(mode='RGB', size=(50, 50), color='#00ff00')
+    img.save(TEST_IMG_PATH_2)
+    img.close()
+    similarity = img_helper.compare_img_hist(
+        img_path_1=TEST_IMG_PATH_1,
+        img_path_2=TEST_IMG_PATH_2)
+    assert_less_equal(similarity, 0.5)
+
     _remove_test_img()
