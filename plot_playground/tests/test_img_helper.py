@@ -1,7 +1,7 @@
 """
 Test Command
 ------------
-$ python run_tests.py --module_name plot_playground.tests.test_img_helper
+$ python run_tests.py --module_name plot_playground.tests.test_img_helper --skip_jupyter 1
 """
 
 import os
