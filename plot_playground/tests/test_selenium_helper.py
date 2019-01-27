@@ -14,6 +14,7 @@ from plot_playground.common import jupyter_helper
 from plot_playground.tests.test_d3_helper \
     import read_jupyter_test_python_script
 from plot_playground.common import settings
+from plot_playground.common import img_helper
 
 
 def teardown():
@@ -96,4 +97,9 @@ def test_save_target_elem_screenshot():
     )
     selenium_helper.save_target_elem_screenshot(
         target_elem=target_elem)
-    pass
+    expected_img_path = img_helper.get_test_expected_img_path(
+        file_name='exec_d3_js_script_on_jupyter')
+    similarity = img_helper.compare_img_hist(
+        img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
+        img_path_2=expected_img_path)
+    assert_equal(similarity, 1.0)
