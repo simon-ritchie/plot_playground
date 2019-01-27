@@ -46,7 +46,7 @@ def test_assert_img_exists():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_assert_img_exists
+    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_assert_img_exists --skip_jupyter 1
     """
     _remove_test_img()
     assert_raises(
@@ -63,7 +63,7 @@ def test_compare_img_hist():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_compare_img_hist
+    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_compare_img_hist --skip_jupyter 1
     """
     _remove_test_img()
 
@@ -91,7 +91,7 @@ def test_get_test_expected_img_path():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_get_test_expected_img_path
+    $ python run_tests.py --module_name plot_playground.tests.test_img_helper:test_get_test_expected_img_path --skip_jupyter 1
     """
     img_path = img_helper.get_test_expected_img_path(
         file_name='exec_d3_js_script_on_jupyter')

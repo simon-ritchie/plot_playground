@@ -112,21 +112,30 @@ if __name__ == '__main__':
     parser.add_argument(
         '--module_name',
         default='',
-        help='The specific module name to be tested. Extension names are not included. It must be specified as a character string containing a path. If omitted, all modules are subject to test execution.')
+        help='The specific module name to be tested. Extension names are not included. It must be specified as a character string containing a path. If omitted, all modules are subject to test execution.'
+    )
+    parser.add_argument(
+        '--skip_jupyter',
+        default=0,
+        help='Whether to skip startup of Jupyter. It is skipped by specifying 1. In cases where Jupyter is unnecessary, testing will be completed in a short time.',
+    )
     args = parser.parse_args()
     module_name = args.module_name
-    stop_jupyter()
+    skip_jupyter = args.skip_jupyter
 
-    jupyter_process = mp.Process(target=run_jupyter_process)
-    jupyter_process.start()
-    while not is_jupyter_started():
-        time.sleep(1)
+    if not skip_jupyter:
+        stop_jupyter()
+        jupyter_process = mp.Process(target=run_jupyter_process)
+        jupyter_process.start()
+        while not is_jupyter_started():
+            time.sleep(1)
 
     test_num, error_num, failures_num = run_nose_command(
         module_name=module_name)
 
-    stop_jupyter()
-    jupyter_process.terminate()
+    if not skip_jupyter:
+        stop_jupyter()
+        jupyter_process.terminate()
     selenium_helper.kill_chromedriver_process()
 
     toast_msg = '----------------------------'
@@ -137,4 +146,4 @@ if __name__ == '__main__':
     toast_notifier.show_toast(
         title='The test is completed.',
         msg=toast_msg,
-        duration=30)
+        duration=3)
