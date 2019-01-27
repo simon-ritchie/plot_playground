@@ -13,6 +13,7 @@ from plot_playground.common import d3_helper
 from plot_playground.common import selenium_helper
 from plot_playground.common import jupyter_helper
 from plot_playground.common import settings
+from plot_playground.common import img_helper
 
 
 def setup():
@@ -77,5 +78,15 @@ def test_exec_d3_js_script_on_jupyter():
     time.sleep(3)
 
     jupyter_helper.run_test_code(sleep_seconds=3)
-    pass
-
+    driver = selenium_helper.driver
+    svg_elem = driver.find_element_by_id(
+        settings.TEST_SVG_ELEM_ID
+    )
+    selenium_helper.save_target_elem_screenshot(
+        target_elem=svg_elem)
+    expected_img_path = img_helper.get_test_expected_img_path(
+        file_name='exec_d3_js_script_on_jupyter')
+    similarity = img_helper.compare_img_hist(
+        img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
+        img_path_2=expected_img_path)
+    assert_equal(similarity, 1.0)
