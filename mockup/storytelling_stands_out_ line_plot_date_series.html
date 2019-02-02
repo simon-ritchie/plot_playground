@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <style>
+            #test-svg {
+                border: 1px solid #999999;
+            }
+
+            .xAxis path,
+            .yAxis path,
+            .xAxis line,
+            .yAxis line {
+                stroke: #999999;
+                shape-rendering: crispEdges;
+            }
+
+            .xAxis text,
+            .yAxis text {
+                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+                fill: #999999;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <script>
+            const SVG_ID = "test-svg";
+            const SVG_WIDTH = 480;
+            const SVG_HEIGHT = 300;
+            const IS_TIMESCALE = true;
+            const OUTER_MARGIN = 20;
+            const X_TICKS = 5;
+            const Y_TICKS = 5;
+
+            var yAxisMin = 0;
+            var yAxisMax = 100;
+
+            var dataset = {
+                "2019-01-01": {
+                    "Apple": 100,
+                    "Orange": 120,
+                    "Melon": 250,
+                },
+                "2019-01-02": {
+                    "Apple": 120,
+                    "Orange": 150,
+                    "Melon": 220,
+                },
+                "2019-01-03": {
+                    "Apple": 110,
+                    "Orange": 110,
+                    "Melon": 290,
+                },
+                "2019-01-04": {
+                    "Apple": 130,
+                    "Orange": 160,
+                    "Melon": 310,
+                }
+            };
+            var xAxisMin = new Date(2019, 0, 1);
+            var xAxisMax = new Date(2019, 0, 4);
+
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("width", SVG_WIDTH)
+                .attr("height", SVG_HEIGHT)
+                .attr("id", SVG_ID)
+
+            var yAxisScale = d3.scaleLinear()
+                .domain([yAxisMin, yAxisMax])
+                .range([SVG_HEIGHT - OUTER_MARGIN, OUTER_MARGIN]);
+            var yAxis = d3.axisLeft()
+                .scale(yAxisScale)
+                .ticks(Y_TICKS);
+            var yAxisGroup = svg.append("g")
+                .classed("yAxis", true)
+                .call(yAxis);
+            var yAxisBBox = yAxisGroup
+                .node()
+                .getBBox();
+            var yAxisPositionX = OUTER_MARGIN + yAxisBBox.width;
+            yAxisGroup.attr("transform", "translate(" + yAxisPositionX + ", 0)");
+
+            var xAxisScale = d3.scaleTime()
+                .domain([xAxisMin, xAxisMax])
+                .range([OUTER_MARGIN, SVG_WIDTH - OUTER_MARGIN - yAxisPositionX])
+            var xAxis = d3.axisBottom()
+                .scale(xAxisScale)
+                .ticks(X_TICKS);
+            var xAxisGroup = svg.append("g")
+                .classed("xAxis", true)
+                .call(xAxis)
+            var xAxisBBox = xAxisGroup
+                .node()
+                .getBBox();
+            xAxisPositionY = SVG_HEIGHT - OUTER_MARGIN - xAxisBBox.height;
+            xAxisGroup.attr(
+                "transform",
+                "translate(" + (yAxisPositionX - OUTER_MARGIN) + ", " + xAxisPositionY + ")");
+
+            yAxisScale.range([xAxisPositionY, OUTER_MARGIN]);
+            yAxis.scale(yAxisScale);
+            yAxisGroup.call(yAxis);
+        </script>
+    </body>
+</html>
