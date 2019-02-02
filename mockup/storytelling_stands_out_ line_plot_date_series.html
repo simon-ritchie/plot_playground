@@ -8,10 +8,18 @@
                 border: 1px solid #999999;
             }
 
-            #test-svg .title {
+            #test-svg .font {
                 font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
-                fill: rgb(88, 170, 252);
+            }
+
+            #test-svg .title {
+                fill: #58aafc;
                 font-size: 25px;
+            }
+
+            #test-svg .legend {
+                font-size: 14px;
+                fill: #999999;
             }
 
             #test-svg .xAxis path,
@@ -23,53 +31,65 @@
             }
 
             #test-svg .xAxis text,
+            #test-svg .xAxis-year,
             #test-svg .yAxis text {
                 font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
                 fill: #999999;
                 font-size: 14px;
+                /* font-size: 12px; */
             }
         </style>
     </head>
     <body>
 
         <script>
+
             const SVG_ID = "test-svg";
             const SVG_WIDTH = 600;
             const SVG_HEIGHT = 372;
-            const IS_TIMESCALE = true;
             const OUTER_MARGIN = 20;
             const X_TICKS = 5;
             const Y_TICKS = 5;
-            const PLOT_TITLE = "Time series of fruit prices.";
-            // const PLOT_TITLE = "";
+            const PLOT_TITLE_TXT = "Time series of fruit prices.";
 
-            var DATASET = {
+            const DATASET = d3.entries({
                 "2018-01-01": {
                     "Apple": 100,
                     "Orange": 120,
-                    "Melon": 250,
+                    "Melon": 250
                 },
                 "2018-04-12": {
                     "Apple": 120,
                     "Orange": 150,
-                    "Melon": 220,
+                    "Melon": 220
                 },
                 "2019-02-03": {
                     "Apple": 110,
                     "Orange": 110,
-                    "Melon": 290,
+                    "Melon": 290
                 },
                 "2019-02-10": {
                     "Apple": 130,
                     "Orange": 160,
-                    "Melon": 310,
+                    "Melon": 310
                 }
-            };
-            const YEAR_LIST = ["2018", "2019"];
-            var Y_AXIS_MIN = 0;
-            var Y_AXIS_MAX = 310;
-            var X_AXIS_MIN = new Date(2018, 0, 1);
-            var X_AXIS_MAX = new Date(2019, 1, 10);
+            });
+            const LEGEND_DATASET = [
+                {key: "Apple", value: 130},
+                {key: "Orange", value: 160},
+                {key: "Melon", value: 310}
+            ];
+            const LEGEND_KEY = function(d) {
+                return d.key;
+            }
+            const YEAR_DATASET = [
+                new Date(2018, 0, 1),
+                new Date(2019, 0, 1)
+            ];
+            const Y_AXIS_MIN = 0;
+            const Y_AXIS_MAX = 310 * 1.1;
+            const X_AXIS_MIN = new Date(2018, 0, 1);
+            const X_AXIS_MAX = new Date(2019, 1, 10);
 
             var svg = d3.select("body")
                 .append("svg")
@@ -78,16 +98,25 @@
                 .attr("id", SVG_ID)
 
             var plotBaseLineY = 0;
-            if (PLOT_TITLE !== "") {
+            if (PLOT_TITLE_TXT !== "") {
                 var plotTitle = svg.append("text")
                     .attr("x", OUTER_MARGIN)
                     .attr("y", OUTER_MARGIN)
                     .attr("dominant-baseline", "hanging")
-                    .text(PLOT_TITLE)
-                    .classed("title", true);
+                    .text(PLOT_TITLE_TXT)
+                    .classed("title font", true);
                 var plotTitleBBox = plotTitle.node().getBBox();
                 plotBaseLineY = plotTitleBBox.y + plotTitleBBox.height;
             }
+
+            var legend = svg.selectAll("legend")
+                .data(LEGEND_DATASET, LEGEND_KEY)
+                .enter()
+                .append("text")
+                .text(function(d) {
+                    return d.key;
+                })
+                .classed("legend font", true);
 
             var yAxisScale = d3.scaleLinear()
                 .domain([Y_AXIS_MIN, Y_AXIS_MAX])
@@ -96,7 +125,7 @@
                 .scale(yAxisScale)
                 .ticks(Y_TICKS);
             var yAxisGroup = svg.append("g")
-                .classed("yAxis", true)
+                .classed("yAxis font", true)
                 .call(yAxis);
             var yAxisBBox = yAxisGroup
                 .node()
@@ -106,25 +135,59 @@
 
             var xAxisScale = d3.scaleTime()
                 .domain([X_AXIS_MIN, X_AXIS_MAX])
-                .range([OUTER_MARGIN, SVG_WIDTH - OUTER_MARGIN - yAxisPositionX])
+                .range([yAxisPositionX, SVG_WIDTH - OUTER_MARGIN])
+            var yearFormat = d3.timeFormat("%Y");
+
+            var year = svg.selectAll("year")
+                .data(YEAR_DATASET)
+                .enter()
+                .append("text")
+                .text(function(d) {
+                    return yearFormat(d);
+                })
+                .attr("text-anchor", "middle")
+                .attr("x", function(d, i) {
+                    var x = xAxisScale(d);
+                    return x;
+                })
+                .attr("y", SVG_HEIGHT - OUTER_MARGIN)
+                .classed("font xAxis-year", true);
+            var yearBBox = year.node()
+                .getBBox()
+
             var xAxis = d3.axisBottom()
                 .scale(xAxisScale)
                 .ticks(X_TICKS)
                 .tickFormat(d3.timeFormat("%m/%d"));
             var xAxisGroup = svg.append("g")
-                .classed("xAxis", true)
+                .classed("xAxis font", true)
                 .call(xAxis)
             var xAxisBBox = xAxisGroup
                 .node()
                 .getBBox();
-            xAxisPositionY = SVG_HEIGHT - OUTER_MARGIN - xAxisBBox.height;
+            xAxisPositionY = SVG_HEIGHT - OUTER_MARGIN - xAxisBBox.height - yearBBox.height;
             xAxisGroup.attr(
                 "transform",
-                "translate(" + (yAxisPositionX - OUTER_MARGIN) + ", " + xAxisPositionY + ")");
+                "translate(0, " + xAxisPositionY + ")");
 
             yAxisScale.range([xAxisPositionY, plotBaseLineY + OUTER_MARGIN]);
             yAxis.scale(yAxisScale);
             yAxisGroup.call(yAxis);
+
+            var legendMaxWidth = 0;
+            svg.selectAll(".legend").each(function(d) {
+                var width = d3.select(this)
+                    .node()
+                    .getBBox()["width"];
+                legendMaxWidth = Math.max(legendMaxWidth, width);
+            });
+            svg.selectAll(".legend")
+                .attr("x", function(d) {
+                    return SVG_WIDTH - OUTER_MARGIN - legendMaxWidth;
+                })
+                .attr("y", function(d) {
+                    return yAxisScale(d.value);
+                });
         </script>
     </body>
 </html>

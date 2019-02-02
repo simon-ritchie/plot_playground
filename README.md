@@ -4,7 +4,8 @@ plot playground is a plot library that works on Jupyter and Pandas datasets. Thi
 
 # Comparability notes
 
-It is compatible with Python 3.4 or later version.
+- It is compatible with Python 3.4 or later version.
+- The browser is compatible mainly with Chrome. IE and Edge are not supported. However, Edge will change depending on Chromium transition in future version upgrade.
 
 # Testing
 
