@@ -8,16 +8,22 @@
                 border: 1px solid #999999;
             }
 
-            .xAxis path,
-            .yAxis path,
-            .xAxis line,
-            .yAxis line {
+            #test-svg .title {
+                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+                fill: rgb(88, 170, 252);
+                font-size: 25px;
+            }
+
+            #test-svg .xAxis path,
+            #test-svg .yAxis path,
+            #test-svg .xAxis line,
+            #test-svg .yAxis line {
                 stroke: #999999;
                 shape-rendering: crispEdges;
             }
 
-            .xAxis text,
-            .yAxis text {
+            #test-svg .xAxis text,
+            #test-svg .yAxis text {
                 font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
                 fill: #999999;
                 font-size: 14px;
@@ -28,40 +34,42 @@
 
         <script>
             const SVG_ID = "test-svg";
-            const SVG_WIDTH = 480;
-            const SVG_HEIGHT = 300;
+            const SVG_WIDTH = 600;
+            const SVG_HEIGHT = 372;
             const IS_TIMESCALE = true;
             const OUTER_MARGIN = 20;
             const X_TICKS = 5;
             const Y_TICKS = 5;
+            const PLOT_TITLE = "Time series of fruit prices.";
+            // const PLOT_TITLE = "";
 
-            var yAxisMin = 0;
-            var yAxisMax = 100;
-
-            var dataset = {
-                "2019-01-01": {
+            var DATASET = {
+                "2018-01-01": {
                     "Apple": 100,
                     "Orange": 120,
                     "Melon": 250,
                 },
-                "2019-01-02": {
+                "2018-04-12": {
                     "Apple": 120,
                     "Orange": 150,
                     "Melon": 220,
                 },
-                "2019-01-03": {
+                "2019-02-03": {
                     "Apple": 110,
                     "Orange": 110,
                     "Melon": 290,
                 },
-                "2019-01-04": {
+                "2019-02-10": {
                     "Apple": 130,
                     "Orange": 160,
                     "Melon": 310,
                 }
             };
-            var xAxisMin = new Date(2019, 0, 1);
-            var xAxisMax = new Date(2019, 0, 4);
+            const YEAR_LIST = ["2018", "2019"];
+            var Y_AXIS_MIN = 0;
+            var Y_AXIS_MAX = 310;
+            var X_AXIS_MIN = new Date(2018, 0, 1);
+            var X_AXIS_MAX = new Date(2019, 1, 10);
 
             var svg = d3.select("body")
                 .append("svg")
@@ -69,9 +77,21 @@
                 .attr("height", SVG_HEIGHT)
                 .attr("id", SVG_ID)
 
+            var plotBaseLineY = 0;
+            if (PLOT_TITLE !== "") {
+                var plotTitle = svg.append("text")
+                    .attr("x", OUTER_MARGIN)
+                    .attr("y", OUTER_MARGIN)
+                    .attr("dominant-baseline", "hanging")
+                    .text(PLOT_TITLE)
+                    .classed("title", true);
+                var plotTitleBBox = plotTitle.node().getBBox();
+                plotBaseLineY = plotTitleBBox.y + plotTitleBBox.height;
+            }
+
             var yAxisScale = d3.scaleLinear()
-                .domain([yAxisMin, yAxisMax])
-                .range([SVG_HEIGHT - OUTER_MARGIN, OUTER_MARGIN]);
+                .domain([Y_AXIS_MIN, Y_AXIS_MAX])
+                .range([SVG_HEIGHT - OUTER_MARGIN, plotBaseLineY + OUTER_MARGIN]);
             var yAxis = d3.axisLeft()
                 .scale(yAxisScale)
                 .ticks(Y_TICKS);
@@ -85,11 +105,12 @@
             yAxisGroup.attr("transform", "translate(" + yAxisPositionX + ", 0)");
 
             var xAxisScale = d3.scaleTime()
-                .domain([xAxisMin, xAxisMax])
+                .domain([X_AXIS_MIN, X_AXIS_MAX])
                 .range([OUTER_MARGIN, SVG_WIDTH - OUTER_MARGIN - yAxisPositionX])
             var xAxis = d3.axisBottom()
                 .scale(xAxisScale)
-                .ticks(X_TICKS);
+                .ticks(X_TICKS)
+                .tickFormat(d3.timeFormat("%m/%d"));
             var xAxisGroup = svg.append("g")
                 .classed("xAxis", true)
                 .call(xAxis)
@@ -101,7 +122,7 @@
                 "transform",
                 "translate(" + (yAxisPositionX - OUTER_MARGIN) + ", " + xAxisPositionY + ")");
 
-            yAxisScale.range([xAxisPositionY, OUTER_MARGIN]);
+            yAxisScale.range([xAxisPositionY, plotBaseLineY + OUTER_MARGIN]);
             yAxis.scale(yAxisScale);
             yAxisGroup.call(yAxis);
         </script>
