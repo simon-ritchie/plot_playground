@@ -22,17 +22,24 @@
                 fill: #999999;
             }
 
-            #test-svg .xAxis path,
-            #test-svg .yAxis path,
-            #test-svg .xAxis line,
-            #test-svg .yAxis line {
+            #test-svg .stands-out-legend {
+                font-size: 14px;
+                fill: #6bb2f8;
+                font-weight: bold;
+            }
+
+            #test-svg .x-axis path,
+            #test-svg .y-axis path,
+            #test-svg .x-axis line,
+            #test-svg .y-axis line {
                 stroke: #999999;
                 shape-rendering: crispEdges;
             }
 
-            #test-svg .xAxis text,
-            #test-svg .xAxis-year,
-            #test-svg .yAxis text {
+            #test-svg .x-axis text,
+            #test-svg .x-axis-year,
+            #test-svg .y-axis text,
+            #test-svg .y-axis-label {
                 font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
                 fill: #999999;
                 font-size: 14px;
@@ -87,7 +94,6 @@
             const COLUMN_LIST = ["Apple", "Melon"];
             const STANDS_OUT_COLUMN_LIST = ["Orange"];
             var MERGED_COLUMN_LIST = COLUMN_LIST.concat(STANDS_OUT_COLUMN_LIST);
-            console.log(MERGED_COLUMN_LIST)
             const LEGEND_DATASET = [
                 {key: "Apple", value: 130},
                 {key: "Orange", value: 160},
@@ -102,6 +108,7 @@
             ];
             const Y_AXIS_MIN = 0;
             const Y_AXIS_MAX = 310 * 1.1;
+            const Y_AXIS_LABEL = "Price of each fruit";
             const X_AXIS_MIN = new Date(2018, 0, 1);
             const X_AXIS_MAX = new Date(2019, 1, 10);
 
@@ -130,9 +137,32 @@
                 .text(function(d) {
                     return d.key;
                 })
-                .classed("legend font", true)
                 .attr("dominant-baseline", "central");
+            legend.each(function(d) {
+                var className;
+                if (STANDS_OUT_COLUMN_LIST.indexOf(d.key) >= 0) {
+                    className = "legend stands-out-legend font";
+                }else {
+                    className = "legend font";
+                }
+                d3.select(this)
+                    .classed(className, true);
+            })
 
+            var yLabelMarginAdjust = 0;
+            if (Y_AXIS_LABEL !== "") {
+                var yAxisLabel = svg.append("text")
+                    .text(Y_AXIS_LABEL)
+                    .attr("transform", "rotate(270)")
+                    .attr("text-anchor", "end")
+                    .attr("dominant-baseline", "text-before-edge")
+                    .classed("font y-axis-label", true);
+                yAxisLabel.attr("x", -plotBaseLineY - OUTER_MARGIN + 1)
+                    .attr("y", OUTER_MARGIN - 3);
+                var yAxisLabelBBox = yAxisLabel.node()
+                    .getBBox();
+                yLabelMarginAdjust = yAxisLabelBBox.height + 2;
+            }
             var yAxisScale = d3.scaleLinear()
                 .domain([Y_AXIS_MIN, Y_AXIS_MAX])
                 .range([SVG_HEIGHT - OUTER_MARGIN, plotBaseLineY + OUTER_MARGIN]);
@@ -140,12 +170,12 @@
                 .scale(yAxisScale)
                 .ticks(Y_TICKS);
             var yAxisGroup = svg.append("g")
-                .classed("yAxis font", true)
+                .classed("y-axis font", true)
                 .call(yAxis);
             var yAxisBBox = yAxisGroup
                 .node()
                 .getBBox();
-            var yAxisPositionX = OUTER_MARGIN + yAxisBBox.width;
+            var yAxisPositionX = OUTER_MARGIN + yAxisBBox.width + yLabelMarginAdjust;
             yAxisGroup.attr("transform", "translate(" + yAxisPositionX + ", 0)");
 
             var xAxisScale = d3.scaleTime()
@@ -165,7 +195,7 @@
                     return xAxisScale(d);
                 })
                 .attr("y", SVG_HEIGHT - OUTER_MARGIN)
-                .classed("font xAxis-year", true);
+                .classed("font x-axis-year", true);
             var yearBBox = year.node()
                 .getBBox()
 
@@ -174,7 +204,7 @@
                 .ticks(X_TICKS)
                 .tickFormat(d3.timeFormat("%m/%d"));
             var xAxisGroup = svg.append("g")
-                .classed("xAxis font", true)
+                .classed("x-axis font", true)
                 .call(xAxis)
             var xAxisBBox = xAxisGroup
                 .node()
