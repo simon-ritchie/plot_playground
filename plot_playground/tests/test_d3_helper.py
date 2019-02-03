@@ -15,6 +15,7 @@ from plot_playground.common import selenium_helper
 from plot_playground.common import jupyter_helper
 from plot_playground.common import settings
 from plot_playground.common import img_helper
+from plot_playground.storytelling import simple_line_date_series_plot
 
 
 def setup():
@@ -121,5 +122,30 @@ def test_read_template_str():
     )
 
     template_str = d3_helper.read_template_str(
-        template_file_path='storytelling/simple_line_date_series_plot.css')
+        template_file_path=simple_line_date_series_plot.PATH_CSS_TEMPLATE)
     assert_not_equal(template_str, '')
+
+
+def test_apply_css_param_to_template():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_apply_css_param_to_template
+    """
+    css_template_str = """
+    abc : --test_param_1--px;
+    def : --test_param_2--;
+    """
+    csv_param = {
+        'test_param_1': 10,
+        'test_param_2': "#333333",
+    }
+    csv_template_str = d3_helper.apply_css_param_to_template(
+        css_template_str=css_template_str,
+        csv_param=csv_param
+    )
+    expected_template_str = """
+    abc : 10px;
+    def : #333333;
+    """
+    assert_equal(csv_template_str, expected_template_str)

@@ -3,6 +3,12 @@ A module that handles a plot of a polygonal line that makes only
 specific line elements stand out.
 """
 
+from plot_playground.common import d3_helper
+
+PATH_CSS_TEMPLATE = 'storytelling/simple_line_date_series_plot.css'
+PATH_JS_TEMPLATE = 'storytelling/simple_line_date_series_plot.js'
+
+
 def display(
         df,
         date_column,
@@ -43,7 +49,7 @@ def display(
 
     Parameters
     ----------
-    df : DataFrame
+    df : pandas.DataFrame
         Data frame to be plotted. A date column is required.
     date_column : str
         Column name of the date in the data frame.
@@ -115,4 +121,33 @@ def display(
     font_family : str
         Font setting. e.g., Meiryo, sans-serif
     """
+    svg_id = d3_helper.make_svg_id()
+    css_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_CSS_TEMPLATE)
+    csv_param = {
+        'svg_id': svg_id,
+        'svg_border_size': outer_border_size,
+        'svg_border_color': outer_border_color,
+        'font_family': font_family,
+        'title_color': title_color,
+        'title_font_size': title_font_size,
+        'description_font_size': description_font_size,
+        'description_color': description_color,
+        'legend_font_size': legend_font_size,
+        'legend_color': legend_color,
+        'stands_out_legend_font_size': stands_out_legend_font_size,
+        'stands_out_legend_font_color': stands_out_legend_font_color,
+        'stands_out_legend_font_weight': stands_out_legend_font_weight,
+        'axis_stroke_color': axis_line_color,
+        'axis_text_color': axis_text_color,
+        'axis_font_size': axis_font_size,
+        'line_color': line_color,
+        'line_size': line_size,
+        'stands_out_line_color': stands_out_line_color,
+        'stands_out_line_size': stands_out_line_size,
+    }
+    css_template_str = d3_helper.apply_css_param_to_template(
+        css_template_str=css_template_str,
+        csv_param=csv_param
+    )
     pass

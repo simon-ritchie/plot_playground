@@ -132,3 +132,27 @@ def read_template_str(template_file_path):
         template_str = f.read()
     template_str = repr(template_str)
     return template_str
+
+
+def apply_css_param_to_template(css_template_str, csv_param):
+    """
+    Apply the parameters to the CSS template.
+
+    Parameters
+    ----------
+    css_template_str : str
+        String of CSS template.
+    csv_param : dict
+        A dictionary that stores parameter name in key and parameter
+        in value. Parameter name corresponds to string excluding hyphens
+        in template.
+
+    Returns
+    -------
+    css_template_str : str
+        Dictionary after parameters are reflected.
+    """
+    for key, value in csv_param.items():
+        key = '--%s--' % key
+        css_template_str = css_template_str.replace(key, str(value))
+    return css_template_str
