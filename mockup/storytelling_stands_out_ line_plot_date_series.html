@@ -73,6 +73,8 @@
             const OUTER_MARGIN = 20;
             const X_TICKS = 5;
             const Y_TICKS = 5;
+            const Y_AXIS_PREFIX = "";
+            const Y_AXIS_SUFFIX = "";
             const PLOT_TITLE_TXT = "Time series of fruit prices.";
             const PLOT_DESCRIPTION_TXT = "Orange price keeps stable value in the long term.";
 
@@ -185,7 +187,17 @@
                 .range([SVG_HEIGHT - OUTER_MARGIN, plotBaseLineY + OUTER_MARGIN]);
             var yAxis = d3.axisLeft()
                 .scale(yAxisScale)
-                .ticks(Y_TICKS);
+                .ticks(Y_TICKS)
+                .tickFormat(function (d) {
+                    var tickFormat = d;
+                    if (Y_AXIS_PREFIX !== "") {
+                        tickFormat = Y_AXIS_PREFIX + tickFormat;
+                    }
+                    if (Y_AXIS_SUFFIX !== "") {
+                        tickFormat += Y_AXIS_SUFFIX;
+                    }
+                    return tickFormat;
+                });
             var yAxisGroup = svg.append("g")
                 .classed("y-axis font", true)
                 .call(yAxis);
