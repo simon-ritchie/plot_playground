@@ -78,27 +78,32 @@
             const PLOT_TITLE_TXT = "Time series of fruit prices.";
             const PLOT_DESCRIPTION_TXT = "Orange price keeps stable value in the long term.";
 
-            const DATASET = [{
-                date: new Date(2018, 0, 1),
+            var dateParse = d3.timeParse("%Y-%m-%d");
+            var dataset = [{
+                date: "2018-01-01",
                 Apple: 100,
                 Orange: 120,
                 Melon: 250
             }, {
-                date: new Date(2018, 3, 12),
+                date: "2018-04-12",
                 Apple: 120,
                 Orange: 150,
                 Melon: 220
             }, {
-                date: new Date(2018, 10, 3),
+                date: "2018-11-03",
                 Apple: 110,
                 Orange: 100,
                 Melon: 330
             }, {
-                date: new Date(2019, 1, 10),
+                date: "2019-02-10",
                 Apple: 130,
                 Orange: 160,
                 Melon: 310
             }]
+            for (var i = 0; i < dataset.length; i++) {
+                var dataDict = dataset[i];
+                dataDict["date"] = dateParse(dataDict["date"]);
+            }
             const COLUMN_LIST = ["Apple", "Melon"];
             const STANDS_OUT_COLUMN_LIST = ["Orange"];
             var MERGED_COLUMN_LIST = COLUMN_LIST.concat(STANDS_OUT_COLUMN_LIST);
@@ -110,15 +115,18 @@
             const LEGEND_KEY = function(d) {
                 return d.key;
             }
-            const YEAR_DATASET = [
-                new Date(2018, 0, 1),
-                new Date(2019, 0, 1)
+            var yearDataset = [
+                "2018-01-01",
+                "2019-01-01"
             ];
-            const Y_AXIS_MIN = 0;
-            const Y_AXIS_MAX = 310 * 1.1;
-            const Y_AXIS_LABEL = "Price of each fruit";
-            const X_AXIS_MIN = new Date(2018, 0, 1);
-            const X_AXIS_MAX = new Date(2019, 1, 10);
+            for (var i = 0; i < yearDataset.length; i++) {
+                yearDataset[i] = dateParse(yearDataset[i]);
+            }
+            const Y_AXIS_MIN = {y_axis_min};
+            const Y_AXIS_MAX = {y_axis_max} * 1.1;
+            const Y_AXIS_LABEL = "{y_axis_label}";
+            const X_AXIS_MIN = dateParse("{x_axis_min}");
+            const X_AXIS_MAX = dateParse("{y_axis_max}");
 
             var svg = d3.select("body")
                 .append("svg")
@@ -213,7 +221,7 @@
 
             var yearFormat = d3.timeFormat("%Y");
             var year = svg.selectAll("year")
-                .data(YEAR_DATASET)
+                .data(yearDataset)
                 .enter()
                 .append("text")
                 .text(function(d) {
@@ -285,7 +293,7 @@
                     className = "line";
                 }
                 svg.append("path")
-                    .datum(DATASET)
+                    .datum(dataset)
                     .classed(className, true)
                     .attr("d", line);
             }
