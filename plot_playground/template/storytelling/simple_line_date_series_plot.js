@@ -89,11 +89,7 @@ const Y_AXIS_LABEL = "Price of each fruit";
 const X_AXIS_MIN = dateParse("2018-01-01");
 const X_AXIS_MAX = dateParse("2019-02-10");
 
-var svg = d3.select("body")
-    .append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", SVG_HEIGHT)
-    .attr("id", SVG_ID)
+var svg = d3.select("#" + SVG_ID);
 
 var plotBaseLineY = 0;
 if (PLOT_TITLE_TXT !== "") {

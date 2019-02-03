@@ -150,4 +150,48 @@ def display(
         css_template_str=css_template_str,
         csv_param=csv_param
     )
+
+    df = df.copy()
+    _validate_df_columns(
+        df=df, date_column=date_column, normal_columns=normal_columns,
+        stands_out_columns=stands_out_columns)
+    js_param = {
+        'svg_id': svg_id,
+        'svg_width': width,
+        'svg_height': height,
+        'outer_margin': outer_margin,
+        'x_ticks': x_ticks,
+        'y_ticks': y_ticks,
+        'y_axis_prefix': y_axis_prefix,
+        'y_axis_suffix': y_axis_suffix,
+        'plot_title': title,
+        'plot_description': description,
+        # 'dataset': 
+    }
+    pass
+
+
+def _validate_df_columns(
+        df, date_column, normal_columns, stands_out_columns):
+    """
+    Check that the specified column exists in the data frame.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data frame to be checked.
+        df, date_column, normal_columns, stands_out_columns):
+    date_column : str
+        Column name of the date in the data frame.
+    normal_columns : list of str
+        A list of the column names of targets for which inconspicuous
+        colors are set.
+    stands_out_columns : list of str
+        A list of column names for which prominent colors are set.
+
+    Raises
+    ------
+    ValueError
+        If the required column is not included in the data frame.
+    """
     pass
