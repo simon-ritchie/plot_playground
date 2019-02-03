@@ -7,6 +7,7 @@ Js string is using bracket, that conflict python string format.
 Therefore, r character is required before quotation.
 """
 
+import os
 from datetime import datetime
 from random import randint
 
@@ -99,3 +100,35 @@ def make_svg_id():
         random_int_str=random_int_str
     )
     return svg_id
+
+
+def read_template_str(template_file_path):
+    """
+    Read string of template file.
+
+    Parameters
+    ----------
+    template_file_path : str
+        The path of the template file under the template directory.
+        e.g., storytelling/simple_line_date_series_plot.css
+
+    Returns
+    -------
+    template_str
+        Loaded template string. The repr function is set.
+
+    Raises
+    ------
+    Exception
+        If the file can not be found.
+    """
+    file_path = os.path.join(
+        settings.ROOT_DIR, 'plot_playground', 'template',
+        template_file_path)
+    if not os.path.exists(file_path):
+        err_msg = 'Template file not found : %s' % file_path
+        raise Exception(err_msg)
+    with open(file_path, 'r') as f:
+        template_str = f.read()
+    template_str = repr(template_str)
+    return template_str

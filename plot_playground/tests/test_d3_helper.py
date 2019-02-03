@@ -7,7 +7,8 @@ $ python run_tests.py --module_name plot_playground.tests.test_d3_helper
 import os
 import time
 
-from nose.tools import assert_equal, assert_true, assert_greater_equal
+from nose.tools import assert_equal, assert_true, assert_greater_equal, \
+    assert_raises, assert_not_equal
 
 from plot_playground.common import d3_helper
 from plot_playground.common import selenium_helper
@@ -101,3 +102,24 @@ def test_make_svg_id():
     svg_id = d3_helper.make_svg_id()
     assert_true(svg_id.startswith('svg_id_'))
     assert_greater_equal(len(svg_id), 20)
+
+
+def test_read_template_str():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_read_template_str
+    """
+
+    kwargs = {
+        'template_file_path': 'test_file_not_exists_path/test.csv',
+    }
+    assert_raises(
+        Exception,
+        d3_helper.read_template_str,
+        **kwargs,
+    )
+
+    template_str = d3_helper.read_template_str(
+        template_file_path='storytelling/simple_line_date_series_plot.css')
+    assert_not_equal(template_str, '')
