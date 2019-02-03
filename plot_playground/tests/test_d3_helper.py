@@ -7,7 +7,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_d3_helper
 import os
 import time
 
-from nose.tools import assert_equal, assert_true
+from nose.tools import assert_equal, assert_true, assert_greater_equal
 
 from plot_playground.common import d3_helper
 from plot_playground.common import selenium_helper
@@ -90,3 +90,14 @@ def test_exec_d3_js_script_on_jupyter():
         img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
         img_path_2=expected_img_path)
     assert_equal(similarity, 1.0)
+
+
+def test_make_svg_id():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_make_svg_id
+    """
+    svg_id = d3_helper.make_svg_id()
+    assert_true(svg_id.startswith('svg_id_'))
+    assert_greater_equal(len(svg_id), 20)

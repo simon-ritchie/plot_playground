@@ -7,6 +7,9 @@ Js string is using bracket, that conflict python string format.
 Therefore, r character is required before quotation.
 """
 
+from datetime import datetime
+from random import randint
+
 from IPython.display import display, HTML
 
 from plot_playground.common import settings
@@ -77,3 +80,22 @@ def exec_d3_js_script_on_jupyter(
     html = html.replace(
         r'{css_str}', css_str)
     display(HTML(html))
+
+
+def make_svg_id():
+    """
+    Generate unique SVG ID using random number and time stamp.
+
+    Returns
+    -------
+    svg_id : str
+        Generated SVG ID.
+    """
+    timestamp_str = str(datetime.now().timestamp())
+    timestamp_str = timestamp_str.replace('.', '_')
+    random_int_str = str(randint(10000, 99999))
+    svg_id = 'svg_id_{timestamp_str}_{random_int_str}'.format(
+        timestamp_str=timestamp_str,
+        random_int_str=random_int_str
+    )
+    return svg_id
