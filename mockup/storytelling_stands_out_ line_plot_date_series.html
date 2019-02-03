@@ -17,6 +17,11 @@
                 font-size: 25px;
             }
 
+            #test-svg .description {
+                font-size: 14px;
+                fill: #999999;
+            }
+
             #test-svg .legend {
                 font-size: 14px;
                 fill: #999999;
@@ -69,6 +74,7 @@
             const X_TICKS = 5;
             const Y_TICKS = 5;
             const PLOT_TITLE_TXT = "Time series of fruit prices.";
+            const PLOT_DESCRIPTION_TXT = "Orange price keeps stable value in the long term.";
 
             const DATASET = [{
                 date: new Date(2018, 0, 1),
@@ -127,7 +133,18 @@
                     .text(PLOT_TITLE_TXT)
                     .classed("title font", true);
                 var plotTitleBBox = plotTitle.node().getBBox();
-                plotBaseLineY = plotTitleBBox.y + plotTitleBBox.height;
+                plotBaseLineY += plotTitleBBox.y + plotTitleBBox.height;
+            }
+
+            if (PLOT_DESCRIPTION_TXT !== "") {
+                var plotDescription = svg.append("text")
+                    .attr("x", OUTER_MARGIN)
+                    .attr("y", plotBaseLineY + 10)
+                    .attr("dominant-baseline", "hanging")
+                    .text(PLOT_DESCRIPTION_TXT)
+                    .classed("description font", true);
+                var plotDesciptionBBox = plotDescription.node().getBBox();
+                plotBaseLineY += plotDesciptionBBox.height + 10;
             }
 
             var legend = svg.selectAll("legend")
