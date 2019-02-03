@@ -1,0 +1,103 @@
+/*
+Parameters
+----------
+--svg_id-- : str
+    ID of the SVG element.
+--svg_border_size-- : int
+    SVG border size.
+--svg_border_color-- : str
+    SVG border color.
+--font_family-- : str
+    Font setting. e.g., Meiryo, sans-serif
+--title_color-- : str
+    Title color setting.
+--title_font_size-- : int
+    Title font size.
+--description_font_size-- : int
+    The font size of description.
+--description_color-- : str
+    The color setting of description .
+--legend_font_size-- : int
+    The font size of the legend.
+--legend_color-- : str
+    The color setting of legend.
+--stands_out_legend_font_size-- : int
+    The legend's font size of the place to stand out.
+--stands_out_legend_font_color-- : str
+    The legend's font color of the place to stand out.
+--stands_out_legend_font_weight-- : str
+    The legend's font weight of the place to stand out.
+    e.g., bold
+--axis_stroke_color-- : str
+    Color of axis line.
+--axis_text_color-- : str
+    The font color of the axis.
+--axis_font_size-- : int
+    The font size of the axis.
+--line_color-- : str
+    Line color of a normal polygonal line.
+--line_size-- : float
+    The size of a normal polygonal line.
+--stands_out_line_color-- : str
+    Line color of the line to make it stand out.
+--stands_out_line_size-- : float
+    Size of the line to stand out.
+ */
+
+#--svg_id-- {
+    border: --svg_border_size--px solid --svg_border_color--;
+}
+
+#--svg_id-- .font {
+    font-family: --font_family--;
+}
+
+#--svg_id-- .title {
+    fill: --title_color--;
+    font-size: --title_font_size--px;
+}
+
+#--svg_id-- .description {
+    font-size: --description_font_size--px;
+    fill: --description_color--;
+}
+
+#--svg_id-- .legend {
+    font-size: --legend_font_size--px;
+    fill: --legend_color--;
+}
+
+#--svg_id-- .stands-out-legend {
+    font-size: --stands_out_legend_font_size--px;
+    fill: --stands_out_legend_font_color--;
+    font-weight: --stands_out_legend_font_weight--;
+}
+
+#--svg_id-- .x-axis path,
+#--svg_id-- .y-axis path,
+#--svg_id-- .x-axis line,
+#--svg_id-- .y-axis line {
+    stroke: --axis_stroke_color--;
+    shape-rendering: crispEdges;
+}
+
+#--svg_id-- .x-axis text,
+#--svg_id-- .x-axis-year,
+#--svg_id-- .y-axis text,
+#--svg_id-- .y-axis-label {
+    font-family: --font_family--;
+    fill: --axis_text_color--;
+    font-size: --axis_font_size--px;
+}
+
+#--svg_id-- .line {
+    fill: none;
+    stroke: --line_color--;
+    stroke-width: --line_size--;
+}
+
+#--svg_id-- .stands-out-line {
+    fill: none;
+    stroke: --stands_out_line_color--;
+    stroke-width: --stands_out_line_size--;
+}
