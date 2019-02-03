@@ -32,6 +32,10 @@ def load_d3_on_jupyter():
 
 
 D3_SCRIPT_EXEC_HTML = r"""
+<style>
+    {css_str}
+</style>
+
 <svg id="{svg_id}" width="{svg_width}" height="{svg_height}">
 </svg>
 <script>
@@ -43,7 +47,7 @@ D3_SCRIPT_EXEC_HTML = r"""
 
 
 def exec_d3_js_script_on_jupyter(
-        js_script, svg_id, svg_width, svg_height):
+        js_script, css_str, svg_id, svg_width, svg_height):
     """
     Execute the JavaScript code in a form that can access
     D3.js.
@@ -52,6 +56,8 @@ def exec_d3_js_script_on_jupyter(
     ----------
     js_script : str
         Code of JavaScript to be executed.
+    css_str : str
+        The CSS string to set.
     svg_id : str
         ID set to SVG. Using this ID as a selector, you can
         access with jQuery or D3.js code.
@@ -68,4 +74,6 @@ def exec_d3_js_script_on_jupyter(
         r'{svg_height}', str(svg_height))
     html = html.replace(
         r'{js_script}', js_script)
+    html = html.replace(
+        r'{css_str}', css_str)
     display(HTML(html))

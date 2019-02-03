@@ -20,6 +20,7 @@ js_script = js_script.replace(
     '{test_svg_elem_id}', TEST_SVG_ELEM_ID)
 d3_helper.exec_d3_js_script_on_jupyter(
     js_script=js_script,
+    css_str='',
     svg_id=TEST_SVG_ELEM_ID,
     svg_width=100,
     svg_height=100)
