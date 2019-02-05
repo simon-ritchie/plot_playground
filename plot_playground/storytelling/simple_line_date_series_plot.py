@@ -194,4 +194,14 @@ def _validate_df_columns(
     ValueError
         If the required column is not included in the data frame.
     """
-    pass
+    has_column = date_column in df.columns
+    if not has_column:
+        err_msg = 'The specified date column is not included in the data frame.'
+        raise ValueError(err_msg)
+    merged_column_list = [*normal_columns, *stands_out_columns]
+    for column_name in merged_column_list:
+        has_column = column_name in df.columns
+        if not has_column:
+            err_msg = 'The specified column is not included in the data frame : %s' \
+                % column_name
+            raise ValueError(err_msg)
