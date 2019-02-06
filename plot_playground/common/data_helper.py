@@ -32,7 +32,7 @@ def cast_df_column_to_date_str(df, column_name):
         - If the target column contains missing values.
         - If it contains a value of date format that is not supported.
     """
-    if df[column_name].isnull().any():
+    if null_value_exists_in_df(df=df, column_name=column_name):
         err_msg = 'The date column contains a missing value.'
         raise ValueError(err_msg)
     df[column_name] = df[column_name].astype(np.str, copy=False)
@@ -48,3 +48,25 @@ def cast_df_column_to_date_str(df, column_name):
         date_str_list[i] = date_str
     df[column_name] = date_str_list
     return df
+
+
+def null_value_exists_in_df(df, column_name):
+    """
+    Get a boolean value as to whether a missing value is included
+    in a specific column of the data frame.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Data frame to be checked.
+    column_name : str
+        The column to be checked.
+
+    Returns
+    -------
+    result : bool
+        If missing values ​​are included, True is set.
+    """
+    if df[column_name].isnull().any():
+        return True
+    return False
