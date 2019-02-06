@@ -154,3 +154,22 @@ def test_get_year_str_from_date_str():
     year_str = data_helper.get_year_str_from_date_str(
         date_str='1970-01-01')
     assert_equal(year_str, '1970')
+
+
+def test_get_df_min_value():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_get_df_min_value --skip_jupyter 1
+    """
+    df = pd.DataFrame(data=[{
+        'a': 100,
+        'b': 200,
+        'c': 300,
+    }, {
+        'a': 50,
+        'b': 30,
+        'c': 80,
+    }])
+    min_value = data_helper.get_df_min_value(df=df, columns=['a', 'c'])
+    assert_equal(min_value, 50)

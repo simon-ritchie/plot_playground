@@ -171,6 +171,9 @@ def display_plot(
         df=df, date_column=date_column, normal_columns=normal_columns,
         stands_out_columns=stands_out_columns)
     year_str_list = _make_year_str_list(df=df, date_column=date_column)
+    y_axis_min = data_helper.get_df_min_value(
+        df=df, columns=merged_column_list)
+    y_axis_min = min(0, y_axis_min)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
@@ -187,6 +190,7 @@ def display_plot(
         'stands_out_column_list': stands_out_columns,
         'legend_dataset': legend_dataset,
         'year_str_list': year_str_list,
+        'y_axis_min': y_axis_min,
     }
     pass
 

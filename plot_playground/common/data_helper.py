@@ -185,3 +185,23 @@ def get_year_str_from_date_str(date_str):
     """
     year_str = date_str[:4]
     return year_str
+
+
+def get_df_min_value(df, columns):
+    """
+    Get the minimum value in the designated column of the data frame.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The target data frame.
+    columns : array-like
+        A list of columns to be calculated.
+
+    Returns
+    -------
+    min_value : int or float
+        The calculated minimum value.
+    """
+    min_value = df.loc[:, columns].min().min()
+    return min_value
