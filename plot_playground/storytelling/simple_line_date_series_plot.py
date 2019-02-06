@@ -4,6 +4,7 @@ specific line elements stand out.
 """
 
 from plot_playground.common import d3_helper
+from plot_playground.common import data_helper
 
 PATH_CSS_TEMPLATE = 'storytelling/simple_line_date_series_plot.css'
 PATH_JS_TEMPLATE = 'storytelling/simple_line_date_series_plot.js'
@@ -155,6 +156,8 @@ def display(
     _validate_df_columns(
         df=df, date_column=date_column, normal_columns=normal_columns,
         stands_out_columns=stands_out_columns)
+    df = data_helper.cast_df_column_to_date_str(
+        df=df, column_name=date_column)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
