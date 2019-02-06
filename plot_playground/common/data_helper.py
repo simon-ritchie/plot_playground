@@ -70,3 +70,30 @@ def null_value_exists_in_df(df, column_name):
     if df[column_name].isnull().any():
         return True
     return False
+
+
+def validate_null_value_not_exists_in_df(df, columns):
+    """
+    Check that missing values ​​do not exist in the list of
+    target columns.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Data frame to be checked.
+    columns : array-like
+        A list of column names to be checked.
+
+    Raises
+    ------
+    ValueError
+        If there is a column containing missing values.
+    """
+    for column_name in columns:
+        null_value_exists = null_value_exists_in_df(
+            df=df, column_name=column_name)
+        if not null_value_exists:
+            continue
+        err_msg = 'A missing value is included in the data frame.'
+        err_msg += '\ncolumn name: %s' % column_name
+        raise ValueError(err_msg)

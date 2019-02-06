@@ -70,3 +70,29 @@ def test_null_value_exists_in_df():
     result = data_helper.null_value_exists_in_df(
         df=df, column_name='b')
     assert_false(result)
+
+
+def test_validate_null_value_not_exists_in_df():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_validate_null_value_not_exists_in_df --skip_jupyter 1
+    """
+
+    df = pd.DataFrame(data=[{
+        'a': 100,
+        'b': None,
+        'c': 200,
+    }])
+    kwargs = {
+        'df': df,
+        'columns': ['a', 'b'],
+    }
+    assert_raises(
+        ValueError,
+        data_helper.validate_null_value_not_exists_in_df,
+        **kwargs
+    )
+
+    data_helper.validate_null_value_not_exists_in_df(
+        df=df, columns=['a', 'c'])

@@ -158,6 +158,9 @@ def display(
         stands_out_columns=stands_out_columns)
     df = data_helper.cast_df_column_to_date_str(
         df=df, column_name=date_column)
+    merged_column_list = [*normal_columns, *stands_out_columns]
+    data_helper.validate_null_value_not_exists_in_df(
+        df=df, columns=merged_column_list)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
