@@ -143,3 +143,14 @@ def test_validate_all_values_are_numeric():
 
     data_helper.validate_all_values_are_numeric(
         df=df, columns=['a'])
+
+
+def test_get_year_str_from_date_str():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_get_year_str_from_date_str --skip_jupyter 1
+    """
+    year_str = data_helper.get_year_str_from_date_str(
+        date_str='1970-01-01')
+    assert_equal(year_str, '1970')

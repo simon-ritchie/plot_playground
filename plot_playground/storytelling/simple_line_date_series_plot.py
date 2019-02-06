@@ -3,6 +3,8 @@ A module that handles a plot of a polygonal line that makes only
 specific line elements stand out.
 """
 
+import numpy as np
+
 from plot_playground.common import d3_helper
 from plot_playground.common import data_helper
 
@@ -168,6 +170,7 @@ def display_plot(
     legend_dataset = _make_legend_dataset(
         df=df, date_column=date_column, normal_columns=normal_columns,
         stands_out_columns=stands_out_columns)
+    year_str_list = _make_year_str_list(df=df, date_column=date_column)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
@@ -183,8 +186,40 @@ def display_plot(
         'column_list': normal_columns,
         'stands_out_column_list': stands_out_columns,
         'legend_dataset': legend_dataset,
+        'year_str_list': year_str_list,
     }
     pass
+
+
+def _make_year_str_list(df, date_column):
+    """
+    Generate a list containing year strings to be used on the x axis.
+
+    Parameters
+    ----------
+    df : DataFrame
+        A data frame containing a column of date string.
+    date_column : str
+        Column name of the date.
+
+    Returns
+    -------
+    year_str_list : list of str
+        A list containing characters at the beginning of the year.
+        e.g., ["2018-01-01", "2019-01-01"]
+    """
+    date_unique_arr = df[date_column].unique()
+    year_str_list = []
+    for date_str in date_unique_arr:
+        year_str = data_helper.get_year_str_from_date_str(
+            date_str=date_str)
+        year_str_list.append(year_str)
+    year_str_list = np.unique(year_str_list).tolist()
+    year_str_list.sort()
+    for i, year_str in enumerate(year_str_list):
+        year_str += '-01-01'
+        year_str_list[i] = year_str
+    return year_str_list
 
 
 def _make_legend_dataset(

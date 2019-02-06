@@ -89,3 +89,24 @@ def test__make_legend_dataset():
         required=True)
     for legend_dataset_dict in legend_dataset:
         schema(legend_dataset_dict)
+
+
+def test__make_year_str_list():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_year_str_list --skip_jupyter 1
+    """
+    df = pd.DataFrame(data=[{
+        'date': '1970-01-01',
+    }, {
+        'date': '1972-03-01',
+    }, {
+        'date': '1970-05-01',
+    }])
+    year_str_list = simple_line_date_series_plot._make_year_str_list(
+        df=df, date_column='date')
+    assert_equal(
+        year_str_list,
+        ['1970-01-01', '1972-01-01']
+    )

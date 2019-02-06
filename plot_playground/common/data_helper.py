@@ -167,3 +167,21 @@ def validate_all_values_are_numeric(df, columns):
             err_msg += '\ncolumn name: %s' % column_name
             err_msg += '\nvalue type: %s' % type(value)
             raise ValueError(err_msg)
+
+
+def get_year_str_from_date_str(date_str):
+    """
+    Get the year string from the date string.
+
+    Parameters
+    ----------
+    date_str : str
+        A string of dates. e.g., '2019-01-01'.
+
+    Returns
+    -------
+    year_str : str
+        A string of years. e.g., '2019'.
+    """
+    year_str = date_str[:4]
+    return year_str
