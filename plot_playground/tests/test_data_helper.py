@@ -6,6 +6,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_data_helper --ski
 
 from nose.tools import assert_equal, assert_true, assert_raises, assert_false
 import pandas as pd
+import numpy as np
 
 from plot_playground.common import data_helper
 
@@ -96,3 +97,49 @@ def test_validate_null_value_not_exists_in_df():
 
     data_helper.validate_null_value_not_exists_in_df(
         df=df, columns=['a', 'c'])
+
+
+def test_is_numeric_value():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_is_numeric_value --skip_jupyter 1
+    """
+    result = data_helper.is_numeric_value(value=100)
+    assert_true(result)
+    result = data_helper.is_numeric_value(value=1.5)
+    assert_true(result)
+    result = data_helper.is_numeric_value(value=np.int(100))
+    assert_true(result)
+
+    result = data_helper.is_numeric_value(value='apple')
+    assert_false(result)
+    result = data_helper.is_numeric_value(value=True)
+    assert_false(result)
+
+
+def test_validate_all_values_are_numeric():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_validate_all_values_are_numeric --skip_jupyter 1
+    """
+    df = pd.DataFrame(data=[{
+        'a': 100,
+        'b': 'apple',
+    }, {
+        'a': 100.5,
+        'b': 'orange',
+    }])
+    kwargs = {
+        'df': df,
+        'columns': ['a', 'b'],
+    }
+    assert_raises(
+        ValueError,
+        data_helper.validate_all_values_are_numeric,
+        **kwargs
+    )
+
+    data_helper.validate_all_values_are_numeric(
+        df=df, columns=['a'])

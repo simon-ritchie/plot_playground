@@ -97,3 +97,73 @@ def validate_null_value_not_exists_in_df(df, columns):
         err_msg = 'A missing value is included in the data frame.'
         err_msg += '\ncolumn name: %s' % column_name
         raise ValueError(err_msg)
+
+
+NUMERIC_CLASS_TUPLE = (
+    int,
+    float,
+    np.int,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    np.uint,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+    np.float,
+    np.float16,
+    np.float32,
+    np.float64,
+)
+
+
+def is_numeric_value(value):
+    """
+    Get a boolean on whether the target value is a number.
+
+    Parameters
+    ----------
+    value : *
+        The value to be checked.
+
+    Returns
+    -------
+    result : bool
+        If the value is a numeric value of Python or NumPy,
+        it is set to True. For other types, for example str
+        or bool, False is set.
+    """
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, NUMERIC_CLASS_TUPLE):
+        return True
+    return False
+
+
+def validate_all_values_are_numeric(df, columns):
+    """
+    Check that the value of the target column is all numeric.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Data frame to be checked.
+    columns : array-like
+        A list of column names to be checked.
+
+    Raises
+    ------
+    ValueError
+        If there are non-numeric values.
+    """
+    for column_name in columns:
+        value_list = df[column_name].tolist()
+        for value in value_list:
+            if is_numeric_value(value=value):
+                continue
+            err_msg = 'There are values ​​that are not numeric.'
+            err_msg += '\ncolumn name: %s' % column_name
+            err_msg += '\nvalue type: %s' % type(value)
+            raise ValueError(err_msg)

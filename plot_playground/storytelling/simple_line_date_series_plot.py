@@ -10,7 +10,7 @@ PATH_CSS_TEMPLATE = 'storytelling/simple_line_date_series_plot.css'
 PATH_JS_TEMPLATE = 'storytelling/simple_line_date_series_plot.js'
 
 
-def display(
+def display_plot(
         df,
         date_column,
         normal_columns,
@@ -45,7 +45,7 @@ def display(
         font_family='-apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif',
     ):
     """
-    Display a simple line graph on Jupyter. Only particular ones
+    Display a simple line plot on Jupyter. Only particular ones
     are markedly visible.
 
     Parameters
