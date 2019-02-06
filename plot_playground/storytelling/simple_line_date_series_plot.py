@@ -161,6 +161,13 @@ def display_plot(
     merged_column_list = [*normal_columns, *stands_out_columns]
     data_helper.validate_null_value_not_exists_in_df(
         df=df, columns=merged_column_list)
+    data_helper.validate_all_values_are_numeric(
+        df=df, columns=merged_column_list)
+    dataset_df = df.loc[:, [date_column, *merged_column_list]]
+    dataset = dataset_df.to_dict(orient='record')
+    legend_dataset = _make_legend_dataset(
+        df=df, date_column=date_column, normal_columns=normal_columns,
+        stands_out_columns=stands_out_columns)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
@@ -172,9 +179,51 @@ def display_plot(
         'y_axis_suffix': y_axis_suffix,
         'plot_title': title,
         'plot_description': description,
-        # 'dataset': 
+        'dataset': dataset,
+        'column_list': normal_columns,
+        'stands_out_column_list': stands_out_columns,
+        'legend_dataset': legend_dataset,
     }
     pass
+
+
+def _make_legend_dataset(
+        df, date_column, normal_columns, stands_out_columns):
+    """
+    Make a data set for the legend.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Data frame to be plotted. A date column is required.
+    date_column : str
+        Column name of the date in the data frame.
+    normal_columns : list of str
+        A list of the column names of targets for which inconspicuous
+        colors are set.
+    stands_out_columns : list of str
+        A list of column names for which prominent colors are set.
+
+    Returns
+    -------
+    legend_dataset : list of dicts
+        A list of dictionaries containing data for the legend.
+        The following keys are set in the dictionary.
+        - key : str -> Column names excluding dates are set.
+        - value : The value of the last date is set.
+    """
+    df.sort_values(by=date_column, inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    df_len = len(df)
+    legend_dataset = []
+    merged_columns = [*normal_columns, *stands_out_columns]
+    for column_name in merged_columns:
+        last_date_val = df.loc[df_len - 1, column_name]
+        legend_dataset.append({
+            'key': column_name,
+            'value': last_date_val,
+        })
+    return legend_dataset
 
 
 def _validate_df_columns(

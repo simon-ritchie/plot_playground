@@ -6,6 +6,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_
 
 from nose.tools import assert_equal, assert_true, assert_raises
 import pandas as pd
+from voluptuous import Schema, Any
 
 from plot_playground.storytelling import simple_line_date_series_plot
 
@@ -56,3 +57,35 @@ def test__validate_df_columns():
 
     simple_line_date_series_plot._validate_df_columns(
         df=df, date_column='a', normal_columns=['b'], stands_out_columns=['c'])
+
+
+def test__make_legend_dataset():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_legend_dataset --skip_jupyter 1
+    """
+    df = pd.DataFrame(data=[{
+        'date': '1970-01-03',
+        'a': 100,
+        'b': 1000,
+    }, {
+        'date': '1970-01-02',
+        'a': 200,
+        'b': 2000,
+    }])
+    legend_dataset = simple_line_date_series_plot._make_legend_dataset(
+        df=df,
+        date_column='date',
+        normal_columns=['b'],
+        stands_out_columns=['a'])
+    assert_equal(len(legend_dataset), 2)
+    print(legend_dataset)
+    schema = Schema(
+        schema={
+            'key': Any('a', 'b'),
+            'value': Any(100, 1000),
+        },
+        required=True)
+    for legend_dataset_dict in legend_dataset:
+        schema(legend_dataset_dict)

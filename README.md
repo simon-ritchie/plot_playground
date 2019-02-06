@@ -22,6 +22,7 @@ $ pip install jupyter==1.0.0
 $ pip install notebook==5.5.0
 $ pip install opencv-python==4.0.0.21
 $ pip install numpy==1.14.5
+$ pip install voluptuous==0.11.5
 # pip install nose==1.3.7
 ```
 
