@@ -51,11 +51,11 @@ Python Parameters
     The label to set on the y axis. It is displayed in a rotated state.
 {x_axis_min} : str
     String with the oldest date on the x axis.
-{y_axis_max} : str
+{x_axis_max} : str
     String of the last date on the x axis.
  */
 
-const SVG_ID = {svg_id};
+const SVG_ID = "{svg_id}";
 const SVG_WIDTH = {svg_width};
 const SVG_HEIGHT = {svg_height};
 const OUTER_MARGIN = {outer_margin};
@@ -83,11 +83,11 @@ var yearDataset = {year_str_list};
 for (var i = 0; i < yearDataset.length; i++) {
     yearDataset[i] = dateParse(yearDataset[i]);
 }
-const Y_AXIS_MIN = 0;
-const Y_AXIS_MAX = 310 * 1.1;
-const Y_AXIS_LABEL = "Price of each fruit";
-const X_AXIS_MIN = dateParse("2018-01-01");
-const X_AXIS_MAX = dateParse("2019-02-10");
+const Y_AXIS_MIN = {y_axis_min};
+const Y_AXIS_MAX = {y_axis_max} * 1.1;
+const Y_AXIS_LABEL = "{y_axis_label}";
+const X_AXIS_MIN = dateParse("{x_axis_min}");
+const X_AXIS_MAX = dateParse("{x_axis_max}");
 
 var svg = d3.select("#" + SVG_ID);
 
@@ -243,7 +243,6 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
         .y(function (d) {
             return yAxisScale(d[columnName]);
         });
-    var line_class;
     if (STANDS_OUT_COLUMN_LIST.indexOf(columnName) >= 0) {
         className = "stands-out-line";
     }else {

@@ -7,6 +7,7 @@ $ python run_tests.py --module_name plot_playground.tests.test_data_helper --ski
 from nose.tools import assert_equal, assert_true, assert_raises, assert_false
 import pandas as pd
 import numpy as np
+from voluptuous import Schema, All, Any
 
 from plot_playground.common import data_helper
 
@@ -173,3 +174,64 @@ def test_get_df_min_value():
     }])
     min_value = data_helper.get_df_min_value(df=df, columns=['a', 'c'])
     assert_equal(min_value, 50)
+
+
+def test_get_df_max_value():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_get_df_max_value --skip_jupyter 1
+    """
+    df = pd.DataFrame(data=[{
+        'a': 100,
+        'b': 200,
+        'c': 300,
+    }, {
+        'a': 50,
+        'b': 350,
+        'c': 80,
+    }])
+    max_value = data_helper.get_df_max_value(
+        df=df, columns=['a', 'c'])
+    assert_equal(max_value, 300)
+
+
+def test_convert_numpy_val_to_python_val():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_convert_numpy_val_to_python_val --skip_jupyter 1
+    """
+    value = data_helper.convert_numpy_val_to_python_val(value=np.int64(100))
+    assert_true(isinstance(value, int))
+
+    value = data_helper.convert_numpy_val_to_python_val(value=np.float16(0.5))
+    assert_true(isinstance(value, float))
+
+    value = data_helper.convert_numpy_val_to_python_val(value='apple')
+    assert_true(isinstance(value, str))
+
+
+def test_convert_dict_or_list_numpy_val_to_python_val():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test_convert_dict_or_list_numpy_val_to_python_val --skip_jupyter 1
+    """
+    target_obj = {
+        'a': {'b': {'c': np.int64(100)}},
+        'd': [np.int16(200)],
+        'e': np.float16(0.5),
+        'f': 'apple',
+    }
+    target_obj = data_helper.convert_dict_or_list_numpy_val_to_python_val(
+        target_obj=target_obj)
+    schema = Schema(
+        schema={
+            'a': {'b': {'c': All(int, 100)}},
+            'd': [All(int, 200)],
+            'e': All(float, 0.5),
+            'f': 'apple',
+        },
+        required=True)
+    schema(target_obj)

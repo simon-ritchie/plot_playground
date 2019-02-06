@@ -25,6 +25,7 @@ def display_plot(
         description='',
         description_font_size=14,
         description_color='#999999',
+        y_axis_label='',
         y_axis_prefix='',
         y_axis_suffix='',
         axis_line_color='#999999',
@@ -79,6 +80,8 @@ def display_plot(
         The font size of description.
     description_color : str, default '#999999'
         The color setting of description.
+    y_axis_label : str, default ''
+        The label to set on the y axis. It is displayed in a rotated state.
     y_axis_prefix : str, default ''
         A string to set before the value of the y axis.
         e.g., $.
@@ -127,7 +130,7 @@ def display_plot(
     svg_id = d3_helper.make_svg_id()
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
-    csv_param = {
+    css_param = {
         'svg_id': svg_id,
         'svg_border_size': outer_border_size,
         'svg_border_color': outer_border_color,
@@ -151,7 +154,7 @@ def display_plot(
     }
     css_template_str = d3_helper.apply_css_param_to_template(
         css_template_str=css_template_str,
-        csv_param=csv_param
+        css_param=css_param
     )
 
     df = df.copy()
@@ -174,6 +177,8 @@ def display_plot(
     y_axis_min = data_helper.get_df_min_value(
         df=df, columns=merged_column_list)
     y_axis_min = min(0, y_axis_min)
+    y_axis_max = data_helper.get_df_max_value(
+        df=df, columns=merged_column_list)
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
@@ -191,8 +196,23 @@ def display_plot(
         'legend_dataset': legend_dataset,
         'year_str_list': year_str_list,
         'y_axis_min': y_axis_min,
+        'y_axis_max': y_axis_max,
+        'y_axis_label': y_axis_label,
+        'x_axis_min': df[date_column].min(),
+        'x_axis_max': df[date_column].max(),
     }
-    pass
+    js_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_JS_TEMPLATE)
+    js_template_str = d3_helper.apply_js_param_to_template(
+        js_template_str=js_template_str,
+        js_param=js_param
+    )
+    d3_helper.exec_d3_js_script_on_jupyter(
+        js_script=js_template_str,
+        css_str=css_template_str,
+        svg_id=svg_id,
+        svg_width=width,
+        svg_height=height)
 
 
 def _make_year_str_list(df, date_column):

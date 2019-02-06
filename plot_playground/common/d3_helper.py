@@ -10,10 +10,13 @@ Therefore, r character is required before quotation.
 import os
 from datetime import datetime
 from random import randint
+import json
+import re
 
 from IPython.display import display, HTML
 
 from plot_playground.common import settings
+from plot_playground.common import data_helper
 
 
 D3_REQUIRE_HTML = r"""
@@ -27,12 +30,19 @@ D3_REQUIRE_HTML = r"""
 """.replace(r'{d3_version}', settings.D3_VERSION)
 
 
+is_d3_loaded = False
+
+
 def load_d3_on_jupyter():
     """
     Load D3.js script on Jupyter, so that it enable to
     access d3 methods.
     """
+    global is_d3_loaded
+    if is_d3_loaded:
+        return
     display(HTML(D3_REQUIRE_HTML))
+    is_d3_loaded = True
 
 
 D3_SCRIPT_EXEC_HTML = r"""
@@ -70,6 +80,7 @@ def exec_d3_js_script_on_jupyter(
     svg_height : int
         Height set to SVG in pixels.
     """
+    load_d3_on_jupyter()
     html = D3_SCRIPT_EXEC_HTML.replace(
         r'{svg_id}', str(svg_id))
     html = html.replace(
@@ -130,11 +141,13 @@ def read_template_str(template_file_path):
         raise Exception(err_msg)
     with open(file_path, 'r') as f:
         template_str = f.read()
-    template_str = repr(template_str)
+    template_str = re.sub(re.compile('/\*.*?\*/', re.DOTALL) , '', template_str)
+    template_str = repr(template_str)[1:-1]
+    template_str = template_str.replace('\\n', '\n')
     return template_str
 
 
-def apply_css_param_to_template(css_template_str, csv_param):
+def apply_css_param_to_template(css_template_str, css_param):
     """
     Apply the parameters to the CSS template.
 
@@ -142,7 +155,7 @@ def apply_css_param_to_template(css_template_str, csv_param):
     ----------
     css_template_str : str
         String of CSS template.
-    csv_param : dict
+    css_param : dict
         A dictionary that stores parameter name in key and parameter
         in value. Parameter name corresponds to string excluding hyphens
         in template.
@@ -150,9 +163,38 @@ def apply_css_param_to_template(css_template_str, csv_param):
     Returns
     -------
     css_template_str : str
-        Dictionary after parameters are reflected.
+        Template string after parameters are reflected.
     """
-    for key, value in csv_param.items():
+    for key, value in css_param.items():
         key = '--%s--' % key
         css_template_str = css_template_str.replace(key, str(value))
     return css_template_str
+
+
+def apply_js_param_to_template(js_template_str, js_param):
+    """
+    Apply the parameters to the js template.
+
+    Parameters
+    ----------
+    js_template_str : str
+        String of js template.
+    js_param : dict
+        A dictionary that stores parameter name in key and parameter
+        in value. If the parameter is a list or dictionary, it is
+        converted to Json format.
+
+    Returns
+    -------
+    js_template_str : str
+        Template string after parameters are reflected.
+    """
+    for key, value in js_param.items():
+        if isinstance(value, (dict, list)):
+            value = data_helper.convert_dict_or_list_numpy_val_to_python_val(
+                target_obj=value)
+            value = json.dumps(value)
+        key = r'{' + key + r'}'
+        value = str(value)
+        js_template_str = js_template_str.replace(key, value)
+    return js_template_str

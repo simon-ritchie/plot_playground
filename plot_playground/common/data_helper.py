@@ -205,3 +205,108 @@ def get_df_min_value(df, columns):
     """
     min_value = df.loc[:, columns].min().min()
     return min_value
+
+
+def get_df_max_value(df, columns):
+    """
+    Get the maximum value in the designated column of the data frame.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The target data frame.
+    columns : array-like
+        A list of columns to be calculated.
+
+    Returns
+    -------
+    max_value : int or float
+        The calculated maximum value.
+    """
+    max_value = df.loc[:, columns].max().max()
+    return max_value
+
+
+def convert_numpy_val_to_python_val(value):
+    """
+    Convert NumPy type value to Python type value.
+
+    Parameters
+    ----------
+    value : *
+        The value to be converted.
+
+    Returns
+    -------
+    value : *
+        The converted value.
+    """
+    np_int_types = (
+        np.int,
+        np.int8,
+        np.int16,
+        np.int32,
+        np.int64,
+        np.uint,
+        np.uint8,
+        np.uint16,
+        np.uint32,
+        np.uint64,
+    )
+    if isinstance(value, np_int_types):
+        return int(value)
+    np_float_types = (
+        np.float,
+        np.float16,
+        np.float32,
+        np.float64,
+    )
+    if isinstance(value, np_float_types):
+        return float(value)
+    return value
+
+
+def convert_dict_or_list_numpy_val_to_python_val(target_obj):
+    """
+    Converts the value of NumPy type in dictionary or list into
+    Python type value.
+
+    Parameters
+    ----------
+    target_obj : dict or list
+        Dictionary or list to be converted.
+
+    Returns
+    -------
+    target_obj : dict or list
+        Dictionary or list after conversion.
+
+    Raises
+    ------
+    ValueError
+        If dictionaries and lists are specified.
+    """
+    if isinstance(target_obj, dict):
+        for key, value in target_obj.items():
+            if isinstance(value, (dict, list)):
+                target_obj[key] = convert_dict_or_list_numpy_val_to_python_val(
+                    target_obj=value
+                )
+                continue
+            target_obj[key] = convert_numpy_val_to_python_val(
+                value=value)
+            continue
+        return target_obj
+    if isinstance(target_obj, list):
+        for i, value in enumerate(target_obj):
+            if isinstance(value, (dict, list)):
+                target_obj[i] = convert_dict_or_list_numpy_val_to_python_val(
+                    target_obj=value
+                )
+                continue
+            target_obj[i] = convert_numpy_val_to_python_val(value=value)
+            continue
+        return target_obj
+    err_msg = 'A type that is not a dictionary or list is specified: %s' \
+        % type(target_obj)
+    raise ValueError(err_msg)

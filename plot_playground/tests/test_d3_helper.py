@@ -9,6 +9,7 @@ import time
 
 from nose.tools import assert_equal, assert_true, assert_greater_equal, \
     assert_raises, assert_not_equal
+import numpy as np
 
 from plot_playground.common import d3_helper
 from plot_playground.common import selenium_helper
@@ -136,16 +137,46 @@ def test_apply_css_param_to_template():
     abc : --test_param_1--px;
     def : --test_param_2--;
     """
-    csv_param = {
+    css_param = {
         'test_param_1': 10,
         'test_param_2': "#333333",
     }
     csv_template_str = d3_helper.apply_css_param_to_template(
         css_template_str=css_template_str,
-        csv_param=csv_param
+        css_param=css_param
     )
     expected_template_str = """
     abc : 10px;
     def : #333333;
     """
     assert_equal(csv_template_str, expected_template_str)
+
+
+def test_apply_js_param_to_template():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_apply_js_param_to_template
+    """
+    js_template_str = r"""
+    var test_val_1 = {a};
+    var test_val_2 = "{b}";
+    var test_val_3 = {c};
+    var test_val_4 = {d};
+    """
+    js_param = {
+        'a': 100,
+        'b': 'apple',
+        'c': ['orange'],
+        'd': {'lemon': np.int32(200)}
+    }
+    js_template_str = d3_helper.apply_js_param_to_template(
+        js_template_str=js_template_str,
+        js_param=js_param)
+    expected_js_str = r"""
+    var test_val_1 = 100;
+    var test_val_2 = "apple";
+    var test_val_3 = ["orange"];
+    var test_val_4 = {"lemon": 200};
+    """
+    assert_equal(js_template_str, expected_js_str)
