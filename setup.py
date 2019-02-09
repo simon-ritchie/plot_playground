@@ -8,12 +8,12 @@ readme_str = """Please see github document for detail information.
 
 setup(
     name='plot_playground',
-    version='0.0.1',
+    version='0.0.2',
     url='https://github.com/simon-ritchie/plot_playground',
     author='simon-ritchie',
-    author_email='antisocial.sid2@gmail.com',
+    author_email='',
     maintainer='simon-ritchie',
-    maintainer_email='antisocial.sid2@gmail.com',
+    maintainer_email='',
     description='plot playground is a plot library that works on Jupyter and Pandas datasets.',
     long_description=readme_str,
     packages=find_packages(),
