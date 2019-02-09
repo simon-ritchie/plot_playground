@@ -244,6 +244,8 @@ year.attr("x", function(d) {
     return xAxisScale(d);
 });
 
+var lineGroup = svg.append("g")
+    .attr("id", "lines");
 for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
@@ -258,8 +260,20 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     }else {
         className = "line";
     }
-    svg.append("path")
+    lineGroup.append("path")
         .datum(dataset)
         .classed(className, true)
         .attr("d", line);
 }
+
+var xAxisScaleRange = xAxisScale.range();
+var yAxisScaleRange = yAxisScale.range();
+svg.append("clipPath")
+    .attr("id", "plotAreaClipPath")
+    .append("rect")
+    .attr("x", xAxisScaleRange[0] + 1)
+    .attr("y", yAxisScaleRange[1])
+    .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
+    .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
+d3.select("#lines")
+    .attr("clip-path", "url(#plotAreaClipPath)");
