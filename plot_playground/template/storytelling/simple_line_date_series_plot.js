@@ -7,6 +7,9 @@ Python Parameters
     Width of SVG area.
 {svg_height} : int
     Height of SVG area.
+{svg_margin_left} : int
+    The left margin of the SVG area. It is basically set by position
+    adjustment on Jupyter.
 {outer_margin} : int
     Edge margin of SVG area.
 {x_ticks} : int
@@ -58,6 +61,7 @@ Python Parameters
 const SVG_ID = "{svg_id}";
 const SVG_WIDTH = {svg_width};
 const SVG_HEIGHT = {svg_height};
+const SVG_MARGIN_LEFT = {svg_margin_left};
 const OUTER_MARGIN = {outer_margin};
 const X_TICKS = {x_ticks};
 const Y_TICKS = {y_ticks};
@@ -89,7 +93,8 @@ const Y_AXIS_LABEL = "{y_axis_label}";
 const X_AXIS_MIN = dateParse("{x_axis_min}");
 const X_AXIS_MAX = dateParse("{x_axis_max}");
 
-var svg = d3.select("#" + SVG_ID);
+var svg = d3.select("#" + SVG_ID)
+    .style("margin-left", SVG_MARGIN_LEFT);
 
 var plotBaseLineY = 0;
 if (PLOT_TITLE_TXT !== "") {
@@ -203,7 +208,8 @@ var xAxisGroup = svg.append("g")
 var xAxisBBox = xAxisGroup
     .node()
     .getBBox();
-xAxisPositionY = SVG_HEIGHT - OUTER_MARGIN - xAxisBBox.height - yearBBox.height;
+xAxisPositionY = parseInt(
+    SVG_HEIGHT - OUTER_MARGIN - xAxisBBox.height - yearBBox.height);
 xAxisGroup.attr(
     "transform",
     "translate(0, " + xAxisPositionY + ")");
