@@ -48,6 +48,7 @@ def display_plot(
         outer_border_size=1,
         outer_border_color='#cccccc',
         font_family='-apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif',
+        svg_id='',
     ):
     """
     Display a simple line plot on Jupyter. Only particular ones
@@ -133,13 +134,17 @@ def display_plot(
         Plot outside border color.
     font_family : str
         Font setting. e.g., Meiryo, sans-serif
+    svg_id : str, default ''
+        ID to set for SVG element. When an empty value is specified,
+        a unique character string is generated and used.
 
     Returns
     -------
     plot_meta : plot_playground.common.d3_helper.PlotMeta
         An object that stores the metadata of the plot.
     """
-    svg_id = d3_helper.make_svg_id()
+    if svg_id == '':
+        svg_id = d3_helper.make_svg_id()
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
     css_param = {

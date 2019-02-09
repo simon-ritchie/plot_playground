@@ -4,11 +4,19 @@ Test Command
 $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot
 """
 
-from nose.tools import assert_equal, assert_true, assert_raises
+from nose.tools import assert_equal, assert_true, assert_raises, \
+    assert_greater_equal
 import pandas as pd
 from voluptuous import Schema, Any
 
 from plot_playground.storytelling import simple_line_date_series_plot
+from plot_playground.common import jupyter_helper
+from plot_playground.common import selenium_helper
+from plot_playground.common import img_helper
+
+
+def teardown():
+    selenium_helper.exit_webdriver()
 
 
 def test__validate_df_columns():
@@ -110,3 +118,66 @@ def test__make_year_str_list():
         year_str_list,
         ['1970-01-01', '1972-01-01']
     )
+
+
+def test_display_plot():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test_display_plot
+    """
+    source_code = """
+from plot_playground.tests.test_simple_line_date_series_plot import display_test_plot
+display_test_plot()
+    """
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code=source_code)
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code(sleep_seconds=10)
+    jupyter_helper.hide_header()
+    jupyter_helper.hide_input_cell()
+    svg_elem = selenium_helper.driver.find_element_by_id('test_plot')
+    selenium_helper.save_target_elem_screenshot(
+        target_elem=svg_elem)
+    expected_img_path = img_helper.get_test_expected_img_path(
+        file_name='simple_line_date_series_plot_display_plot')
+    similarity = img_helper.compare_img_hist(
+        img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
+        img_path_2=expected_img_path)
+    assert_greater_equal(similarity, 0.8)
+    selenium_helper.exit_webdriver()
+
+
+def display_test_plot():
+    """
+    Display a test plot.
+    """
+    df = pd.DataFrame(data=[{
+        'date': '2017-11-03',
+        'apple': 100,
+        'orange': 140,
+    }, {
+        'date': '2017-12-03',
+        'apple': 90,
+        'orange': 85,
+    }, {
+        'date': '2018-04-03',
+        'apple': 120,
+        'orange': 170,
+    }, {
+        'date': '2018-09-03',
+        'apple': 110,
+        'orange': 180,
+    }, {
+        'date': '2019-02-01',
+        'apple': 90,
+        'orange': 150,
+    }])
+    simple_line_date_series_plot.display_plot(
+        df=df,
+        date_column='date',
+        normal_columns=['apple'],
+        stands_out_columns=['orange'],
+        title='Time series of fruit prices.',
+        description='Orange price keeps stable value in the long term.',
+        svg_id='test_plot')
