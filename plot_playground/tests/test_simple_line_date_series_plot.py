@@ -13,6 +13,7 @@ from plot_playground.storytelling import simple_line_date_series_plot
 from plot_playground.common import jupyter_helper
 from plot_playground.common import selenium_helper
 from plot_playground.common import img_helper
+from plot_playground.common import d3_helper
 
 
 def teardown():
@@ -147,10 +148,20 @@ display_test_plot()
     assert_greater_equal(similarity, 0.8)
     selenium_helper.exit_webdriver()
 
+    plot_meta = display_test_plot()
+    assert_true(
+        isinstance(plot_meta, d3_helper.PlotMeta)
+    )
+
 
 def display_test_plot():
     """
     Display a test plot.
+
+    Returns
+    -------
+    plot_meta : plot_playground.common.d3_helper.PlotMeta
+        An object that stores the metadata of the plot.
     """
     df = pd.DataFrame(data=[{
         'date': '2017-11-03',
@@ -173,7 +184,7 @@ def display_test_plot():
         'apple': 90,
         'orange': 150,
     }])
-    simple_line_date_series_plot.display_plot(
+    plot_meta = simple_line_date_series_plot.display_plot(
         df=df,
         date_column='date',
         normal_columns=['apple'],
@@ -181,3 +192,4 @@ def display_test_plot():
         title='Time series of fruit prices.',
         description='Orange price keeps stable value in the long term.',
         svg_id='test_plot')
+    return plot_meta

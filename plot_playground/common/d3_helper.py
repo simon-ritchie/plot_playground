@@ -203,7 +203,8 @@ def apply_js_param_to_template(js_template_str, js_param):
 class PlotMeta():
 
     def __init__(
-            self, js_template_str, js_param, css_template_str, css_param):
+            self, js_template_str, js_param, css_template_str,
+            css_param):
         """
         Class dealing with plot metadata.
 

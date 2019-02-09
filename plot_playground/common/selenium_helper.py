@@ -3,6 +3,7 @@ Module describing general purpose processing of
 Selenium's webdriver control.
 """
 
+import time
 import subprocess as sp
 import os
 from io import BytesIO
@@ -52,6 +53,7 @@ def exit_webdriver():
         return
     driver.close()
     driver = None
+    time.sleep(3)
 
 
 def chromedriver_process_exists():
