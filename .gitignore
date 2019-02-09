@@ -9,6 +9,7 @@
 *.pyc
 /.vscode
 /log_test.xml
+/log_failed_test.log
 /plot_playground/tests/notes/.ipynb_checkpoints
 *.log
 /plot_playground/tests/tmp_test_img.png

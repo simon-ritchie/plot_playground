@@ -30,19 +30,12 @@ D3_REQUIRE_HTML = r"""
 """.replace(r'{d3_version}', settings.D3_VERSION)
 
 
-is_d3_loaded = False
-
-
 def load_d3_on_jupyter():
     """
     Load D3.js script on Jupyter, so that it enable to
     access d3 methods.
     """
-    global is_d3_loaded
-    if is_d3_loaded:
-        return
     display(HTML(D3_REQUIRE_HTML))
-    is_d3_loaded = True
 
 
 D3_SCRIPT_EXEC_HTML = r"""

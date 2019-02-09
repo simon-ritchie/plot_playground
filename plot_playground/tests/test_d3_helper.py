@@ -29,16 +29,17 @@ def teardown():
     jupyter_helper.empty_test_ipynb_code_cell()
 
 
-def read_jupyter_test_python_script(script_file_name):
+def read_jupyter_test_python_script(script_file_name=None):
     """
     Read the character string of Python script used on
     Jupyter.
 
     Parameters
     ----------
-    script_file_name : str
+    script_file_name : str or None, default None
         Filename of the target script (excluding
-        the extension).
+        the extension).  None is specified only when passing
+        through the test runner. Usually, specify a character string.
 
     Returns
     -------
@@ -50,6 +51,8 @@ def read_jupyter_test_python_script(script_file_name):
     Exception
         If the file not exists.
     """
+    if script_file_name is None:
+        return ''
     file_path = os.path.join(
         settings.ROOT_DIR,
         'plot_playground',

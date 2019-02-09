@@ -65,6 +65,10 @@ def stop_jupyter():
     ))
 
 
+LOG_FILE_PATH_FAILED_INFO = 'log_failed_test.log'
+LOG_FILE_PATH_TEST_INFO = 'log_test.xml'
+
+
 def run_nose_command(module_name):
     """
     Execute the test command with the Nose library, and
@@ -87,22 +91,120 @@ def run_nose_command(module_name):
         Number of errors.
     failures_num : int
         Number of tests failed.
+
+    Notes
+    -----
+    The nose test process is divided by module. Similar processing
+    is also provided by nose argument (e.g., --with-isolation),
+    but since error occurs, it is divided manually.
     """
-    xml_path = 'log_test.xml'
-    nose_command = 'nosetests'
+    _remove_failed_info_log_file()
+
     if module_name != '':
+        target_module_list = [module_name]
+    else:
+        target_module_list = _get_overall_module_list()
+
+    xml_path = LOG_FILE_PATH_TEST_INFO
+    test_num = 0
+    error_num = 0
+    failures_num = 0
+    for module_name in target_module_list:
+        nose_command = 'nosetests'
         nose_command += ' %s' % module_name
-    nose_command += ' --with-xunit --xunit-file={xml_path} -s -v'.format(
-        xml_path=xml_path
-    )
-    os.system(nose_command)
-    with open(xml_path, 'r') as f:
-        test_xml = f.read()
-        xml_root_elem = ET.fromstring(text=test_xml)
-    test_num = int(xml_root_elem.attrib['tests'])
-    error_num = int(xml_root_elem.attrib['errors'])
-    failures_num = int(xml_root_elem.attrib['failures'])
+        nose_command += ' --with-xunit --xunit-file={xml_path} -s -v'.format(
+            xml_path=xml_path
+        )
+        print('nose command: %s' % nose_command)
+        os.system(nose_command)
+        with open(xml_path, 'r') as f:
+            test_xml = f.read()
+            xml_root_elem = ET.fromstring(text=test_xml)
+        test_num += int(xml_root_elem.attrib['tests'])
+        error_num += int(xml_root_elem.attrib['errors'])
+        failures_num += int(xml_root_elem.attrib['failures'])
+        if (error_num != 0 or failures_num != 0):
+            _append_failed_info()
+    _print_test_result(
+        test_num=test_num, error_num=error_num,
+        failures_num=failures_num)
     return test_num, error_num, failures_num
+
+
+def _print_test_result(test_num, error_num, failures_num):
+    """
+    Output the test result to the console.
+
+    Parameters
+    ----------
+    test_num : int
+        Number of tests executed.
+    error_num : int
+        Number of errors.
+    failures_num : int
+        Number of tests failed.
+    """
+    print(
+        'test num:', test_num, ', error num:', error_num,
+        ', failures num:', failures_num)
+    if error_num == 0 and failures_num == 0:
+        return
+    with open(LOG_FILE_PATH_FAILED_INFO, 'r') as f:
+        failed_info = f.read()
+        print(failed_info)
+
+
+def _append_failed_info():
+    """
+    Add test failure information to the log file.
+    """
+    error_str_list = []
+    with open(LOG_FILE_PATH_TEST_INFO, 'r') as f:
+        test_xml = f.read()
+        print(test_xml)
+        error_splited_str_list = test_xml.split('end captured logging')
+        for error_str in error_splited_str_list:
+            error_str = error_str.split('begin captured logging')[0]
+            if error_str.find('File') == -1:
+                continue
+            error_str = '\nFile'.join(error_str.split('File')[1:])
+            error_str = error_str.replace(' >>', '')
+            error_str_list.append(error_str)
+    with open(LOG_FILE_PATH_FAILED_INFO, 'a+') as f:
+        for error_str in error_str_list:
+            f.write(error_str)
+
+
+def _remove_failed_info_log_file():
+    """
+    Remove the log file of test failure information.
+    """
+    if not os.path.exists(LOG_FILE_PATH_FAILED_INFO):
+        return
+    os.remove(LOG_FILE_PATH_FAILED_INFO)
+
+
+def _get_overall_module_list():
+    """
+    Get a list of all module names to be tested.
+
+    Returns
+    -------
+    module_name_list : list of str
+        A list containing module names.
+        e.g., 'plot_playground.tests.test_your_module'
+    """
+    module_name_list = []
+    file_name_list = os.listdir('plot_playground/tests/')
+    for file_name in file_name_list:
+        if not file_name.startswith('test_'):
+            continue
+        if not file_name.endswith('.py'):
+            continue
+        file_name = file_name.replace('.py', '')
+        module_name = 'plot_playground.tests.%s' % file_name
+        module_name_list.append(module_name)
+    return module_name_list
 
 
 if __name__ == '__main__':

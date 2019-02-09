@@ -116,7 +116,6 @@ def save_target_elem_screenshot(
     right = location_dict['x'] + size_dict['width']
     bottom = location_dict['y'] + size_dict['height']
     screenshot_png = driver.get_screenshot_as_png()
-    img = Image.open(BytesIO(screenshot_png))
-    img = img.crop((left, top, right, bottom))
-    img.save(img_path)
-    img.close()
+    with Image.open(BytesIO(screenshot_png)) as img:
+        img = img.crop((left, top, right, bottom))
+        img.save(img_path)

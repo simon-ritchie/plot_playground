@@ -74,6 +74,7 @@ def test__make_legend_dataset():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_legend_dataset --skip_jupyter 1
     """
+
     df = pd.DataFrame(data=[{
         'date': '1970-01-03',
         'a': 100,
@@ -89,7 +90,6 @@ def test__make_legend_dataset():
         normal_columns=['b'],
         stands_out_columns=['a'])
     assert_equal(len(legend_dataset), 2)
-    print(legend_dataset)
     schema = Schema(
         schema={
             'key': Any('a', 'b'),
@@ -134,7 +134,7 @@ display_test_plot()
     jupyter_helper.update_ipynb_test_source_code(
         source_code=source_code)
     jupyter_helper.open_test_jupyter_note_book()
-    jupyter_helper.run_test_code(sleep_seconds=10)
+    jupyter_helper.run_test_code(sleep_seconds=15)
     jupyter_helper.hide_header()
     jupyter_helper.hide_input_cell()
     svg_elem = selenium_helper.driver.find_element_by_id('test_plot')
@@ -145,7 +145,7 @@ display_test_plot()
     similarity = img_helper.compare_img_hist(
         img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
         img_path_2=expected_img_path)
-    assert_greater_equal(similarity, 0.8)
+    assert_greater_equal(similarity, 0.99)
     selenium_helper.exit_webdriver()
 
     plot_meta = display_test_plot()
