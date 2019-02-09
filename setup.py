@@ -8,7 +8,7 @@ readme_str = """Please see github document for detail information.
 
 setup(
     name='plot_playground',
-    version='0.0.2',
+    version='0.0.5',
     url='https://github.com/simon-ritchie/plot_playground',
     author='simon-ritchie',
     author_email='',
@@ -18,6 +18,7 @@ setup(
     long_description=readme_str,
     packages=find_packages(),
     install_requires=[],
+    include_package_data=True,
     license='MIT',
     classifiers=[
         'Programming Language :: Python :: 3',

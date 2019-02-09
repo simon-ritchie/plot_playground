@@ -1,0 +1,2 @@
+recursive-include plot_playground *.js
+recursive-include plot_playground *.css
