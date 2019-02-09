@@ -180,3 +180,20 @@ def test_apply_js_param_to_template():
     var test_val_4 = {"lemon": 200};
     """
     assert_equal(js_template_str, expected_js_str)
+
+
+def test_PlotMeta():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_PlotMeta
+    """
+    plot_meta = d3_helper.PlotMeta(
+        js_template_str='a',
+        js_param={'a': 1},
+        css_template_str='b',
+        css_param={'b': 2})
+    assert_equal(plot_meta.js_template_str, 'a')
+    assert_equal(plot_meta.js_param, {'a': 1})
+    assert_equal(plot_meta.css_template_str, 'b')
+    assert_equal(plot_meta.css_param, {'b': 2})

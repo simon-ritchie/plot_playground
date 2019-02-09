@@ -198,3 +198,27 @@ def apply_js_param_to_template(js_template_str, js_param):
         value = str(value)
         js_template_str = js_template_str.replace(key, value)
     return js_template_str
+
+
+class PlotMeta():
+
+    def __init__(
+            self, js_template_str, js_param, css_template_str, css_param):
+        """
+        Class dealing with plot metadata.
+
+        Parameters
+        ----------
+        js_template_str : str
+            JavaScript template string after parameter substitution.
+        js_param : dict
+            A dictionary storing parameters set in the JavaScript template.
+        css_template_str : str
+            CSS template string after parameter substitution.
+        css_param : dict
+            A dictionary storing parameters set in the CSS template.
+        """
+        self.js_template_str = js_template_str
+        self.js_param = js_param
+        self.css_template_str = css_template_str
+        self.css_param = css_param

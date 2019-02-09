@@ -133,6 +133,11 @@ def display_plot(
         Plot outside border color.
     font_family : str
         Font setting. e.g., Meiryo, sans-serif
+
+    Returns
+    -------
+    plot_meta : plot_playground.common.d3_helper.PlotMeta
+        An object that stores the metadata of the plot.
     """
     svg_id = d3_helper.make_svg_id()
     css_template_str = d3_helper.read_template_str(
@@ -222,6 +227,13 @@ def display_plot(
         svg_id=svg_id,
         svg_width=width,
         svg_height=height)
+
+    plot_meta = d3_helper.PlotMeta(
+        js_template_str=js_template_str,
+        js_param=js_param,
+        css_template_str=css_template_str,
+        css_param=css_param)
+    return plot_meta
 
 
 def _make_year_str_list(df, date_column):
