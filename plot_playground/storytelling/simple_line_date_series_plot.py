@@ -43,6 +43,7 @@ def display_plot(
         outer_margin=20,
         x_ticks=5,
         y_ticks=5,
+        plot_background_color='#ffffff',
         plot_margin_left=-6,
         outer_border_size=1,
         outer_border_color='#cccccc',
@@ -121,6 +122,8 @@ def display_plot(
     y_ticks : int
         Number of steps in the y axis. This number roughly varies depending
         on the value of surplus etc.
+    plot_background_color : str
+        The background color of the plot.
     plot_margin_left : int, default -6
         The left margin of the SVG area. It is basically set by position
         adjustment on Jupyter.
@@ -187,6 +190,7 @@ def display_plot(
         'svg_id': svg_id,
         'svg_width': width,
         'svg_height': height,
+        'svg_background_color': plot_background_color,
         'svg_margin_left': plot_margin_left,
         'outer_margin': outer_margin,
         'x_ticks': x_ticks,

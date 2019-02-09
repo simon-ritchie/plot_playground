@@ -7,6 +7,8 @@ Python Parameters
     Width of SVG area.
 {svg_height} : int
     Height of SVG area.
+{svg_background_color} : str
+    The background color of the svg.
 {svg_margin_left} : int
     The left margin of the SVG area. It is basically set by position
     adjustment on Jupyter.
@@ -61,6 +63,7 @@ Python Parameters
 const SVG_ID = "{svg_id}";
 const SVG_WIDTH = {svg_width};
 const SVG_HEIGHT = {svg_height};
+const SVG_BACKGROUND_COLOR = "{svg_background_color}";
 const SVG_MARGIN_LEFT = {svg_margin_left};
 const OUTER_MARGIN = {outer_margin};
 const X_TICKS = {x_ticks};
@@ -94,6 +97,7 @@ const X_AXIS_MIN = dateParse("{x_axis_min}");
 const X_AXIS_MAX = dateParse("{x_axis_max}");
 
 var svg = d3.select("#" + SVG_ID)
+    .style("background-color", SVG_BACKGROUND_COLOR)
     .style("margin-left", SVG_MARGIN_LEFT);
 
 var plotBaseLineY = 0;
