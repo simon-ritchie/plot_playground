@@ -36,6 +36,12 @@ def cast_df_column_to_date_str(df, column_name):
         err_msg = 'The date column contains a missing value.'
         raise ValueError(err_msg)
     df[column_name] = df[column_name].astype(np.str, copy=False)
+    df[column_name] = df[column_name].apply(
+        _convert_year_to_date_str
+    )
+    df[column_name] = df[column_name].apply(
+        _convert_month_to_date_str
+    )
     date_str_list = df[column_name].tolist()
     for i, date_str in enumerate(date_str_list):
         date_str = date_str[:10]
@@ -48,6 +54,48 @@ def cast_df_column_to_date_str(df, column_name):
         date_str_list[i] = date_str
     df[column_name] = date_str_list
     return df
+
+
+def _convert_month_to_date_str(month_str):
+    """
+    Convert string of month format to date format. If it is not a month
+    format, return the value without converting.
+
+    Parameters
+    ----------
+    month_str : str
+        String to be converted. e.g., 2019-01
+
+    Returns
+    -------
+    date_str : str
+        String converted to date format. e.g., 2019-01-01
+    """
+    if len(month_str) != 7:
+        return month_str
+    date_str = month_str + '-01'
+    return date_str
+
+
+def _convert_year_to_date_str(year_str):
+    """
+    Convert string of year format to date format. If it is not a year
+    format, return the value without converting.
+
+    Parameters
+    ----------
+    year_str : str
+        String to be converted. e.g., 2019
+
+    Returns
+    -------
+    date_str : str
+        String converted to date format. e.g., 2019-01-01
+    """
+    if len(year_str) != 4:
+        return year_str
+    date_str = year_str + '-01-01'
+    return date_str
 
 
 def null_value_exists_in_df(df, column_name):

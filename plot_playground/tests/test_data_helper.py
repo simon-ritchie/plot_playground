@@ -235,3 +235,33 @@ def test_convert_dict_or_list_numpy_val_to_python_val():
         },
         required=True)
     schema(target_obj)
+
+
+def test__convert_year_to_date_str():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test__convert_year_to_date_str --skip_jupyter 1
+    """
+    date_str = data_helper._convert_year_to_date_str(
+        year_str='1970')
+    assert_equal(date_str, '1970-01-01')
+
+    date_str = data_helper._convert_year_to_date_str(
+        year_str='1970-01')
+    assert_equal(date_str, '1970-01')
+
+
+def test__convert_month_to_date_str():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_data_helper:test__convert_month_to_date_str --skip_jupyter 1
+    """
+    date_str = data_helper._convert_month_to_date_str(
+        month_str='1970-01')
+    assert_equal(date_str, '1970-01-01')
+
+    date_str = data_helper._convert_month_to_date_str(
+        month_str='1970-01-01')
+    assert_equal(date_str, '1970-01-01')

@@ -145,7 +145,7 @@ display_test_plot()
     similarity = img_helper.compare_img_hist(
         img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
         img_path_2=expected_img_path)
-    assert_greater_equal(similarity, 1.0)
+    assert_greater_equal(similarity, 0.995)
     selenium_helper.exit_webdriver()
 
     plot_meta = display_test_plot()
