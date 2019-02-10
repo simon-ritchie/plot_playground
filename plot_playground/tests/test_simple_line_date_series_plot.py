@@ -14,10 +14,12 @@ from plot_playground.common import jupyter_helper
 from plot_playground.common import selenium_helper
 from plot_playground.common import img_helper
 from plot_playground.common import d3_helper
+from plot_playground.common import settings
 
 
 def teardown():
     selenium_helper.exit_webdriver()
+    jupyter_helper.empty_test_ipynb_code_cell()
 
 
 def test__validate_df_columns():
@@ -137,7 +139,9 @@ display_test_plot()
     jupyter_helper.run_test_code(sleep_seconds=10)
     jupyter_helper.hide_header()
     jupyter_helper.hide_input_cell()
-    svg_elem = selenium_helper.driver.find_element_by_id('test_plot')
+    svg_elem = selenium_helper.driver.find_element_by_id(
+        settings.TEST_SVG_ELEM_ID
+    )
     selenium_helper.save_target_elem_screenshot(
         target_elem=svg_elem)
     expected_img_path = img_helper.get_test_expected_img_path(
@@ -191,5 +195,5 @@ def display_test_plot():
         stands_out_columns=['orange'],
         title='Time series of fruit prices.',
         description='Orange price keeps stable value in the long term.',
-        svg_id='test_plot')
+        svg_id=settings.TEST_SVG_ELEM_ID)
     return plot_meta
