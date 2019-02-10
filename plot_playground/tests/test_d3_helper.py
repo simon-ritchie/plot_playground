@@ -200,3 +200,17 @@ def test_PlotMeta():
     assert_equal(plot_meta.js_param, {'a': 1})
     assert_equal(plot_meta.css_template_str, 'b')
     assert_equal(plot_meta.css_param, {'b': 2})
+
+
+def test__read_d3_require_html():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test__read_d3_require_html
+    """
+    d3_require_html_str = d3_helper._read_d3_require_html()
+    assert_true(
+        isinstance(d3_require_html_str, str)
+    )
+    is_in = 'requirejs' in d3_require_html_str
+    assert_true(is_in)
