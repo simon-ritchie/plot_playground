@@ -258,6 +258,7 @@ def _make_year_str_list(df, date_column):
         A list containing characters at the beginning of the year.
         e.g., ["2018-01-01", "2019-01-01"]
     """
+    min_date_str = df[date_column].min()
     date_unique_arr = df[date_column].unique()
     year_str_list = []
     for date_str in date_unique_arr:
@@ -268,6 +269,8 @@ def _make_year_str_list(df, date_column):
     year_str_list.sort()
     for i, year_str in enumerate(year_str_list):
         year_str += '-01-01'
+        if year_str < min_date_str:
+            year_str = min_date_str
         year_str_list[i] = year_str
     return year_str_list
 

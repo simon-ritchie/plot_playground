@@ -109,7 +109,7 @@ def test__make_year_str_list():
     $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_year_str_list --skip_jupyter 1
     """
     df = pd.DataFrame(data=[{
-        'date': '1970-01-01',
+        'date': '1970-01-05',
     }, {
         'date': '1972-03-01',
     }, {
@@ -119,7 +119,7 @@ def test__make_year_str_list():
         df=df, date_column='date')
     assert_equal(
         year_str_list,
-        ['1970-01-01', '1972-01-01']
+        ['1970-01-05', '1972-01-01']
     )
 
 
