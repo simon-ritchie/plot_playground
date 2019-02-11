@@ -15,9 +15,16 @@ $ pip install plot_playground
 
 # Examples
 
-## Storytelling
+## Storytelling simple line date series plot
 
-### Simple line date series plot
+- This plot is inspired by the wonderful book [Storytelling with Data: A Data Visualization Guide for Business Professionals](https://www.amazon.com/Storytelling-Data-Visualization-Business-Professionals/dp/1119002257/).
+- It is useful when you want to show where you should tell in a short time.
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_white.png)
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_black.png)
+
+\>\> [More defail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html)
 
 # Testing
 
