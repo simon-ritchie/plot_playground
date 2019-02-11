@@ -26,6 +26,16 @@ $ pip install plot_playground
 
 \>\> [More defail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html)
 
+# Colaboratory and Kaggle Kernel
+
+PlotPlayground also supports Google Colaboratory and Kaggle Kernel. Even in these environments you can install with the pip command.
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/on_google_colab.png)
+
+Notes: **To use it on Kaggle Kernel, you need to switch the menu setting to "Internet Connected" and execute the pip command.**
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/on_kaggle_kernel.png)
+
 # Testing
 
 Please use Windows10 to run the test.
