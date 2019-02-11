@@ -19,6 +19,11 @@ $ pip install plot_playground
 
 ### Simple line date series plot
 
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_white.png)
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_black.png)
+
+[Document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html)
+
 # Testing
 
 Please use Windows10 to run the test.
