@@ -15,9 +15,26 @@ $ pip install plot_playground
 
 # Examples
 
-## Storytelling
+## Storytelling simple line date series plot
 
-### Simple line date series plot
+- This plot is inspired by the wonderful book [Storytelling with Data: A Data Visualization Guide for Business Professionals](https://www.amazon.com/Storytelling-Data-Visualization-Business-Professionals/dp/1119002257/).
+- It is useful when you want to show where you should tell in a short time.
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_white.png)
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_simple_line_date_series_plot_black.png)
+
+\>\> [More defail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html)
+
+# Colaboratory and Kaggle Kernel
+
+PlotPlayground also supports Google Colaboratory and Kaggle Kernel. Even in these environments you can install with the pip command.
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/on_google_colab.png)
+
+Notes: **To use it on Kaggle Kernel, you need to switch the menu setting to "Internet Connected" and execute the pip command.**
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/on_kaggle_kernel.png)
 
 # Testing
 

@@ -4,8 +4,20 @@
 
 <svg id="{svg_id}" width="{svg_width}" height="{svg_height}">
 </svg>
+<script src="/static/components/requirejs/require.js"></script>
 <script>
+    requirejs.config({
+        paths: {
+            "d3": ["https://d3js.org/d3.v{d3_version}.min"],
+        },
+    });
     require(["d3"], function(d3) {
+        var svgParent = d3.select("#{svg_id}")
+            .select(function() {
+                return this.parentNode;
+            })
+            .style("padding-left", 0);
         {js_script}
     });
+
 </script>

@@ -44,7 +44,7 @@ def display_plot(
         x_ticks=5,
         y_ticks=5,
         plot_background_color='#ffffff',
-        plot_margin_left=-6,
+        plot_margin_left=0,
         outer_border_size=1,
         outer_border_color='#cccccc',
         font_family='-apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif',
@@ -125,9 +125,8 @@ def display_plot(
         on the value of surplus etc.
     plot_background_color : str
         The background color of the plot.
-    plot_margin_left : int, default -6
-        The left margin of the SVG area. It is basically set by position
-        adjustment on Jupyter.
+    plot_margin_left : int, default 0
+        The left margin of the SVG area.
     outer_border_size : int, default 1
         Plot outside border size.
     outer_border_color : str, default '#cccccc'
