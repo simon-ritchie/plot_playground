@@ -36,7 +36,7 @@ def display_plot(
         stands_out_legend_font_size=14,
         stands_out_legend_font_color='#6bb2f8',
         stands_out_legend_font_weight='bold',
-        line_color='#cccccc',
+        line_color='#e8e8e8',
         line_size=2.5,
         stands_out_line_color='#acd5ff',
         stands_out_line_size=4.0,
@@ -107,7 +107,7 @@ def display_plot(
         The legend's font color of the place to stand out.
     stands_out_legend_font_weight : str, default 'bold'
         The legend's font weight of the place to stand out.
-    line_color : str, default '#cccccc'
+    line_color : str, default '#e8e8e8'
         Line color of a normal polygonal line.
     line_size : float, default 2.5
         The size of a normal polygonal line.

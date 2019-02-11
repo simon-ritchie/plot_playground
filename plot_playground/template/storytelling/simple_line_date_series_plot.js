@@ -276,4 +276,4 @@ svg.append("clipPath")
     .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
     .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
 d3.select("#{svg_id}-lines")
-    .attr("clip-path", "url(#{svg_id}plotAreaClipPath)");
+    .attr("clip-path", "url(#{svg_id}-plotAreaClipPath)");
