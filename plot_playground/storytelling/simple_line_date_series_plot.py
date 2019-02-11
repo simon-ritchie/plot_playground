@@ -130,7 +130,7 @@ def display_plot(
         adjustment on Jupyter.
     outer_border_size : int, default 1
         Plot outside border size.
-    outer_border_color : str, default '#999999'
+    outer_border_color : str, default '#cccccc'
         Plot outside border color.
     font_family : str
         Font setting. e.g., Meiryo, sans-serif

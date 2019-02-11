@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <style>
+            #test-svg {
+                border: 1px solid #cccccc;
+            }
+
+            #test-svg .font {
+                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+
+        <script>
+
+            const SVG_ID = "test-svg";
+            const SVG_WIDTH = 600;
+            const SVG_HEIGHT = 372;
+            const OUTER_MARGIN = 20;
+            const PLOT_TITLE_TXT = "Fruit price changes in 2017 and 2018.";
+            const PLOT_DESCRIPTION_TXT = "The price of orange has dropped considerably.";
+            const DATASET = [{
+                "label": "Apple",
+                "left": 1.23,
+                "right": 1.30
+            }, {
+                "label": "Orange",
+                "left": 1.43,
+                "right": 1.13
+            }, {
+                "label": "Melon",
+                "left": 3.35,
+                "right": 3.13
+            }, {
+                "label": "Peach",
+                "left": 2.81,
+                "right": 2.48
+            }];
+        svg = d3.select("body").append('svg')
+            .attr("width", SVG_WIDTH)
+            .attr("height", SVG_HEIGHT)
+            .attr("id", SVG_ID);
+        </script>
+    </body>
+</html>
