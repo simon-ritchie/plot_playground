@@ -13,6 +13,9 @@
     });
     require(["d3"], function(d3) {
         var svgParent = d3.select("#{svg_id}")
+            .select(function() {
+                return this.parentNode;
+            })
             .style("padding-left", 0);
         {js_script}
     });
