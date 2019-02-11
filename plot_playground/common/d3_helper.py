@@ -107,37 +107,6 @@ def apply_js_param_to_template(js_template_str, js_param):
     return js_template_str
 
 
-def _read_d3_require_html():
-    """
-    Read the template for loading D3.js.
-
-    Returns
-    -------
-    d3_require_html : str
-        The template string for loading D3.js.
-    """
-    d3_require_html = read_template_str(
-        template_file_path='base/d3_load.html')
-    param_dict = {
-        'd3_version': settings.D3_VERSION,
-    }
-    d3_require_html = apply_js_param_to_template(
-        js_template_str=d3_require_html,
-        js_param=param_dict)
-    return d3_require_html
-
-
-D3_REQUIRE_HTML = _read_d3_require_html()
-
-
-def load_d3_on_jupyter():
-    """
-    Load D3.js script on Jupyter, so that it enable to
-    access d3 methods.
-    """
-    display(HTML(D3_REQUIRE_HTML))
-
-
 D3_SCRIPT_EXEC_HTML = read_template_str(
     template_file_path='base/d3_exec.html')
 
@@ -162,17 +131,17 @@ def exec_d3_js_script_on_jupyter(
     svg_height : int
         Height set to SVG in pixels.
     """
-    load_d3_on_jupyter()
-    html = D3_SCRIPT_EXEC_HTML.replace(
-        r'{svg_id}', str(svg_id))
-    html = html.replace(
-        r'{svg_width}', str(svg_width))
-    html = html.replace(
-        r'{svg_height}', str(svg_height))
-    html = html.replace(
-        r'{js_script}', js_script)
-    html = html.replace(
-        r'{css_str}', css_str)
+    param_dict = {
+        'd3_version': settings.D3_VERSION,
+        'svg_id': str(svg_id),
+        'svg_width': str(svg_width),
+        'svg_height': str(svg_height),
+        'js_script': js_script,
+        'css_str': css_str,
+    }
+    html = apply_js_param_to_template(
+        js_template_str=D3_SCRIPT_EXEC_HTML,
+        js_param=param_dict)
     display(HTML(html))
 
 

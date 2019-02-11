@@ -8,7 +8,6 @@ a module.
 from plot_playground.common import d3_helper
 from plot_playground.common.settings import TEST_SVG_ELEM_ID
 
-d3_helper.load_d3_on_jupyter()
 js_script = r"""
 d3.select("#{test_svg_elem_id}")
     .append("rect")
