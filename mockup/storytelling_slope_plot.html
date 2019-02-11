@@ -1,49 +1,185 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <script src="https://d3js.org/d3.v4.js"></script>
-        <style>
-            #test-svg {
-                border: 1px solid #cccccc;
-            }
 
-            #test-svg .font {
-                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
-            }
-        </style>
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <style>
+        #test-svg {
+            border: 1px solid #cccccc;
+        }
 
-        <script>
+        #test-svg .font {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+        }
 
-            const SVG_ID = "test-svg";
-            const SVG_WIDTH = 600;
-            const SVG_HEIGHT = 372;
-            const OUTER_MARGIN = 20;
-            const PLOT_TITLE_TXT = "Fruit price changes in 2017 and 2018.";
-            const PLOT_DESCRIPTION_TXT = "The price of orange has dropped considerably.";
-            const DATASET = [{
-                "label": "Apple",
-                "left": 1.23,
-                "right": 1.30
-            }, {
-                "label": "Orange",
-                "left": 1.43,
-                "right": 1.13
-            }, {
-                "label": "Melon",
-                "left": 3.35,
-                "right": 3.13
-            }, {
-                "label": "Peach",
-                "left": 2.81,
-                "right": 2.48
-            }];
+        #test-svg .title {
+            fill: #6bb2f8;
+            font-size: 25px;
+        }
+
+        #test-svg .description {
+            font-size: 14px;
+            fill: #999999;
+        }
+
+        #test-svg .label {
+            font-size: 14px;
+            fill: #999999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+
+        /**
+         * Get the maximum width of the target D3 element
+         * (multiple specifications possible).
+         *
+         * @param {Object} elems: Target elements.
+         *
+         * @return {int} Max Width.
+         */
+        function getMaxWidth(elems) {
+            var maxWidth = 0;
+            elems.each(function(d) {
+                var bBox = d3.select(this)
+                    .node()
+                    .getBBox();
+                if (bBox.width > maxWidth) {
+                    maxWidth = bBox.width;
+                }
+            });
+            return maxWidth;
+        }
+
+        const SVG_ID = "test-svg";
+        const SVG_WIDTH = 600;
+        const SVG_HEIGHT = 372;
+        const BASIC_MARGIN = 20;
+        const FONT_SIZE_LABEL = 14;
+        const PLOT_TITLE_TXT = "Fruit price changes in 2017 and 2018.";
+        const PLOT_DESCRIPTION_TXT = "The price of orange has dropped considerably.";
+        const COLUMN_NAME_LABEL = "label";
+        const COLUMN_NAME_LEFT = "left";
+        const COLUMN_NAME_RIGHT = "right";
+        const DATASET = [{
+            "label": "Apple",
+            "left": 1.23,
+            "right": 1.30
+        }, {
+            "label": "Orange",
+            "left": 1.43,
+            "right": 1.13
+        }, {
+            "label": "Melon",
+            "left": 3.3,
+            "right": 3.13
+        }, {
+            "label": "Peach",
+            "left": 2.81,
+            "right": 2.48
+        }];
+        MIN_VALUE = 1.23;
+        MAX_VALUE = 3.3;
+
         svg = d3.select("body").append('svg')
             .attr("width", SVG_WIDTH)
             .attr("height", SVG_HEIGHT)
             .attr("id", SVG_ID);
-        </script>
-    </body>
+
+        var plotBaseLineY = 0;
+        if (PLOT_TITLE_TXT !== "") {
+            var plotTitle = svg.append("text")
+                .attr("x", BASIC_MARGIN)
+                .attr("y", BASIC_MARGIN)
+                .attr("dominant-baseline", "hanging")
+                .text(PLOT_TITLE_TXT)
+                .classed("title font", true);
+            var plotTitleBBox = plotTitle.node().getBBox();
+            plotBaseLineY += plotTitleBBox.y + plotTitleBBox.height;
+        }
+
+        if (PLOT_DESCRIPTION_TXT !== "") {
+            var plotDescription = svg.append("text")
+                .attr("x", BASIC_MARGIN)
+                .attr("y", plotBaseLineY + BASIC_MARGIN / 2)
+                .attr("dominant-baseline", "hanging")
+                .text(PLOT_DESCRIPTION_TXT)
+                .classed("description font", true);
+            var plotDesciptionBBox = plotDescription.node().getBBox();
+            plotBaseLineY += plotDesciptionBBox.height + BASIC_MARGIN / 2;
+        }
+
+        var yScale = d3.scaleLinear()
+            .domain([MIN_VALUE, MAX_VALUE])
+            .range([SVG_HEIGHT - BASIC_MARGIN - FONT_SIZE_LABEL,
+                    plotBaseLineY + BASIC_MARGIN + 10]);
+
+        var leftLabels = svg.selectAll("leftLabel")
+            .data(DATASET)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return d[COLUMN_NAME_LABEL];
+            })
+            .attr("x", BASIC_MARGIN)
+            .attr("y", function(d) {
+                return yScale(d[COLUMN_NAME_LEFT]);
+            })
+            .classed("font label", true);
+        var leftLabelMaxWidth = getMaxWidth(leftLabels);
+
+        var leftValues = svg.selectAll("leftValues")
+            .data(DATASET)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return d[COLUMN_NAME_LEFT];
+            })
+            .attr("text-anchor", "end")
+            .attr("y", function(d) {
+                return yScale(d[COLUMN_NAME_LEFT]);
+            })
+            .classed("font label", true);
+        var leftValueMaxWidth = getMaxWidth(leftValues);
+        leftValues.attr("x", function(d) {
+            return BASIC_MARGIN + leftLabelMaxWidth + 20 + leftValueMaxWidth;
+        });
+
+        var rightLabels = svg.selectAll("rightLabel")
+            .data(DATASET)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return d[COLUMN_NAME_LABEL];
+            })
+            .attr("text-anchor", "end")
+            .attr("x", SVG_WIDTH - BASIC_MARGIN)
+            .attr("y", function(d) {
+                return yScale(d[COLUMN_NAME_RIGHT]);
+            })
+            .classed("font label", true);
+        var rightLabelMaxWidth = getMaxWidth(rightLabels);
+
+        var rightValues = svg.selectAll("rightValues")
+            .data(DATASET)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return d[COLUMN_NAME_RIGHT];
+            })
+            .attr("y", function(d) {
+                return yScale(d[COLUMN_NAME_RIGHT]);
+            })
+            .classed("font label", true);
+        var rightValueMaxWidth = getMaxWidth(rightValues);
+        rightValues.attr("x", function(d) {
+            return SVG_WIDTH - BASIC_MARGIN * 2 - rightValueMaxWidth - rightLabelMaxWidth;
+        })
+    </script>
+</body>
+
 </html>
