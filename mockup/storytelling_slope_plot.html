@@ -118,6 +118,10 @@
         }];
         const MIN_VALUE = 1.23;
         const MAX_VALUE = 3.3;
+        const LEFT_VALUE_PREFIX = "$";
+        const LEFT_VALUE_SUFFIX = "";
+        const RIGHT_VALUE_PREFIX = "$";
+        const RIGHT_VALUE_SUFFIX = "";
 
         svg = d3.select("body").append('svg')
             .attr("width", SVG_WIDTH)
@@ -179,7 +183,14 @@
             .enter()
             .append("text")
             .text(function(d) {
-                return d[COLUMN_NAME_LEFT];
+                var text = d[COLUMN_NAME_LEFT];
+                if (LEFT_VALUE_PREFIX !== "") {
+                    text = LEFT_VALUE_PREFIX + text;
+                }
+                if (LEFT_VALUE_SUFFIX !== "") {
+                    text += LEFT_VALUE_SUFFIX;
+                }
+                return text;
             })
             .attr("text-anchor", "end")
             .attr("y", function(d) {
@@ -209,7 +220,7 @@
             .enter()
             .append("text")
             .text(function(d) {
-                return d[COLUMN_NAME_LABEL];
+                return d[COLUMN_NAME_LABEL];;
             })
             .attr("text-anchor", "end")
             .attr("x", SVG_WIDTH - BASIC_MARGIN)
@@ -229,7 +240,14 @@
             .enter()
             .append("text")
             .text(function(d) {
-                return d[COLUMN_NAME_RIGHT];
+                var text = d[COLUMN_NAME_RIGHT];
+                if (RIGHT_VALUE_PREFIX !== "") {
+                    text = RIGHT_VALUE_PREFIX + text;
+                }
+                if (RIGHT_VALUE_SUFFIX !== "") {
+                    text += RIGHT_VALUE_SUFFIX;
+                }
+                return text;
             })
             .attr("y", function(d) {
                 return yScale(d[COLUMN_NAME_RIGHT]);
