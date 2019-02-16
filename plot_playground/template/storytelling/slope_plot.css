@@ -1,0 +1,93 @@
+/**
+Python Parameters
+-----------------
+--svg_id-- : str
+    ID of the SVG element.
+--svg_border_size-- : int
+    SVG border size.
+--svg_border_color-- : str
+    SVG border color.
+--svg_background_color-- : str
+    SVG background color.
+--font_family-- : str
+    Font setting. e.g., Meiryo, sans-serif
+--title_color-- : str
+    Title color setting.
+--title_font_size-- : int
+    Title font size.
+--description_font_size-- : int
+    The font size of description.
+--description_color-- : str
+    The color setting of description.
+--label_font_size-- : int
+    Font size of element label.
+--label_color-- : str
+    Font color of element label.
+--standing_out_label_font_weight-- : str
+    Weight setting of the label to make it stand out. e.g., bold
+--standing_out_label_color-- : str
+    Font color of the label to make it stand out.
+--line_color-- : str
+    Normal line color.
+--line_width-- : float
+    Normal line width.
+--standing_out_line_color-- : str
+    The color of the line that makes it stand out.
+--standing_out_line_width-- : float
+    Width of the line to make it stand out.
+--circl_color-- : str
+    The color of a normal circle.
+--standing_out_circle_color-- : str
+    The color of the circle to stand out.
+*/
+
+#--svg_id-- {
+    border: --svg_border_size--px solid --svg_border_color--;
+    background-color: --svg_background_color--;
+}
+
+#--svg_id-- .font {
+    font-family: --font_family--;
+}
+
+#--svg_id-- .title {
+    fill: --title_color--;
+    font-size: --title_font_size--px;
+}
+
+#--svg_id-- .description {
+    font-size: --description_font_size--px;
+    fill: --description_color--;
+}
+
+#--svg_id-- .label {
+    font-size: --label_font_size--px;
+    fill: --label_color--;
+}
+
+#--svg_id-- .standing-out-label {
+    font-weight: --standing_out_label_font_weight--;
+    fill: --standing_out_label_color--;
+}
+
+#--svg_id-- .line {
+    fill: none;
+    stroke: --line_width--;
+    stroke-width: --line_width--;
+}
+
+#test-svg .standing-out-line {
+    fill: none;
+    stroke: --standing_out_line_color--;
+    stroke-width: --standing_out_line_width--;
+}
+
+#test-svg .circle {
+    fill: --circl_color--;
+    stroke: none;
+}
+
+#test-svg .standing-out-circle {
+    fill: --standing_out_circle_color--;
+    stroke: none;
+}
