@@ -11776,7 +11776,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><h1>Table of Contents<span class="tocSkip"></span></h1></p>
-<div class="toc"><ul class="toc-item"><li><span><a href="#Overview" data-toc-modified-id="Overview-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Overview</a></span></li><li><span><a href="#Installing" data-toc-modified-id="Installing-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Installing</a></span></li><li><span><a href="#Sample-data-creation" data-toc-modified-id="Sample-data-creation-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Sample data creation</a></span></li><li><span><a href="#Sample-data" data-toc-modified-id="Sample-data-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Sample data</a></span></li><li><span><a href="#Simple-example" data-toc-modified-id="Simple-example-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Simple example</a></span></li><li><span><a href="#Title,-description,-and-axis-label-setting-example" data-toc-modified-id="Title,-description,-and-axis-label-setting-example-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>Title, description, and axis label setting example</a></span></li><li><span><a href="#Y-axis-symbol-setting-example" data-toc-modified-id="Y-axis-symbol-setting-example-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Y-axis symbol setting example</a></span></li><li><span><a href="#Black-based-color-setting" data-toc-modified-id="Black-based-color-setting-8"><span class="toc-item-num">8&nbsp;&nbsp;</span>Black-based color setting</a></span></li></ul></div>
+<div class="toc"><ul class="toc-item"><li><span><a href="#Overview" data-toc-modified-id="Overview-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Overview</a></span></li><li><span><a href="#Installing" data-toc-modified-id="Installing-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Installing</a></span></li><li><span><a href="#Sample-data" data-toc-modified-id="Sample-data-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Sample data</a></span></li><li><span><a href="#Simple-example" data-toc-modified-id="Simple-example-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Simple example</a></span></li><li><span><a href="#Title,-description,-and-axis-label-setting-example" data-toc-modified-id="Title,-description,-and-axis-label-setting-example-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Title, description, and axis label setting example</a></span></li><li><span><a href="#Y-axis-symbol-setting-example" data-toc-modified-id="Y-axis-symbol-setting-example-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>Y-axis symbol setting example</a></span></li><li><span><a href="#Black-based-color-setting" data-toc-modified-id="Black-based-color-setting-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Black-based color setting</a></span></li></ul></div>
 </div>
 </div>
 </div>
@@ -11797,7 +11797,7 @@ This plot is inspired by the wonderful book <a href="https://www.amazon.com/Stor
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Installing">Installing<a class="anchor-link" href="#Installing">&#182;</a></h1><p>This document uses the following versions.<br>
-v0.0.8, Added February 11, 2019.</p>
+v0.0.11, Added February 16, 2019.</p>
 
 </div>
 </div>
@@ -11807,7 +11807,7 @@ v0.0.8, Added February 11, 2019.</p>
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install <span class="nv">plot_playground</span><span class="o">==</span><span class="m">0</span>.0.8
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install <span class="nv">plot_playground</span><span class="o">==</span><span class="m">0</span>.0.11
 </pre></div>
 
 </div>
@@ -11824,7 +11824,7 @@ v0.0.8, Added February 11, 2019.</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Requirement already satisfied: plot_playground==0.0.8 in c:\users\antis\miniconda3\lib\site-packages (0.0.8)
+<pre>Requirement already satisfied: plot_playground==0.0.11 in c:\users\antis\miniconda3\lib\site-packages (0.0.11)
 </pre>
 </div>
 </div>
@@ -12593,98 +12593,90 @@ v0.0.8, Added February 11, 2019.</p>
 
 
 <div class="output_html rendered_html output_subarea ">
-<script>
-    requirejs.config({
-        paths: {
-            "d3": ["https://d3js.org/d3.v4.min"],
-        },
-    });
-</script>
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
 <style>
     
 
-#svg_id_1549858994_15245_38835 {
+#svg_id_1550291373_058344_97745 {
     border: 1px solid #cccccc;
 }
 
-#svg_id_1549858994_15245_38835 .font {
+#svg_id_1550291373_058344_97745 .font {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
 }
 
-#svg_id_1549858994_15245_38835 .title {
+#svg_id_1550291373_058344_97745 .title {
     fill: #6bb2f8;
     font-size: 25px;
 }
 
-#svg_id_1549858994_15245_38835 .description {
+#svg_id_1550291373_058344_97745 .description {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_15245_38835 .legend {
+#svg_id_1550291373_058344_97745 .legend {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_15245_38835 .stands-out-legend {
+#svg_id_1550291373_058344_97745 .stands-out-legend {
     font-size: 14px;
     fill: #6bb2f8;
     font-weight: bold;
 }
 
-#svg_id_1549858994_15245_38835 .x-axis path,
-#svg_id_1549858994_15245_38835 .y-axis path,
-#svg_id_1549858994_15245_38835 .x-axis line,
-#svg_id_1549858994_15245_38835 .y-axis line {
+#svg_id_1550291373_058344_97745 .x-axis path,
+#svg_id_1550291373_058344_97745 .y-axis path,
+#svg_id_1550291373_058344_97745 .x-axis line,
+#svg_id_1550291373_058344_97745 .y-axis line {
     stroke: #999999;
     shape-rendering: crispEdges;
 }
 
-#svg_id_1549858994_15245_38835 .x-axis text,
-#svg_id_1549858994_15245_38835 .x-axis-year,
-#svg_id_1549858994_15245_38835 .y-axis text,
-#svg_id_1549858994_15245_38835 .y-axis-label {
+#svg_id_1550291373_058344_97745 .x-axis text,
+#svg_id_1550291373_058344_97745 .x-axis-year,
+#svg_id_1550291373_058344_97745 .y-axis text,
+#svg_id_1550291373_058344_97745 .y-axis-label {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
     fill: #999999;
     font-size: 14px;
 }
 
-#svg_id_1549858994_15245_38835 .line {
+#svg_id_1550291373_058344_97745 .line {
     fill: none;
     stroke: #e8e8e8;
     stroke-width: 2.5;
 }
 
-#svg_id_1549858994_15245_38835 .stands-out-line {
+#svg_id_1550291373_058344_97745 .stands-out-line {
     fill: none;
     stroke: #acd5ff;
     stroke-width: 4.0;
 }
 </style>
 
-<svg id="svg_id_1549858994_15245_38835" width="600" height="372">
+<svg id="svg_id_1550291373_058344_97745" width="600" height="372">
 </svg>
+<script src="/static/components/requirejs/require.js"></script>
 <script>
+    requirejs.config({
+        paths: {
+            "d3": ["https://d3js.org/d3.v4.min"],
+        },
+    });
     require(["d3"], function(d3) {
+        var svgParent = d3.select("#svg_id_1550291373_058344_97745")
+            .select(function() {
+                return this.parentNode;
+            })
+            .style("padding-left", 0);
         
 
-const SVG_ID = "svg_id_1549858994_15245_38835";
+const SVG_ID = "svg_id_1550291373_058344_97745";
 const SVG_WIDTH = 600;
 const SVG_HEIGHT = 372;
 const SVG_BACKGROUND_COLOR = "#ffffff";
-const SVG_MARGIN_LEFT = -6;
+const SVG_MARGIN_LEFT = 0;
 const OUTER_MARGIN = 20;
 const X_TICKS = 5;
 const Y_TICKS = 5;
@@ -12865,12 +12857,12 @@ year.attr("x", function(d) {
 });
 
 var lineGroup = svg.append("g")
-    .attr("id", "svg_id_1549858994_15245_38835-lines");
+    .attr("id", "svg_id_1550291373_058344_97745-lines");
 for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
         .x(function (d) {
-            return xAxisScale(d.date);
+            return xAxisScale(d["date"]);
         })
         .y(function (d) {
             return yAxisScale(d[columnName]);
@@ -12889,16 +12881,17 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
 var xAxisScaleRange = xAxisScale.range();
 var yAxisScaleRange = yAxisScale.range();
 svg.append("clipPath")
-    .attr("id", "svg_id_1549858994_15245_38835-plotAreaClipPath")
+    .attr("id", "svg_id_1550291373_058344_97745-plotAreaClipPath")
     .append("rect")
     .attr("x", xAxisScaleRange[0] + 1)
     .attr("y", yAxisScaleRange[1])
     .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
     .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
-d3.select("#svg_id_1549858994_15245_38835-lines")
-    .attr("clip-path", "url(#svg_id_1549858994_15245_38835-plotAreaClipPath)");
+d3.select("#svg_id_1550291373_058344_97745-lines")
+    .attr("clip-path", "url(#svg_id_1550291373_058344_97745-plotAreaClipPath)");
 
     });
+
 </script>
 
 </div>
@@ -12913,7 +12906,7 @@ d3.select("#svg_id_1549858994_15245_38835-lines")
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x218107ffc88&gt;</pre>
+<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x23bf4eaf048&gt;</pre>
 </div>
 
 </div>
@@ -12963,98 +12956,90 @@ d3.select("#svg_id_1549858994_15245_38835-lines")
 
 
 <div class="output_html rendered_html output_subarea ">
-<script>
-    requirejs.config({
-        paths: {
-            "d3": ["https://d3js.org/d3.v4.min"],
-        },
-    });
-</script>
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
 <style>
     
 
-#svg_id_1549858994_249455_79050 {
+#svg_id_1550291373_145346_74301 {
     border: 1px solid #cccccc;
 }
 
-#svg_id_1549858994_249455_79050 .font {
+#svg_id_1550291373_145346_74301 .font {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
 }
 
-#svg_id_1549858994_249455_79050 .title {
+#svg_id_1550291373_145346_74301 .title {
     fill: #6bb2f8;
     font-size: 25px;
 }
 
-#svg_id_1549858994_249455_79050 .description {
+#svg_id_1550291373_145346_74301 .description {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_249455_79050 .legend {
+#svg_id_1550291373_145346_74301 .legend {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_249455_79050 .stands-out-legend {
+#svg_id_1550291373_145346_74301 .stands-out-legend {
     font-size: 14px;
     fill: #6bb2f8;
     font-weight: bold;
 }
 
-#svg_id_1549858994_249455_79050 .x-axis path,
-#svg_id_1549858994_249455_79050 .y-axis path,
-#svg_id_1549858994_249455_79050 .x-axis line,
-#svg_id_1549858994_249455_79050 .y-axis line {
+#svg_id_1550291373_145346_74301 .x-axis path,
+#svg_id_1550291373_145346_74301 .y-axis path,
+#svg_id_1550291373_145346_74301 .x-axis line,
+#svg_id_1550291373_145346_74301 .y-axis line {
     stroke: #999999;
     shape-rendering: crispEdges;
 }
 
-#svg_id_1549858994_249455_79050 .x-axis text,
-#svg_id_1549858994_249455_79050 .x-axis-year,
-#svg_id_1549858994_249455_79050 .y-axis text,
-#svg_id_1549858994_249455_79050 .y-axis-label {
+#svg_id_1550291373_145346_74301 .x-axis text,
+#svg_id_1550291373_145346_74301 .x-axis-year,
+#svg_id_1550291373_145346_74301 .y-axis text,
+#svg_id_1550291373_145346_74301 .y-axis-label {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
     fill: #999999;
     font-size: 14px;
 }
 
-#svg_id_1549858994_249455_79050 .line {
+#svg_id_1550291373_145346_74301 .line {
     fill: none;
     stroke: #e8e8e8;
     stroke-width: 2.5;
 }
 
-#svg_id_1549858994_249455_79050 .stands-out-line {
+#svg_id_1550291373_145346_74301 .stands-out-line {
     fill: none;
     stroke: #acd5ff;
     stroke-width: 4.0;
 }
 </style>
 
-<svg id="svg_id_1549858994_249455_79050" width="600" height="372">
+<svg id="svg_id_1550291373_145346_74301" width="600" height="372">
 </svg>
+<script src="/static/components/requirejs/require.js"></script>
 <script>
+    requirejs.config({
+        paths: {
+            "d3": ["https://d3js.org/d3.v4.min"],
+        },
+    });
     require(["d3"], function(d3) {
+        var svgParent = d3.select("#svg_id_1550291373_145346_74301")
+            .select(function() {
+                return this.parentNode;
+            })
+            .style("padding-left", 0);
         
 
-const SVG_ID = "svg_id_1549858994_249455_79050";
+const SVG_ID = "svg_id_1550291373_145346_74301";
 const SVG_WIDTH = 600;
 const SVG_HEIGHT = 372;
 const SVG_BACKGROUND_COLOR = "#ffffff";
-const SVG_MARGIN_LEFT = -6;
+const SVG_MARGIN_LEFT = 0;
 const OUTER_MARGIN = 20;
 const X_TICKS = 5;
 const Y_TICKS = 5;
@@ -13235,12 +13220,12 @@ year.attr("x", function(d) {
 });
 
 var lineGroup = svg.append("g")
-    .attr("id", "svg_id_1549858994_249455_79050-lines");
+    .attr("id", "svg_id_1550291373_145346_74301-lines");
 for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
         .x(function (d) {
-            return xAxisScale(d.date);
+            return xAxisScale(d["date"]);
         })
         .y(function (d) {
             return yAxisScale(d[columnName]);
@@ -13259,16 +13244,17 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
 var xAxisScaleRange = xAxisScale.range();
 var yAxisScaleRange = yAxisScale.range();
 svg.append("clipPath")
-    .attr("id", "svg_id_1549858994_249455_79050-plotAreaClipPath")
+    .attr("id", "svg_id_1550291373_145346_74301-plotAreaClipPath")
     .append("rect")
     .attr("x", xAxisScaleRange[0] + 1)
     .attr("y", yAxisScaleRange[1])
     .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
     .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
-d3.select("#svg_id_1549858994_249455_79050-lines")
-    .attr("clip-path", "url(#svg_id_1549858994_249455_79050-plotAreaClipPath)");
+d3.select("#svg_id_1550291373_145346_74301-lines")
+    .attr("clip-path", "url(#svg_id_1550291373_145346_74301-plotAreaClipPath)");
 
     });
+
 </script>
 
 </div>
@@ -13283,7 +13269,7 @@ d3.select("#svg_id_1549858994_249455_79050-lines")
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x218107ec278&gt;</pre>
+<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x23bf4e992e8&gt;</pre>
 </div>
 
 </div>
@@ -13334,98 +13320,90 @@ d3.select("#svg_id_1549858994_249455_79050-lines")
 
 
 <div class="output_html rendered_html output_subarea ">
-<script>
-    requirejs.config({
-        paths: {
-            "d3": ["https://d3js.org/d3.v4.min"],
-        },
-    });
-</script>
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
 <style>
     
 
-#svg_id_1549858994_338447_79521 {
+#svg_id_1550291373_243347_72138 {
     border: 1px solid #cccccc;
 }
 
-#svg_id_1549858994_338447_79521 .font {
+#svg_id_1550291373_243347_72138 .font {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
 }
 
-#svg_id_1549858994_338447_79521 .title {
+#svg_id_1550291373_243347_72138 .title {
     fill: #6bb2f8;
     font-size: 25px;
 }
 
-#svg_id_1549858994_338447_79521 .description {
+#svg_id_1550291373_243347_72138 .description {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_338447_79521 .legend {
+#svg_id_1550291373_243347_72138 .legend {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_338447_79521 .stands-out-legend {
+#svg_id_1550291373_243347_72138 .stands-out-legend {
     font-size: 14px;
     fill: #6bb2f8;
     font-weight: bold;
 }
 
-#svg_id_1549858994_338447_79521 .x-axis path,
-#svg_id_1549858994_338447_79521 .y-axis path,
-#svg_id_1549858994_338447_79521 .x-axis line,
-#svg_id_1549858994_338447_79521 .y-axis line {
+#svg_id_1550291373_243347_72138 .x-axis path,
+#svg_id_1550291373_243347_72138 .y-axis path,
+#svg_id_1550291373_243347_72138 .x-axis line,
+#svg_id_1550291373_243347_72138 .y-axis line {
     stroke: #999999;
     shape-rendering: crispEdges;
 }
 
-#svg_id_1549858994_338447_79521 .x-axis text,
-#svg_id_1549858994_338447_79521 .x-axis-year,
-#svg_id_1549858994_338447_79521 .y-axis text,
-#svg_id_1549858994_338447_79521 .y-axis-label {
+#svg_id_1550291373_243347_72138 .x-axis text,
+#svg_id_1550291373_243347_72138 .x-axis-year,
+#svg_id_1550291373_243347_72138 .y-axis text,
+#svg_id_1550291373_243347_72138 .y-axis-label {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
     fill: #999999;
     font-size: 14px;
 }
 
-#svg_id_1549858994_338447_79521 .line {
+#svg_id_1550291373_243347_72138 .line {
     fill: none;
     stroke: #e8e8e8;
     stroke-width: 2.5;
 }
 
-#svg_id_1549858994_338447_79521 .stands-out-line {
+#svg_id_1550291373_243347_72138 .stands-out-line {
     fill: none;
     stroke: #acd5ff;
     stroke-width: 4.0;
 }
 </style>
 
-<svg id="svg_id_1549858994_338447_79521" width="600" height="372">
+<svg id="svg_id_1550291373_243347_72138" width="600" height="372">
 </svg>
+<script src="/static/components/requirejs/require.js"></script>
 <script>
+    requirejs.config({
+        paths: {
+            "d3": ["https://d3js.org/d3.v4.min"],
+        },
+    });
     require(["d3"], function(d3) {
+        var svgParent = d3.select("#svg_id_1550291373_243347_72138")
+            .select(function() {
+                return this.parentNode;
+            })
+            .style("padding-left", 0);
         
 
-const SVG_ID = "svg_id_1549858994_338447_79521";
+const SVG_ID = "svg_id_1550291373_243347_72138";
 const SVG_WIDTH = 600;
 const SVG_HEIGHT = 372;
 const SVG_BACKGROUND_COLOR = "#ffffff";
-const SVG_MARGIN_LEFT = -6;
+const SVG_MARGIN_LEFT = 0;
 const OUTER_MARGIN = 20;
 const X_TICKS = 5;
 const Y_TICKS = 5;
@@ -13606,12 +13584,12 @@ year.attr("x", function(d) {
 });
 
 var lineGroup = svg.append("g")
-    .attr("id", "svg_id_1549858994_338447_79521-lines");
+    .attr("id", "svg_id_1550291373_243347_72138-lines");
 for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
         .x(function (d) {
-            return xAxisScale(d.date);
+            return xAxisScale(d["date"]);
         })
         .y(function (d) {
             return yAxisScale(d[columnName]);
@@ -13630,16 +13608,17 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
 var xAxisScaleRange = xAxisScale.range();
 var yAxisScaleRange = yAxisScale.range();
 svg.append("clipPath")
-    .attr("id", "svg_id_1549858994_338447_79521-plotAreaClipPath")
+    .attr("id", "svg_id_1550291373_243347_72138-plotAreaClipPath")
     .append("rect")
     .attr("x", xAxisScaleRange[0] + 1)
     .attr("y", yAxisScaleRange[1])
     .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
     .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
-d3.select("#svg_id_1549858994_338447_79521-lines")
-    .attr("clip-path", "url(#svg_id_1549858994_338447_79521-plotAreaClipPath)");
+d3.select("#svg_id_1550291373_243347_72138-lines")
+    .attr("clip-path", "url(#svg_id_1550291373_243347_72138-plotAreaClipPath)");
 
     });
+
 </script>
 
 </div>
@@ -13654,7 +13633,7 @@ d3.select("#svg_id_1549858994_338447_79521-lines")
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x21810712128&gt;</pre>
+<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x23bf4eaf4e0&gt;</pre>
 </div>
 
 </div>
@@ -13709,98 +13688,90 @@ d3.select("#svg_id_1549858994_338447_79521-lines")
 
 
 <div class="output_html rendered_html output_subarea ">
-<script>
-    requirejs.config({
-        paths: {
-            "d3": ["https://d3js.org/d3.v4.min"],
-        },
-    });
-</script>
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
 <style>
     
 
-#svg_id_1549858994_441448_53132 {
+#svg_id_1550291373_338344_22220 {
     border: 1px solid #cccccc;
 }
 
-#svg_id_1549858994_441448_53132 .font {
+#svg_id_1550291373_338344_22220 .font {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
 }
 
-#svg_id_1549858994_441448_53132 .title {
+#svg_id_1550291373_338344_22220 .title {
     fill: #6bb2f8;
     font-size: 25px;
 }
 
-#svg_id_1549858994_441448_53132 .description {
+#svg_id_1550291373_338344_22220 .description {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_441448_53132 .legend {
+#svg_id_1550291373_338344_22220 .legend {
     font-size: 14px;
     fill: #999999;
 }
 
-#svg_id_1549858994_441448_53132 .stands-out-legend {
+#svg_id_1550291373_338344_22220 .stands-out-legend {
     font-size: 14px;
     fill: #6bb2f8;
     font-weight: bold;
 }
 
-#svg_id_1549858994_441448_53132 .x-axis path,
-#svg_id_1549858994_441448_53132 .y-axis path,
-#svg_id_1549858994_441448_53132 .x-axis line,
-#svg_id_1549858994_441448_53132 .y-axis line {
+#svg_id_1550291373_338344_22220 .x-axis path,
+#svg_id_1550291373_338344_22220 .y-axis path,
+#svg_id_1550291373_338344_22220 .x-axis line,
+#svg_id_1550291373_338344_22220 .y-axis line {
     stroke: #999999;
     shape-rendering: crispEdges;
 }
 
-#svg_id_1549858994_441448_53132 .x-axis text,
-#svg_id_1549858994_441448_53132 .x-axis-year,
-#svg_id_1549858994_441448_53132 .y-axis text,
-#svg_id_1549858994_441448_53132 .y-axis-label {
+#svg_id_1550291373_338344_22220 .x-axis text,
+#svg_id_1550291373_338344_22220 .x-axis-year,
+#svg_id_1550291373_338344_22220 .y-axis text,
+#svg_id_1550291373_338344_22220 .y-axis-label {
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
     fill: #999999;
     font-size: 14px;
 }
 
-#svg_id_1549858994_441448_53132 .line {
+#svg_id_1550291373_338344_22220 .line {
     fill: none;
     stroke: #555555;
     stroke-width: 2.5;
 }
 
-#svg_id_1549858994_441448_53132 .stands-out-line {
+#svg_id_1550291373_338344_22220 .stands-out-line {
     fill: none;
     stroke: #6bb2f8;
     stroke-width: 4.0;
 }
 </style>
 
-<svg id="svg_id_1549858994_441448_53132" width="600" height="372">
+<svg id="svg_id_1550291373_338344_22220" width="600" height="372">
 </svg>
+<script src="/static/components/requirejs/require.js"></script>
 <script>
+    requirejs.config({
+        paths: {
+            "d3": ["https://d3js.org/d3.v4.min"],
+        },
+    });
     require(["d3"], function(d3) {
+        var svgParent = d3.select("#svg_id_1550291373_338344_22220")
+            .select(function() {
+                return this.parentNode;
+            })
+            .style("padding-left", 0);
         
 
-const SVG_ID = "svg_id_1549858994_441448_53132";
+const SVG_ID = "svg_id_1550291373_338344_22220";
 const SVG_WIDTH = 600;
 const SVG_HEIGHT = 372;
 const SVG_BACKGROUND_COLOR = "#333333";
-const SVG_MARGIN_LEFT = -6;
+const SVG_MARGIN_LEFT = 0;
 const OUTER_MARGIN = 20;
 const X_TICKS = 5;
 const Y_TICKS = 5;
@@ -13981,12 +13952,12 @@ year.attr("x", function(d) {
 });
 
 var lineGroup = svg.append("g")
-    .attr("id", "svg_id_1549858994_441448_53132-lines");
+    .attr("id", "svg_id_1550291373_338344_22220-lines");
 for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
         .x(function (d) {
-            return xAxisScale(d.date);
+            return xAxisScale(d["date"]);
         })
         .y(function (d) {
             return yAxisScale(d[columnName]);
@@ -14005,16 +13976,17 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
 var xAxisScaleRange = xAxisScale.range();
 var yAxisScaleRange = yAxisScale.range();
 svg.append("clipPath")
-    .attr("id", "svg_id_1549858994_441448_53132-plotAreaClipPath")
+    .attr("id", "svg_id_1550291373_338344_22220-plotAreaClipPath")
     .append("rect")
     .attr("x", xAxisScaleRange[0] + 1)
     .attr("y", yAxisScaleRange[1])
     .attr("width", xAxisScaleRange[1] - xAxisScaleRange[0])
     .attr("height", yAxisScaleRange[0] - yAxisScaleRange[1] - 1);
-d3.select("#svg_id_1549858994_441448_53132-lines")
-    .attr("clip-path", "url(#svg_id_1549858994_441448_53132-plotAreaClipPath)");
+d3.select("#svg_id_1550291373_338344_22220-lines")
+    .attr("clip-path", "url(#svg_id_1550291373_338344_22220-plotAreaClipPath)");
 
     });
+
 </script>
 
 </div>
@@ -14029,7 +14001,7 @@ d3.select("#svg_id_1549858994_441448_53132-lines")
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x21808593f28&gt;</pre>
+<pre>&lt;plot_playground.common.d3_helper.PlotMeta at 0x23bf4ed3048&gt;</pre>
 </div>
 
 </div>
