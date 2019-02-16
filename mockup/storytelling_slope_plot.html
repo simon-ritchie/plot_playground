@@ -7,6 +7,7 @@
     <style>
         #test-svg {
             border: 1px solid #cccccc;
+            background-color: #ffffff;
         }
 
         #test-svg .font {
@@ -26,6 +27,17 @@
         #test-svg .label {
             font-size: 14px;
             fill: #999999;
+        }
+
+        #test-svg .line {
+            fill: none;
+            stroke: #cccccc;
+            stroke-width: 2.5;
+        }
+
+        #test-svg .circle {
+            fill: #cccccc;
+            stroke: none;
         }
     </style>
 </head>
@@ -60,6 +72,7 @@
         const SVG_HEIGHT = 372;
         const BASIC_MARGIN = 20;
         const FONT_SIZE_LABEL = 14;
+        const CIRCLE_RADIUS = 4;
         const PLOT_TITLE_TXT = "Fruit price changes in 2017 and 2018.";
         const PLOT_DESCRIPTION_TXT = "The price of orange has dropped considerably.";
         const COLUMN_NAME_LABEL = "label";
@@ -68,22 +81,26 @@
         const DATASET = [{
             "label": "Apple",
             "left": 1.23,
-            "right": 1.30
-        }, {
-            "label": "Orange",
-            "left": 1.43,
-            "right": 1.13
+            "right": 1.30,
+            "is_standing_out_plot": 0
         }, {
             "label": "Melon",
             "left": 3.3,
-            "right": 3.13
+            "right": 3.13,
+            "is_standing_out_plot": 0
         }, {
             "label": "Peach",
             "left": 2.81,
-            "right": 2.48
+            "right": 2.48,
+            "is_standing_out_plot": 0
+        }, {
+            "label": "Orange",
+            "left": 1.83,
+            "right": 1.13,
+            "is_standing_out_plot": 1
         }];
-        MIN_VALUE = 1.23;
-        MAX_VALUE = 3.3;
+        const MIN_VALUE = 1.23;
+        const MAX_VALUE = 3.3;
 
         svg = d3.select("body").append('svg')
             .attr("width", SVG_WIDTH)
@@ -145,8 +162,16 @@
             })
             .classed("font label", true);
         var leftValueMaxWidth = getMaxWidth(leftValues);
+        var leftValueX = BASIC_MARGIN + leftLabelMaxWidth + 20 + leftValueMaxWidth;
         leftValues.attr("x", function(d) {
             return BASIC_MARGIN + leftLabelMaxWidth + 20 + leftValueMaxWidth;
+        });
+        var leftValuesBBoxList = [];
+        leftValues.each(function(d) {
+            var leftValuesBBox = d3.select(this)
+                .node()
+                .getBBox();
+            leftValuesBBoxList.push(leftValuesBBox);
         });
 
         var rightLabels = svg.selectAll("rightLabel")
@@ -176,9 +201,43 @@
             })
             .classed("font label", true);
         var rightValueMaxWidth = getMaxWidth(rightValues);
+        var rightValueX = SVG_WIDTH - BASIC_MARGIN * 2 - rightValueMaxWidth - rightLabelMaxWidth;
         rightValues.attr("x", function(d) {
-            return SVG_WIDTH - BASIC_MARGIN * 2 - rightValueMaxWidth - rightLabelMaxWidth;
-        })
+            return rightValueX;
+        });
+        var rightValuesBBoxList = [];
+        rightValues.each(function(d) {
+            var rightValuesBBox = d3.select(this)
+                .node()
+                .getBBox();
+            rightValuesBBoxList.push(rightValuesBBox);
+        });
+
+        const SLOPE_LEFT_X = leftValueX + 20;
+        const SLOPE_RIGHT_X = rightValueX - 20;
+        var lineGroups = svg.append("g")
+            .classed("line", true);
+        for (var i = 0; i < DATASET.length; i++) {
+            lineGroups.append("line")
+                .attr("x1", SLOPE_LEFT_X)
+                .attr("y1", leftValuesBBoxList[i].y + leftValuesBBoxList[i].height / 2)
+                .attr("x2", SLOPE_RIGHT_X)
+                .attr("y2", rightValuesBBoxList[i].y + rightValuesBBoxList[i].height / 2);
+        }
+        var circleGroup = svg.append("g")
+            .classed("circle", true);
+        for (var i = 0; i < DATASET.length; i++) {
+            circleGroup.append("circle")
+                .attr("r", CIRCLE_RADIUS)
+                .attr("cx", SLOPE_LEFT_X)
+                .attr("cy", leftValuesBBoxList[i].y + leftValuesBBoxList[i].height / 2);
+
+            circleGroup.append("circle")
+                .attr("r", CIRCLE_RADIUS)
+                .attr("cx", SLOPE_RIGHT_X)
+                .attr("cy", rightValuesBBoxList[i].y + rightValuesBBoxList[i].height / 2);
+        }
+
     </script>
 </body>
 
