@@ -34,6 +34,8 @@ Python Parameters
     Data set to set. The following keys are required in the dictionary.
     - date : A string of dates of the form "%Y-%m-%d".
     - other key : Any other key that stores the value of int or float.
+{date_column} : str
+    Column name of the date.
 {column_list} : list of str
     A list of the column names of targets for which inconspicuous
     colors are set.
@@ -77,7 +79,7 @@ var dateParse = d3.timeParse("%Y-%m-%d");
 var dataset = {dataset};
 for (var i = 0; i < dataset.length; i++) {
     var dataDict = dataset[i];
-    dataDict["date"] = dateParse(dataDict["date"]);
+    dataDict["{date_column}"] = dateParse(dataDict["{date_column}"]);
 }
 const COLUMN_LIST = {column_list};
 const STANDS_OUT_COLUMN_LIST = {stands_out_column_list};
@@ -250,7 +252,7 @@ for (var i = 0; i < MERGED_COLUMN_LIST.length; i++) {
     var columnName = MERGED_COLUMN_LIST[i];
     var line = d3.line()
         .x(function (d) {
-            return xAxisScale(d.date);
+            return xAxisScale(d["{date_column}"]);
         })
         .y(function (d) {
             return yAxisScale(d[columnName]);

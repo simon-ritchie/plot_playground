@@ -209,6 +209,7 @@ def display_plot(
         'plot_title': title,
         'plot_description': description,
         'dataset': dataset,
+        'date_column': date_column,
         'column_list': normal_columns,
         'stands_out_column_list': stands_out_columns,
         'legend_dataset': legend_dataset,

@@ -6,7 +6,7 @@ readme_str = """Please see github document for detail information.
 
 setup(
     name='plot_playground',
-    version='0.0.10',
+    version='0.0.11',
     url='https://github.com/simon-ritchie/plot_playground',
     author='simon-ritchie',
     author_email='',
