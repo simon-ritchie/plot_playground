@@ -31,7 +31,7 @@ Python Parameters
 {plot_description} : str
     A description of the plot. It is set under the title.
 {dataset} : list of dicts
-    Data set to set. The following keys are required in the dictionary.
+    Dataset to set. The following keys are required in the dictionary.
     - date : A string of dates of the form "%Y-%m-%d".
     - other key : Any other key that stores the value of int or float.
 {date_column} : str
