@@ -29,14 +29,30 @@
             fill: #999999;
         }
 
+        #test-svg .standing-out-label {
+            font-weight: bold;
+            fill: #6bb2f8;
+        }
+
         #test-svg .line {
             fill: none;
             stroke: #cccccc;
             stroke-width: 2.5;
         }
 
+        #test-svg .standing-out-line {
+            fill: none;
+            stroke: #acd5ff;
+            stroke-width: 4.0;
+        }
+
         #test-svg .circle {
             fill: #cccccc;
+            stroke: none;
+        }
+
+        #test-svg .standing-out-circle {
+            fill: #acd5ff;
             stroke: none;
         }
     </style>
@@ -73,6 +89,7 @@
         const BASIC_MARGIN = 20;
         const FONT_SIZE_LABEL = 14;
         const CIRCLE_RADIUS = 4;
+        const STANDING_OUT_CIRCLE_RADIUS = 5;
         const PLOT_TITLE_TXT = "Fruit price changes in 2017 and 2018.";
         const PLOT_DESCRIPTION_TXT = "The price of orange has dropped considerably.";
         const COLUMN_NAME_LABEL = "label";
@@ -82,22 +99,22 @@
             "label": "Apple",
             "left": 1.23,
             "right": 1.30,
-            "is_standing_out_plot": 0
+            "isStandingOutData": 0
         }, {
             "label": "Melon",
             "left": 3.3,
             "right": 3.13,
-            "is_standing_out_plot": 0
+            "isStandingOutData": 0
         }, {
             "label": "Peach",
             "left": 2.81,
             "right": 2.48,
-            "is_standing_out_plot": 0
+            "isStandingOutData": 0
         }, {
             "label": "Orange",
             "left": 1.83,
             "right": 1.13,
-            "is_standing_out_plot": 1
+            "isStandingOutData": 1
         }];
         const MIN_VALUE = 1.23;
         const MAX_VALUE = 3.3;
@@ -135,6 +152,9 @@
             .range([SVG_HEIGHT - BASIC_MARGIN - FONT_SIZE_LABEL,
                     plotBaseLineY + BASIC_MARGIN + 10]);
 
+        const LABEL_CLASS = "font label";
+        const STANDING_OUT_CLASS = "font label standing-out-label";
+
         var leftLabels = svg.selectAll("leftLabel")
             .data(DATASET)
             .enter()
@@ -146,7 +166,12 @@
             .attr("y", function(d) {
                 return yScale(d[COLUMN_NAME_LEFT]);
             })
-            .classed("font label", true);
+            .attr("class", function(d) {
+                if (d.isStandingOutData === 1) {
+                    return STANDING_OUT_CLASS;
+                }
+                return LABEL_CLASS;
+            });
         var leftLabelMaxWidth = getMaxWidth(leftLabels);
 
         var leftValues = svg.selectAll("leftValues")
@@ -160,7 +185,12 @@
             .attr("y", function(d) {
                 return yScale(d[COLUMN_NAME_LEFT]);
             })
-            .classed("font label", true);
+            .attr("class", function(d) {
+                if (d.isStandingOutData === 1) {
+                    return STANDING_OUT_CLASS;
+                }
+                return LABEL_CLASS;
+            });
         var leftValueMaxWidth = getMaxWidth(leftValues);
         var leftValueX = BASIC_MARGIN + leftLabelMaxWidth + 20 + leftValueMaxWidth;
         leftValues.attr("x", function(d) {
@@ -186,7 +216,12 @@
             .attr("y", function(d) {
                 return yScale(d[COLUMN_NAME_RIGHT]);
             })
-            .classed("font label", true);
+            .attr("class", function(d) {
+                if (d.isStandingOutData === 1) {
+                    return STANDING_OUT_CLASS;
+                }
+                return LABEL_CLASS;
+            });
         var rightLabelMaxWidth = getMaxWidth(rightLabels);
 
         var rightValues = svg.selectAll("rightValues")
@@ -199,7 +234,12 @@
             .attr("y", function(d) {
                 return yScale(d[COLUMN_NAME_RIGHT]);
             })
-            .classed("font label", true);
+            .attr("class", function(d) {
+                if (d.isStandingOutData === 1) {
+                    return STANDING_OUT_CLASS;
+                }
+                return LABEL_CLASS;
+            });
         var rightValueMaxWidth = getMaxWidth(rightValues);
         var rightValueX = SVG_WIDTH - BASIC_MARGIN * 2 - rightValueMaxWidth - rightLabelMaxWidth;
         rightValues.attr("x", function(d) {
@@ -218,24 +258,38 @@
         var lineGroups = svg.append("g")
             .classed("line", true);
         for (var i = 0; i < DATASET.length; i++) {
-            lineGroups.append("line")
+            var line = lineGroups.append("line")
                 .attr("x1", SLOPE_LEFT_X)
                 .attr("y1", leftValuesBBoxList[i].y + leftValuesBBoxList[i].height / 2)
                 .attr("x2", SLOPE_RIGHT_X)
                 .attr("y2", rightValuesBBoxList[i].y + rightValuesBBoxList[i].height / 2);
+            var dataDict = DATASET[i];
+            if (dataDict["isStandingOutData"] === 1) {
+                line.classed("standing-out-line", true);
+            }
         }
         var circleGroup = svg.append("g")
             .classed("circle", true);
         for (var i = 0; i < DATASET.length; i++) {
-            circleGroup.append("circle")
+            var dataDict = DATASET[i];
+            var leftCircle = circleGroup.append("circle")
                 .attr("r", CIRCLE_RADIUS)
                 .attr("cx", SLOPE_LEFT_X)
                 .attr("cy", leftValuesBBoxList[i].y + leftValuesBBoxList[i].height / 2);
 
-            circleGroup.append("circle")
-                .attr("r", CIRCLE_RADIUS)
+            var rightCircle = circleGroup.append("circle")
                 .attr("cx", SLOPE_RIGHT_X)
                 .attr("cy", rightValuesBBoxList[i].y + rightValuesBBoxList[i].height / 2);
+
+            if (dataDict["isStandingOutData"] === 1) {
+                leftCircle.attr("r", STANDING_OUT_CIRCLE_RADIUS)
+                    .classed("standing-out-circle", true);
+                rightCircle.attr("r", STANDING_OUT_CIRCLE_RADIUS)
+                    .classed("standing-out-circle", true);
+            }else {
+                leftCircle.attr("r", CIRCLE_RADIUS);
+                rightCircle.attr("r", CIRCLE_RADIUS);
+            }
         }
 
     </script>
