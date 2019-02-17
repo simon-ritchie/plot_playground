@@ -19,7 +19,9 @@ def display_plot(
         standing_out_label_name_list,
         width=600,
         height=372,
+        plot_background_color='#ffffff',
         plot_border_size=1,
+        plot_border_color='#cccccc',
         basic_margin=20,
         font_family='-apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif',
         title='',
@@ -66,8 +68,12 @@ def display_plot(
         Width of the plot.
     height : int default 372
         Height of the plot.
+    plot_background_color : str, default '#ffffff'
+        The background color of the plot.
     plot_border_size : int, default 1
         The size of the line around the plot.
+    plot_border_color : str, default '#cccccc'
+        The color of the line around the plot.
     basic_margin : int, default 20
         Basic margin value.
     font_family : str
@@ -125,4 +131,87 @@ def display_plot(
     plot_meta : plot_playground.common.d3_helper.PlotMeta
         An object that stores the metadata of the plot.
     """
+    if svg_id == '':
+        svg_id = d3_helper.make_svg_id()
+    css_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_CSS_TEMPLATE)
+    css_param = {
+        'svg_id': svg_id,
+        'svg_border_size': plot_border_size,
+        'svg_border_color': plot_border_color,
+        'svg_background_color': plot_background_color,
+        'font_family': font_family,
+        'title_color': title_color,
+        'title_font_size': title_font_size,
+        'description_font_size': description_font_size,
+        'description_color': description_color,
+        'label_font_size': label_font_size,
+        'label_color': label_color,
+        'standing_out_label_font_weight': standing_out_label_font_weight,
+        'standing_out_label_color': standing_out_label_color,
+        'line_color': line_color,
+        'line_width': line_width,
+        'standing_out_line_color': standing_out_line_color,
+        'standing_out_line_width': standing_out_line_width,
+        'circle_color': circle_color,
+        'standing_out_circle_color': standing_out_circle_color,
+    }
+    css_template_str = d3_helper.apply_css_param_to_template(
+        css_template_str=css_template_str,
+        css_param=css_param)
+
+    df = df.copy()
+    _validate_df_columns(
+        df=df, label_column_name=label_column_name,
+        left_value_column_name=left_value_column_name,
+        right_value_column_name=right_value_column_name,
+    )
+    df[label_column_name] = df[label_column_name].astype(
+        np.str, copy=False)
     pass
+
+
+def _validate_df_columns(
+        df, label_column_name, left_value_column_name,
+        right_value_column_name):
+    """
+    Check the structure and value of columns in the data frame.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The target data frame.
+    label_column_name : str
+        Column name of the label.
+    left_value_column_name : str
+        Column name of the value on the left.
+    right_value_column_name : str
+        Column name of the value on the right.
+
+    Raises
+    ------
+    ValueError
+        - If the necessary columns are not included.
+        - The value is not a numerical value.
+        - The value contains a missing value.
+    """
+    is_in = label_column_name in df.columns
+    if not is_in:
+        err_mgs = 'The column specified for label_column_name is not included: %s' \
+            % label_column_name
+        raise ValueError(err_mgs)
+    is_in = left_value_column_name in df.columns
+    if not is_in:
+        err_mgs = 'The column specified for left_value_column_name is not included: %s' \
+            % left_value_column_name
+        raise ValueError(err_mgs)
+    is_in = right_value_column_name in df.columns
+    if not is_in:
+        err_mgs = 'The column specified for right_value_column_name is not included: %s' \
+            % right_value_column_name
+        raise ValueError(err_mgs)
+
+    data_helper.validate_all_values_are_numeric(
+        df=df, columns=[left_value_column_name, right_value_column_name])
+    data_helper.validate_null_value_not_exists_in_df(
+        df=df, columns=[left_value_column_name, right_value_column_name])

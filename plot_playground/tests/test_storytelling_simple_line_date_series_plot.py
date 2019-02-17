@@ -1,7 +1,7 @@
 """
 Test Command
 ------------
-$ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot
+$ python run_tests.py --module_name plot_playground.tests.test_storytelling_simple_line_date_series_plot
 """
 
 from nose.tools import assert_equal, assert_true, assert_raises, \
@@ -26,7 +26,7 @@ def test__validate_df_columns():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__validate_df_columns
+    $ python run_tests.py --module_name plot_playground.tests.test_storytelling_simple_line_date_series_plot:test__validate_df_columns
     """
     df = pd.DataFrame(columns=['a', 'b', 'c'])
 
@@ -74,7 +74,7 @@ def test__make_legend_dataset():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_legend_dataset --skip_jupyter 1
+    $ python run_tests.py --module_name plot_playground.tests.test_storytelling_simple_line_date_series_plot:test__make_legend_dataset --skip_jupyter 1
     """
 
     df = pd.DataFrame(data=[{
@@ -106,7 +106,7 @@ def test__make_year_str_list():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test__make_year_str_list --skip_jupyter 1
+    $ python run_tests.py --module_name plot_playground.tests.test_storytelling_simple_line_date_series_plot:test__make_year_str_list --skip_jupyter 1
     """
     df = pd.DataFrame(data=[{
         'date': '1970-01-05',
@@ -127,10 +127,10 @@ def test_display_plot():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_simple_line_date_series_plot:test_display_plot
+    $ python run_tests.py --module_name plot_playground.tests.test_storytelling_simple_line_date_series_plot:test_display_plot
     """
     source_code = """
-from plot_playground.tests.test_simple_line_date_series_plot import display_test_plot
+from plot_playground.tests.test_storytelling_simple_line_date_series_plot import display_test_plot
 display_test_plot()
     """
     jupyter_helper.update_ipynb_test_source_code(

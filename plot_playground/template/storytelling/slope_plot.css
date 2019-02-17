@@ -35,7 +35,7 @@ Python Parameters
     The color of the line that makes it stand out.
 --standing_out_line_width-- : float
     Width of the line to make it stand out.
---circl_color-- : str
+--circle_color-- : str
     The color of a normal circle.
 --standing_out_circle_color-- : str
     The color of the circle to stand out.
@@ -83,7 +83,7 @@ Python Parameters
 }
 
 #test-svg .circle {
-    fill: --circl_color--;
+    fill: --circle_color--;
     stroke: none;
 }
 
