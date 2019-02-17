@@ -6,7 +6,7 @@ import numpy as np
 
 from plot_playground.common import d3_helper
 from plot_playground.common import data_helper
-from plot_playground.template.js_helper import js_helper_template_path
+from plot_playground.common import js_helper_template_path
 
 PATH_CSS_TEMPLATE = 'storytelling/slope_plot.css'
 PATH_JS_TEMPLATE = 'storytelling/slope_plot.js'
@@ -52,6 +52,11 @@ def display_plot(
     ):
     """
     Display slope plot on Jupyter.
+
+    See Also
+    --------
+    https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_slope_plot/document.html
+        Document of this plot.
 
     Parameters
     ----------
