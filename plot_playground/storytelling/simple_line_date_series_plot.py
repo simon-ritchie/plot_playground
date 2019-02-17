@@ -54,6 +54,11 @@ def display_plot(
     Display a simple line plot on Jupyter. Only particular ones
     are markedly visible.
 
+    See Also
+    --------
+    https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html
+        Document of this plot.
+
     Parameters
     ----------
     df : pandas.DataFrame
