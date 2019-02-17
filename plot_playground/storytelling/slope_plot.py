@@ -6,6 +6,7 @@ import numpy as np
 
 from plot_playground.common import d3_helper
 from plot_playground.common import data_helper
+from plot_playground.template.js_helper import js_helper_template_path
 
 PATH_CSS_TEMPLATE = 'storytelling/slope_plot.css'
 PATH_JS_TEMPLATE = 'storytelling/slope_plot.js'
@@ -168,7 +169,66 @@ def display_plot(
     )
     df[label_column_name] = df[label_column_name].astype(
         np.str, copy=False)
+    js_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_JS_TEMPLATE)
+    helper_func_str_get_max_width = d3_helper.read_template_str(
+        template_file_path=js_helper_template_path.GET_MAX_WIDTH)
+    dataset = _make_dataset(
+        df=df, label_column_name=label_column_name,
+        left_value_column_name=left_value_column_name,
+        right_value_column_name=right_value_column_name
+    )
+    js_param = {
+        'svg_id': svg_id,
+        'svg_width': width,
+        'svg_height': height,
+        'helper_func_get_max_width': helper_func_str_get_max_width,
+        'basic_margin': basic_margin,
+        'font_size_label': label_font_size,
+        'circle_radius': circle_radius,
+        'standing_out_circle_radius': standing_out_circle_radius,
+        'plot_title': title,
+        'plot_description': description,
+        # 'dataset': 
+    }
     pass
+
+
+def _make_dataset(
+        df, label_column_name, left_value_column_name,
+        right_value_column_name):
+    """
+    Make the required dataset from the data frame.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The target data frame.
+    label_column_name : str
+        Column name of the label.
+    left_value_column_name : str
+        Column name of the value on the left.
+    right_value_column_name : str
+        Column name of the value on the right.
+
+    Returns
+    -------
+    dataset : list of dicts
+        The generated data set. The following keys are set to
+        the dictionary in the list.
+        - label : str
+        - left : int or float
+        - right : int or float
+    """
+    df = df.copy()
+    df.rename(columns={
+        label_column_name: 'label',
+        left_value_column_name: 'left',
+        right_value_column_name: 'right',
+    }, inplace=True)
+    df = df.loc[:, ['label', 'left', 'right']]
+    dataset = df.to_dict(orient='record')
+    return dataset
 
 
 def _validate_df_columns(
