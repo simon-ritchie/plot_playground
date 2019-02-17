@@ -26,6 +26,15 @@ $ pip install plot_playground
 
 \>\> [More defail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_simple_line_date_series_plot/document.html)
 
+## Storytelling Slope plot
+
+- This may be useful to quickly understand how each element fluctuated in two transitions and grasp the magnitude relation of the elements.
+
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_slope_plot_white.png)
+![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/storytelling_slope_plot_black.png)
+
+\>\> [More detail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_slope_plot/document.html)
+
 # Colaboratory and Kaggle Kernel
 
 PlotPlayground also supports Google Colaboratory and Kaggle Kernel. Even in these environments you can install with the pip command.
