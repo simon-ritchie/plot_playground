@@ -31,6 +31,7 @@ def display_plot(
         description='',
         description_color='#999999',
         description_font_size=14,
+        label_font_weight='normal',
         label_font_size=14,
         label_color='#999999',
         standing_out_label_font_weight='bold',
@@ -91,6 +92,8 @@ def display_plot(
         Text color of the description.
     description_font_size : int, default 14
         Font size of the description.
+    label_font_weight : str, default 'normal'
+        Weight setting of normal label.
     label_font_size : int, default 14
         Font size of label.
     label_color : str, default '#999999'
@@ -146,6 +149,7 @@ def display_plot(
         'title_font_size': title_font_size,
         'description_font_size': description_font_size,
         'description_color': description_color,
+        'label_font_weight': label_font_weight,
         'label_font_size': label_font_size,
         'label_color': label_color,
         'standing_out_label_font_weight': standing_out_label_font_weight,
@@ -176,8 +180,13 @@ def display_plot(
     dataset = _make_dataset(
         df=df, label_column_name=label_column_name,
         left_value_column_name=left_value_column_name,
-        right_value_column_name=right_value_column_name
+        right_value_column_name=right_value_column_name,
+        standing_out_label_name_list=standing_out_label_name_list,
     )
+    min_value = df[
+        [left_value_column_name, right_value_column_name]].min().min()
+    max_value = df[
+        [left_value_column_name, right_value_column_name]].max().max()
     js_param = {
         'svg_id': svg_id,
         'svg_width': width,
@@ -189,14 +198,35 @@ def display_plot(
         'standing_out_circle_radius': standing_out_circle_radius,
         'plot_title': title,
         'plot_description': description,
-        # 'dataset': 
+        'dataset': dataset,
+        'min_value': min_value,
+        'max_value': max_value,
+        'left_value_prefix': left_value_prefix,
+        'left_value_suffix': left_value_suffix,
+        'right_value_prefix': right_value_prefix,
+        'right_value_suffix': right_value_suffix,
     }
-    pass
+    js_template_str = d3_helper.apply_js_param_to_template(
+        js_template_str=js_template_str, js_param=js_param)
+    html_str = d3_helper.exec_d3_js_script_on_jupyter(
+        js_script=js_template_str,
+        css_str=css_template_str,
+        svg_id=svg_id,
+        svg_width=width,
+        svg_height=height)
+
+    plot_meta = d3_helper.PlotMeta(
+        html_str=html_str,
+        js_template_str=js_template_str,
+        js_param=js_param,
+        css_template_str=css_template_str,
+        css_param=css_param)
+    return plot_meta
 
 
 def _make_dataset(
         df, label_column_name, left_value_column_name,
-        right_value_column_name):
+        right_value_column_name, standing_out_label_name_list):
     """
     Make the required dataset from the data frame.
 
@@ -210,6 +240,8 @@ def _make_dataset(
         Column name of the value on the left.
     right_value_column_name : str
         Column name of the value on the right.
+    standing_out_label_name_list : list of str
+        List of label names to make it stand out.
 
     Returns
     -------
@@ -219,6 +251,7 @@ def _make_dataset(
         - label : str
         - left : int or float
         - right : int or float
+        - isStandingOutData : int, 0 or 1.
     """
     df = df.copy()
     df.rename(columns={
@@ -226,8 +259,29 @@ def _make_dataset(
         left_value_column_name: 'left',
         right_value_column_name: 'right',
     }, inplace=True)
-    df = df.loc[:, ['label', 'left', 'right']]
-    dataset = df.to_dict(orient='record')
+    dataset = []
+    for index, sr in df.iterrows():
+        is_in = sr['label'] in standing_out_label_name_list
+        if is_in:
+            continue
+        data_dict = {
+            'label': sr['label'],
+            'left': sr['left'],
+            'right': sr['right'],
+            'isStandingOutData': 0,
+        }
+        dataset.append(data_dict)
+    for index, sr in df.iterrows():
+        is_in = sr['label'] in standing_out_label_name_list
+        if not is_in:
+            continue
+        data_dict = {
+            'label': sr['label'],
+            'left': sr['left'],
+            'right': sr['right'],
+            'isStandingOutData': 1,
+        }
+        dataset.append(data_dict)
     return dataset
 
 

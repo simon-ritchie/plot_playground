@@ -192,10 +192,12 @@ def test_PlotMeta():
     $ python run_tests.py --module_name plot_playground.tests.test_d3_helper:test_PlotMeta
     """
     plot_meta = d3_helper.PlotMeta(
+        html_str='abcdef',
         js_template_str='a',
         js_param={'a': 1},
         css_template_str='b',
         css_param={'b': 2})
+    assert_equal(plot_meta.html_str, 'abcdef')
     assert_equal(plot_meta.js_template_str, 'a')
     assert_equal(plot_meta.js_param, {'a': 1})
     assert_equal(plot_meta.css_template_str, 'b')

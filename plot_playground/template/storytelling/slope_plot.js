@@ -26,6 +26,8 @@ Python Parameters
     - label : str -> The label of the element.
     - left : int or float -> Left value of slope.
     - right : int or float -> Right value of slope.
+    - isStandingOutData : int -> 0 or 1. Set 1 for data to make
+        it stand out.
 {min_value} : int or float
     Minimum value of the plot.
 {max_value} : int or float
@@ -63,16 +65,14 @@ const LEFT_VALUE_PREFIX = "{left_value_prefix}";
 const LEFT_VALUE_SUFFIX = "{left_value_suffix}";
 const RIGHT_VALUE_PREFIX = "{right_value_prefix}";
 const RIGHT_VALUE_SUFFIX = "{right_value_suffix}";
+const FONT_POSITION_ADJUST = 2;
 
-svg = d3.select("body").append('svg')
-    .attr("width", SVG_WIDTH)
-    .attr("height", SVG_HEIGHT)
-    .attr("id", SVG_ID);
+svg = d3.select("#{svg_id}");
 
 var plotBaseLineY = 0;
 if (PLOT_TITLE_TXT !== "") {
     var plotTitle = svg.append("text")
-        .attr("x", BASIC_MARGIN)
+        .attr("x", BASIC_MARGIN - FONT_POSITION_ADJUST)
         .attr("y", BASIC_MARGIN)
         .attr("dominant-baseline", "hanging")
         .text(PLOT_TITLE_TXT)
@@ -83,7 +83,7 @@ if (PLOT_TITLE_TXT !== "") {
 
 if (PLOT_DESCRIPTION_TXT !== "") {
     var plotDescription = svg.append("text")
-        .attr("x", BASIC_MARGIN)
+        .attr("x", BASIC_MARGIN - FONT_POSITION_ADJUST)
         .attr("y", plotBaseLineY + BASIC_MARGIN / 2)
         .attr("dominant-baseline", "hanging")
         .text(PLOT_DESCRIPTION_TXT)
@@ -94,7 +94,7 @@ if (PLOT_DESCRIPTION_TXT !== "") {
 
 var yScale = d3.scaleLinear()
     .domain([MIN_VALUE, MAX_VALUE])
-    .range([SVG_HEIGHT - BASIC_MARGIN - FONT_SIZE_LABEL,
+    .range([SVG_HEIGHT - BASIC_MARGIN - 3,
             plotBaseLineY + BASIC_MARGIN + 10]);
 
 const LABEL_CLASS = "font label";
@@ -107,7 +107,7 @@ var leftLabels = svg.selectAll("leftLabel")
     .text(function(d) {
         return d[COLUMN_NAME_LABEL];
     })
-    .attr("x", BASIC_MARGIN)
+    .attr("x", BASIC_MARGIN - FONT_POSITION_ADJUST)
     .attr("y", function(d) {
         return yScale(d[COLUMN_NAME_LEFT]);
     })
@@ -144,7 +144,7 @@ var leftValues = svg.selectAll("leftValues")
         return LABEL_CLASS;
     });
 var leftValueMaxWidth = getMaxWidth(leftValues);
-var leftValueX = BASIC_MARGIN * 2 + leftLabelMaxWidth + leftValueMaxWidth;
+var leftValueX = BASIC_MARGIN * 2 + leftLabelMaxWidth + leftValueMaxWidth - FONT_POSITION_ADJUST * 2;
 leftValues.attr("x", function(d) {
     return leftValueX;
 });
@@ -164,7 +164,7 @@ var rightLabels = svg.selectAll("rightLabel")
         return d[COLUMN_NAME_LABEL];;
     })
     .attr("text-anchor", "end")
-    .attr("x", SVG_WIDTH - BASIC_MARGIN)
+    .attr("x", SVG_WIDTH - BASIC_MARGIN - FONT_POSITION_ADJUST)
     .attr("y", function(d) {
         return yScale(d[COLUMN_NAME_RIGHT]);
     })
@@ -212,8 +212,8 @@ rightValues.each(function(d) {
     rightValuesBBoxList.push(rightValuesBBox);
 });
 
-const SLOPE_LEFT_X = leftValueX + BASIC_MARGIN;
-const SLOPE_RIGHT_X = rightValueX - BASIC_MARGIN;
+const SLOPE_LEFT_X = leftValueX + BASIC_MARGIN + STANDING_OUT_CIRCLE_RADIUS;
+const SLOPE_RIGHT_X = rightValueX - BASIC_MARGIN - STANDING_OUT_CIRCLE_RADIUS;
 var lineGroups = svg.append("g")
     .classed("line", true);
 for (var i = 0; i < DATASET.length; i++) {

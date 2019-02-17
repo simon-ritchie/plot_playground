@@ -19,6 +19,8 @@ Python Parameters
     The font size of description.
 --description_color-- : str
     The color setting of description.
+--label_font_weight-- : str
+    Weight setting of normal label.
 --label_font_size-- : int
     Font size of element label.
 --label_color-- : str
@@ -61,6 +63,7 @@ Python Parameters
 }
 
 #--svg_id-- .label {
+    font-weight: --label_font_weight--;
     font-size: --label_font_size--px;
     fill: --label_color--;
 }
@@ -72,22 +75,22 @@ Python Parameters
 
 #--svg_id-- .line {
     fill: none;
-    stroke: --line_width--;
+    stroke: --line_color--;
     stroke-width: --line_width--;
 }
 
-#test-svg .standing-out-line {
+#--svg_id-- .standing-out-line {
     fill: none;
     stroke: --standing_out_line_color--;
     stroke-width: --standing_out_line_width--;
 }
 
-#test-svg .circle {
+#--svg_id-- .circle {
     fill: --circle_color--;
     stroke: none;
 }
 
-#test-svg .standing-out-circle {
+#--svg_id-- .standing-out-circle {
     fill: --standing_out_circle_color--;
     stroke: none;
 }

@@ -130,6 +130,11 @@ def exec_d3_js_script_on_jupyter(
         Width set to SVG in pixels.
     svg_height : int
         Height set to SVG in pixels.
+
+    Returns
+    -------
+    html_str : str
+        HTML string set on Jupyter.
     """
     param_dict = {
         'd3_version': settings.D3_VERSION,
@@ -143,6 +148,7 @@ def exec_d3_js_script_on_jupyter(
         js_template_str=D3_SCRIPT_EXEC_HTML,
         js_param=param_dict)
     display(HTML(html))
+    return html
 
 
 def make_svg_id():
@@ -167,13 +173,15 @@ def make_svg_id():
 class PlotMeta():
 
     def __init__(
-            self, js_template_str, js_param, css_template_str,
+            self, html_str, js_template_str, js_param, css_template_str,
             css_param):
         """
         Class dealing with plot metadata.
 
         Parameters
         ----------
+        html_str : str
+            HTML string set on Jupyter.
         js_template_str : str
             JavaScript template string after parameter substitution.
         js_param : dict
@@ -183,6 +191,7 @@ class PlotMeta():
         css_param : dict
             A dictionary storing parameters set in the CSS template.
         """
+        self.html_str = html_str
         self.js_template_str = js_template_str
         self.js_param = js_param
         self.css_template_str = css_template_str

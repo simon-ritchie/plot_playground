@@ -231,7 +231,7 @@ def display_plot(
         js_template_str=js_template_str,
         js_param=js_param
     )
-    d3_helper.exec_d3_js_script_on_jupyter(
+    html_str = d3_helper.exec_d3_js_script_on_jupyter(
         js_script=js_template_str,
         css_str=css_template_str,
         svg_id=svg_id,
@@ -239,6 +239,7 @@ def display_plot(
         svg_height=height)
 
     plot_meta = d3_helper.PlotMeta(
+        html_str=html_str,
         js_template_str=js_template_str,
         js_param=js_param,
         css_template_str=css_template_str,
