@@ -36,3 +36,22 @@ def test__remove_log_file():
     assert_false(
         os.path.exists(test_file_path)
     )
+
+
+def test__exec_gpustat_command():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__exec_gpustat_command --skip_jupyter 1
+
+    Notes
+    -----
+    Since this function depends on the OS and GPU, most of the functions
+    are tested manually in each environment.
+    """
+    pre_bool = linux_stats_plot.is_gpu_stats_disabled
+    linux_stats_plot.is_gpu_stats_disabled = True
+    command_result = linux_stats_plot._exec_gpustat_command()
+    assert_equal(command_result, '')
+
+    linux_stats_plot.is_gpu_stats_disabled = pre_bool

@@ -18,6 +18,7 @@ This basically supports only Linux environment such as Ubuntu.
 import time
 import traceback
 import multiprocessing as mp
+import subprocess as sp
 from collections import deque
 import os
 
@@ -93,6 +94,7 @@ def _start_plot_data_updating(
         log_dir_path=log_dir_path
     )
     _remove_log_file(log_file_path=log_file_path)
+    gpu_num = _get_gpu_num()
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
     disk_free_size_deque = deque([], maxlen=buffer_size)
@@ -100,6 +102,43 @@ def _start_plot_data_updating(
     while True:
         time.sleep(interval_seconds)
     pass
+
+
+def _get_gpu_num():
+    """
+    Get the number of GPUs.
+
+    Returns
+    -------
+    gpu_num : int
+        The number of GPUs. 0 is returned under the following
+        conditions.
+        - The gpustat library is not installed.
+        - In an environment without GPU.
+        - Environment such as windows.
+    """
+    command_result = _exec_gpustat_command()
+    pass
+
+
+def _exec_gpustat_command():
+    """
+    Execute the command of the gpustat library and obtain the result.
+
+    Returns
+    -------
+    command_result : str
+        String of command execution result. The string changes
+        under each condition as follows.
+        - If gpustat is disabled: An empty character will be returned.
+        - If there is no GPU: 'Error on querying NVIDIA devices. Use --debug flag for details'
+        - If GPU exists more than one: '28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n'
+    """
+    global is_gpu_stats_disabled
+    if is_gpu_stats_disabled:
+        return ''
+    command_result = sp.check_output('gpustat').decode('utf-8')
+    return command_result
 
 
 def _remove_log_file(log_file_path):
