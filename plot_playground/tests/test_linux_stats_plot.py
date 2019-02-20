@@ -106,3 +106,14 @@ def test__get_memory_usage():
     memory_usage = linux_stats_plot._get_memory_usage()
     assert_true(isinstance(memory_usage, int))
     assert_greater(memory_usage, 0)
+
+
+def test__get_disk_usage():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_disk_usage --skip_jupyter 1
+    """
+    disk_usage_gb = linux_stats_plot._get_disk_usage()
+    assert_true(isinstance(disk_usage_gb, float))
+    assert_greater(disk_usage_gb, 0)

@@ -112,8 +112,25 @@ def _start_plot_data_updating(
         )
     while True:
         memory_usage = _get_memory_usage()
+        memory_usage.append(memory_usage)
+        disk_usage_gb = _get_disk_usage()
+        disk_usage_deque.append(disk_usage_gb)
         time.sleep(interval_seconds)
     pass
+
+
+def _get_disk_usage():
+    """
+    Get disk usage.
+
+    Returns
+    -------
+    disk_usage_gb : float
+        Disk usage in GB units.
+    """
+    disk_usage = psutil.disk_usage('./')
+    disk_usage_gb = round(disk_usage.used / (1024.0 ** 3), 2)
+    return disk_usage_gb
 
 
 def _get_memory_usage():
@@ -128,7 +145,7 @@ def _get_memory_usage():
     memory_usage = 0
     for process in psutil.process_iter():
         memory_usage += process.memory_info().rss
-    memory_usage = int(memory_usage / 1000 / 1000)
+    memory_usage = int(memory_usage / 1048576)
     return memory_usage
 
 
