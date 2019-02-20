@@ -92,13 +92,27 @@ def _start_plot_data_updating(
     log_file_path = _get_log_file_path(
         log_dir_path=log_dir_path
     )
+    _remove_log_file(log_file_path=log_file_path)
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
     disk_free_size_deque = deque([], maxlen=buffer_size)
-    gpu_memory_usage_deque = deque([], maxlen=buffer_size)
+    # gpu_memory_usage_deque = deque([], maxlen=buffer_size)
     while True:
         time.sleep(interval_seconds)
     pass
+
+
+def _remove_log_file(log_file_path):
+    """
+    Delete the log file if it exists.
+
+    Parameters
+    ----------
+    log_file_path : str
+        The path of the log file.
+    """
+    if os.path.exists(log_file_path):
+        os.remove(log_file_path)
 
 
 def _get_log_file_path(log_dir_path):
