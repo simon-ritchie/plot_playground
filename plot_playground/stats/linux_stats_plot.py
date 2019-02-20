@@ -63,6 +63,13 @@ def display_plot(
         Buffer size to handle in the plot.
     log_dir_path : str, default './log_plotplayground_stats/'
         Directory where the log is saved.
+
+    Notes
+    -----
+    - In some cloud kernels (e.g., Azure Notebooks), disk usage may
+        not be acquired correctly in some cases.
+    - Depending on the environment, memory usage and disk usage
+        will be somewhat different values.
     """
     process = mp.Process(
         target=_start_plot_data_updating,
@@ -98,10 +105,31 @@ def _start_plot_data_updating(
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
     disk_free_size_deque = deque([], maxlen=buffer_size)
-    # gpu_memory_usage_deque = deque([], maxlen=buffer_size)
+    gpu_memory_usage_deque_list = []
+    for i in range(gpu_num):
+        gpu_memory_usage_deque_list.append(
+            deque([], maxlen=buffer_size)
+        )
     while True:
+        memory_usage = _get_memory_usage()
         time.sleep(interval_seconds)
     pass
+
+
+def _get_memory_usage():
+    """
+    Get current memory usage (rss total).
+
+    Returns
+    -------
+    memory_usage : int
+        Memory consumption in megabytes.
+    """
+    memory_usage = 0
+    for process in psutil.process_iter():
+        memory_usage += process.memory_info().rss
+    memory_usage = int(memory_usage / 1000 / 1000)
+    return memory_usage
 
 
 def _get_gpu_num():

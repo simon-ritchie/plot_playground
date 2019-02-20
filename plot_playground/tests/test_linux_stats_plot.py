@@ -6,7 +6,8 @@ $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot
 
 import os
 
-from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_true, assert_false, \
+    assert_greater
 
 from plot_playground.stats import linux_stats_plot
 
@@ -94,3 +95,14 @@ def test__get_gpu_num():
     assert_equal(gpu_num, 2)
 
     linux_stats_plot._exec_gpustat_command = pre_func
+
+
+def test__get_memory_usage():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_memory_usage --skip_jupyter 1
+    """
+    memory_usage = linux_stats_plot._get_memory_usage()
+    assert_true(isinstance(memory_usage, int))
+    assert_greater(memory_usage, 0)
