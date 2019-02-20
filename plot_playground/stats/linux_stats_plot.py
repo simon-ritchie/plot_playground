@@ -118,7 +118,21 @@ def _get_gpu_num():
         - Environment such as windows.
     """
     command_result = _exec_gpustat_command()
-    pass
+    if command_result == '':
+        return 0
+    is_in = 'Error' in command_result
+    if is_in:
+        return 0
+    gpu_num = 0
+    splited_command_result = command_result.split('\n')
+    for i, unit_line_gpu_str in enumerate(splited_command_result):
+        if i == 0:
+            # Ignore the heading line.
+            continue
+        if unit_line_gpu_str == '':
+            continue
+        gpu_num += 1
+    return gpu_num
 
 
 def _exec_gpustat_command():
@@ -132,7 +146,7 @@ def _exec_gpustat_command():
         under each condition as follows.
         - If gpustat is disabled: An empty character will be returned.
         - If there is no GPU: 'Error on querying NVIDIA devices. Use --debug flag for details'
-        - If GPU exists more than one: '28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n'
+        - If GPU exists more than one: '28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n'
     """
     global is_gpu_stats_disabled
     if is_gpu_stats_disabled:

@@ -55,3 +55,42 @@ def test__exec_gpustat_command():
     assert_equal(command_result, '')
 
     linux_stats_plot.is_gpu_stats_disabled = pre_bool
+
+
+def test__get_gpu_num():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_gpu_num --skip_jupyter 1
+    """
+    pre_func = linux_stats_plot._exec_gpustat_command
+
+    def test_func_1():
+        return ''
+
+    linux_stats_plot._exec_gpustat_command = test_func_1
+    gpu_num = linux_stats_plot._get_gpu_num()
+    assert_equal(gpu_num, 0)
+
+    def test_func_2():
+        return 'Error on querying NVIDIA devices. Use --debug flag for details'
+
+    linux_stats_plot._exec_gpustat_command = test_func_2
+    gpu_num = linux_stats_plot._get_gpu_num()
+    assert_equal(gpu_num, 0)
+
+    def test_func_3():
+        return "28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n"
+
+    linux_stats_plot._exec_gpustat_command = test_func_3
+    gpu_num = linux_stats_plot._get_gpu_num()
+    assert_equal(gpu_num, 1)
+
+    def test_func_4():
+        return "28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n"
+
+    linux_stats_plot._exec_gpustat_command = test_func_4
+    gpu_num = linux_stats_plot._get_gpu_num()
+    assert_equal(gpu_num, 2)
+
+    linux_stats_plot._exec_gpustat_command = pre_func
