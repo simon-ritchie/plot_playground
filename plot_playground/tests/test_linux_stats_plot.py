@@ -5,9 +5,11 @@ $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot
 """
 
 import os
+from collections import deque
 
 from nose.tools import assert_equal, assert_true, assert_false, \
     assert_greater
+import pandas as pd
 
 from plot_playground.stats import linux_stats_plot
 
@@ -117,3 +119,103 @@ def test__get_disk_usage():
     disk_usage_gb = linux_stats_plot._get_disk_usage()
     assert_true(isinstance(disk_usage_gb, float))
     assert_greater(disk_usage_gb, 0)
+
+
+def test__get_gpustat_line_str_by_gpu_idx():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_gpustat_line_str_by_gpu_idx --skip_jupyter 1
+    """
+    pre_func = linux_stats_plot._exec_gpustat_command
+
+    def test_func():
+        return "28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n"
+
+    linux_stats_plot._exec_gpustat_command = test_func
+    target_line_str = linux_stats_plot._get_gpustat_line_str_by_gpu_idx(
+        gpu_idx=1
+    )
+    assert_equal(
+        target_line_str,
+        "[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |"
+    )
+
+    linux_stats_plot._exec_gpustat_command = pre_func
+
+
+def test__get_gpu_memory_usage():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_gpu_memory_usage --skip_jupyter 1
+    """
+    pre_func = linux_stats_plot._exec_gpustat_command
+
+    def test_func():
+        return "28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |    110 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |   250 / 11441 MB |\n"
+
+    linux_stats_plot._exec_gpustat_command = test_func
+    gpu_memory_usage_mb = linux_stats_plot._get_gpu_memory_usage(
+        gpu_idx=0
+    )
+    assert_equal(gpu_memory_usage_mb, 110)
+    gpu_memory_usage_mb = linux_stats_plot._get_gpu_memory_usage(
+        gpu_idx=1
+    )
+    assert_equal(gpu_memory_usage_mb, 250)
+
+    linux_stats_plot._exec_gpustat_command = pre_func
+
+
+def test__save_csv():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__save_csv --skip_jupyter 1
+    """
+    log_dir_path = './log_plotplayground_stats/'
+    os.makedirs(log_dir_path, exist_ok=True)
+    log_file_path = linux_stats_plot._get_log_file_path(
+        log_dir_path=log_dir_path)
+    linux_stats_plot._remove_log_file(
+        log_file_path=log_file_path)
+    memory_usage_deque = deque([1, 2, 3], maxlen=3)
+    disk_usage_deque = deque([4, 5, 6], maxlen=3)
+    gpu_memory_usage_deque_list = [
+        deque([5, 6, 7], maxlen=3),
+        deque([8, 9, 10], maxlen=3),
+    ]
+    linux_stats_plot._save_csv(
+        memory_usage_deque=memory_usage_deque,
+        disk_usage_deque=disk_usage_deque,
+        gpu_memory_usage_deque_list=gpu_memory_usage_deque_list,
+        log_file_path=log_file_path)
+    assert_true(
+        os.path.exists(log_file_path)
+    )
+    df = pd.read_csv(log_file_path)
+    assert_equal(len(df), 3)
+    assert_equal(
+        df[linux_stats_plot._COLUMN_NAME_MEMORY_USAGE].tolist(),
+        [1, 2, 3]
+    )
+    assert_equal(
+        df[linux_stats_plot._COLUMN_NAME_DISK_USGE].tolist(),
+        [4, 5, 6]
+    )
+    gpu_column_name_1 = linux_stats_plot.\
+        _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(gpu_idx=0)
+    assert_equal(
+        df[gpu_column_name_1].tolist(),
+        [5, 6, 7]
+    )
+    gpu_column_name_2 = linux_stats_plot.\
+        _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(gpu_idx=1)
+    assert_equal(
+        df[gpu_column_name_2].tolist(),
+        [8, 9, 10]
+    )
+
+    linux_stats_plot._remove_log_file(
+        log_file_path=log_file_path)

@@ -22,6 +22,9 @@ import subprocess as sp
 from collections import deque
 import os
 
+import pandas as pd
+import numpy as np
+
 from plot_playground.common import d3_helper
 from plot_playground.common import data_helper
 from plot_playground.common import js_helper_template_path
@@ -115,8 +118,100 @@ def _start_plot_data_updating(
         memory_usage.append(memory_usage)
         disk_usage_gb = _get_disk_usage()
         disk_usage_deque.append(disk_usage_gb)
+        for i in range(gpu_num):
+            gpu_memory_usage_mb = _get_gpu_memory_usage(gpu_idx=i)
+            gpu_memory_usage_deque_list[i].append(gpu_memory_usage_mb)
+        _save_csv(
+            memory_usage_deque=memory_usage_deque,
+            disk_usage_deque=disk_usage_deque,
+            gpu_memory_usage_deque_list=gpu_memory_usage_deque_list,
+            log_file_path=log_file_path
+        )
         time.sleep(interval_seconds)
     pass
+
+
+_COLUMN_NAME_MEMORY_USAGE = 'memory usage (MB)'
+_COLUMN_NAME_DISK_USGE = 'disk usage (GB)'
+_COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT = 'gpu({gpu_idx}) memory usage (MB)'
+
+
+def _save_csv(
+        memory_usage_deque, disk_usage_deque,
+        gpu_memory_usage_deque_list, log_file_path):
+    """
+    Save the acquired data as a CSV for plotting.
+
+    Parameters
+    ----------
+    memory_usage_deque : collections.deque
+        The deque object containing the memory usage value.
+    disk_usage_deque : collections.deque
+        The deque object containing the disk usage value.
+    gpu_memory_usage_deque_list : list of collections.deque
+        A list of deque objects containing memory usage of the GPU.
+    log_file_path : str
+        The file path of the log.
+    """
+    df_len = len(memory_usage_deque)
+    df = pd.DataFrame(
+        columns=[
+            _COLUMN_NAME_MEMORY_USAGE,
+            _COLUMN_NAME_DISK_USGE,
+        ],
+        index=np.arange(0, df_len))
+    df[_COLUMN_NAME_MEMORY_USAGE] = memory_usage_deque
+    df[_COLUMN_NAME_DISK_USGE] = disk_usage_deque
+    for i, gpu_memory_usage_deque in \
+            enumerate(gpu_memory_usage_deque_list):
+        column_name = _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(
+            gpu_idx=i
+        )
+        df[column_name] = gpu_memory_usage_deque
+    df.to_csv(log_file_path, index=False, encoding='utf-8')
+
+
+def _get_gpu_memory_usage(gpu_idx):
+    """
+    Get the GPU memory usage of the specified index.
+
+    Parameters
+    ----------
+    gpu_idx : int
+        Index of target GPU (starting from zero).
+
+    Returns
+    -------
+    gpu_memory_usage_mb : int
+        GPU memory usage in megabytes.
+    """
+    target_line_str = _get_gpustat_line_str_by_gpu_idx(
+        gpu_idx=gpu_idx
+    )
+    gpu_memory_str = target_line_str.split('|')[2]
+    gpu_memory_str = gpu_memory_str.split('/')[0]
+    gpu_memory_str = gpu_memory_str.strip()
+    gpu_memory_usage_mb = int(gpu_memory_str)
+    return gpu_memory_usage_mb
+
+
+def _get_gpustat_line_str_by_gpu_idx(gpu_idx):
+    """
+    Gets the command result string at the specified GPU index.
+
+    Parameters
+    ----------
+    gpu_idx : int
+        Index of target GPU (starting from zero).
+
+    Returns
+    -------
+    target_line_str
+        The command result string at the specified GPU index.
+    """
+    command_result = _exec_gpustat_command()
+    target_line_str = command_result.split('\n')[gpu_idx + 1]
+    return target_line_str
 
 
 def _get_disk_usage():
@@ -126,7 +221,7 @@ def _get_disk_usage():
     Returns
     -------
     disk_usage_gb : float
-        Disk usage in GB units.
+        Disk usage in gigabytes.
     """
     disk_usage = psutil.disk_usage('./')
     disk_usage_gb = round(disk_usage.used / (1024.0 ** 3), 2)
