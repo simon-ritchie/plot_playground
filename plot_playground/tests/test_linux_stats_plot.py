@@ -6,6 +6,8 @@ $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot
 
 import os
 from collections import deque
+import multiprocessing as mp
+import time
 
 from nose.tools import assert_equal, assert_true, assert_false, \
     assert_greater
@@ -219,3 +221,39 @@ def test__save_csv():
 
     linux_stats_plot._remove_log_file(
         log_file_path=log_file_path)
+
+
+def test__start_plot_data_updating():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_plot_data_updating --skip_jupyter 1
+    """
+    log_dir_path = './log_plotplayground_stats/'
+    os.makedirs(log_dir_path, exist_ok=True)
+    log_file_path = linux_stats_plot._get_log_file_path(
+        log_dir_path=log_dir_path)
+    linux_stats_plot._remove_log_file(log_file_path=log_file_path)
+
+    pre_disabled_val = linux_stats_plot.is_gpu_stats_disabled
+    linux_stats_plot.is_gpu_stats_disabled = False
+    process = mp.Process(
+        target=linux_stats_plot._start_plot_data_updating,
+        kwargs={
+            'interval_seconds': 1,
+            'buffer_size': 2,
+            'log_dir_path': log_dir_path,
+        })
+    process.deamon = True
+    process.start()
+    time.sleep(20)
+    process.terminate()
+    df = pd.read_csv(log_file_path)
+    assert_equal(len(df), 2)
+    is_in = linux_stats_plot._COLUMN_NAME_MEMORY_USAGE in df.columns
+    assert_true(is_in)
+    is_in = linux_stats_plot._COLUMN_NAME_DISK_USGE in df.columns
+    assert_true(is_in)
+
+    linux_stats_plot.is_gpu_stats_disabled = pre_disabled_val
+    linux_stats_plot._remove_log_file(log_file_path=log_file_path)

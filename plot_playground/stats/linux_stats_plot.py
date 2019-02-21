@@ -61,7 +61,9 @@ def display_plot(
     Parameters
     ----------
     interval_seconds : int, default 1
-        Update interval in seconds.
+        Update interval in seconds. Note: Since command execution
+        time etc. are not considered, it is basically longer than
+        this value.
     buffer_size : int, default 600
         Buffer size to handle in the plot.
     log_dir_path : str, default './log_plotplayground_stats/'
@@ -93,7 +95,9 @@ def _start_plot_data_updating(
     Parameters
     ----------
     interval_seconds : int
-        Update interval in seconds.
+        Update interval in seconds. Note: Since command execution
+        time etc. are not considered, it is basically longer than
+        this value.
     buffer_size : int
         Buffer size to handle in the plot.
     log_dir_path : str
@@ -115,7 +119,7 @@ def _start_plot_data_updating(
         )
     while True:
         memory_usage = _get_memory_usage()
-        memory_usage.append(memory_usage)
+        memory_usage_deque.append(memory_usage)
         disk_usage_gb = _get_disk_usage()
         disk_usage_deque.append(disk_usage_gb)
         for i in range(gpu_num):
@@ -128,7 +132,6 @@ def _start_plot_data_updating(
             log_file_path=log_file_path
         )
         time.sleep(interval_seconds)
-    pass
 
 
 _COLUMN_NAME_MEMORY_USAGE = 'memory usage (MB)'
