@@ -246,7 +246,7 @@ def test__start_plot_data_updating():
         })
     process.deamon = True
     process.start()
-    time.sleep(20)
+    time.sleep(25)
     process.terminate()
     df = pd.read_csv(log_file_path)
     assert_equal(len(df), 2)

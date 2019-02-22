@@ -85,6 +85,7 @@ def display_plot(
         })
     process.deamon = True
     process.start()
+    pass
 
 
 def _start_plot_data_updating(

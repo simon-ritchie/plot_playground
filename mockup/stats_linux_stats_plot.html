@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <style>
+            #test-svg {
+                background-color: #333333;
+            }
+
+            #test-svg .font {
+                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+            }
+
+            #test-svg .outer-border-rect {
+                fill: none;
+                stroke: #999999;
+                stroke-width: 1px;
+            }
+
+            #test-svg .line {
+                fill: none;
+                stroke: #cccccc;
+                stroke-width: 2.5;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            const SVG_ID = "test-svg";
+            const SVG_WIDTH = 700;
+            const BASIC_MARGIN = 20;
+            const SVG_UNIT_HEIGHT = 200;
+            const SVG_TOTAL_HEIGHT = SVG_UNIT_HEIGHT * 4 + BASIC_MARGIN * 5;
+            const GPU_NUM = 2;
+            const LOG_FILE_PATH = "./stats_linux_stats_plot_log.csv";
+            const COLUMN_NAME_MEMORY_USAGE = "memory usage (MB)";
+            const COLUMN_NAME_DISK_USAGE = "disk usage (GB)";
+
+            /**
+             * Gets the column name of memory usage of the GPU.
+             *
+             * @param {int} gpuIndex: Index of target GPU (Starting
+             * from zero).
+             *
+             * @return {String} GPU column name.
+             */
+            function getGPUColumnName(gpuIndex) {
+                return "gpu(" + gpuIndex + ") memory usage (MB)";
+            }
+
+            var svg = d3.select("body").append('svg')
+                .attr("width", SVG_WIDTH)
+                .attr("height", SVG_TOTAL_HEIGHT)
+                .attr("id", SVG_ID);
+            var memoryUsagePlotBorderRect = svg.append("rect")
+                .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
+                .attr("height", SVG_UNIT_HEIGHT - 2)
+                .classed("outer-border-rect", true)
+                .attr("x", 1 + BASIC_MARGIN)
+                .attr("y", 1 + BASIC_MARGIN);
+            var diskUsagePlotBorderRect = svg.append("rect")
+                .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
+                .attr("height", SVG_UNIT_HEIGHT - 2)
+                .classed("outer-border-rect", true)
+                .attr("x", 1 + BASIC_MARGIN)
+                .attr("y", SVG_UNIT_HEIGHT + BASIC_MARGIN * 2 + 1);
+            for (var i = 0; i < GPU_NUM; i++) {
+                svg.append("rect")
+                    .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
+                    .attr("height", SVG_UNIT_HEIGHT - 2)
+                    .classed("outer-border-rect", true)
+                    .attr("x", 1 + BASIC_MARGIN)
+                    .attr("y", SVG_UNIT_HEIGHT * (2 + i) + BASIC_MARGIN * (3 + i) + 1);
+            }
+
+            var rowConverter = function(d) {
+                var rowDict = {
+                    memoryUsage: parseInt(d[COLUMN_NAME_MEMORY_USAGE]),
+                    diskUsage: parseInt(d[COLUMN_NAME_DISK_USAGE])
+                };
+                for (var i = 0; i < GPU_NUM; i++) {
+                    var gpuColumnName = getGPUColumnName(gpuIndex=i);
+                    rowDict["gpuMemoryUsage"] = gpuColumnName;
+                }
+                return rowDict;
+            }
+
+            /**
+             * Read the CSV and update the value of the plot.
+             */
+            function update_plot_value() {
+                d3.csv(LOG_FILE_PATH, rowConverter, function(data) {
+                    
+                });
+            }
+
+
+        </script>
+    </body>
+</html>
