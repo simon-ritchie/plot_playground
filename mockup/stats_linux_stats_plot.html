@@ -18,6 +18,11 @@
                 stroke-width: 1px;
             }
 
+            #test-svg .title {
+                fill: #999999;
+                font-size: 14px;
+            }
+
             #test-svg .line {
                 fill: none;
                 stroke: #cccccc;
@@ -51,6 +56,7 @@
             const COLUMN_NAME_DISK_USAGE = "disk usage (GB)";
             const INTERVAL_SECONDS = 1;
             const AXIS_TICKS = 5;
+            const ANIMATION_DURATION = 300;
 
             /**
              * Gets the column name of memory usage of the GPU.
@@ -149,6 +155,34 @@
                 );
             }
 
+            const DEFAULT_TITLE_X = PLOT_X + BASIC_MARGIN + 2;
+            var memoryUsageTitle = svg.append("text")
+                .attr("x", DEFAULT_TITLE_X)
+                .attr("y", MEMORY_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
+                .text(COLUMN_NAME_MEMORY_USAGE)
+                .attr("dominant-baseline", "hanging")
+                .classed("title font", true);
+
+            var diskUsageTitle = svg.append("text")
+                .attr("x", DEFAULT_TITLE_X)
+                .attr("y", DISK_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
+                .text(COLUMN_NAME_DISK_USAGE)
+                .attr("dominant-baseline", "hanging")
+                .classed("title font", true);
+
+            var gpuMemoryUsageTitleList = [];
+            for (var i = 0; i < GPU_NUM; i++) {
+                var gpuColumnName = getGPUColumnName(i);
+                gpuMemoryUsageTitleList.push(
+                    svg.append("text")
+                        .attr("x", DEFAULT_TITLE_X)
+                        .attr("y", gpuMemoryUsagePlotYList[i] + 1 + BASIC_MARGIN)
+                        .text(gpuColumnName)
+                        .attr("dominant-baseline", "hanging")
+                        .classed("title font", true)
+                );
+            }
+
             /**
              * Read the CSV and update the value of the plot.
              */
@@ -192,6 +226,29 @@
                         gpuMemoryUsageAxisBBoxList.push(gpuMemoryUsageAxisBBox);
                         gpuMemoryUsageAxisGroupList[i].
                             attr("transform", "translate(" + (gpuMemoryUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
+                    }
+
+                    var axisBBoxWidthList = [
+                        memoryUsageAxisBBox.width,
+                        diskUsageAxisBBox.width
+                    ];
+                    for (var i = 0; i < GPU_NUM; i++) {
+                        axisBBoxWidthList.push(
+                            gpuMemoryUsageAxisBBoxList[i].width
+                        );
+                    }
+                    var titleX = d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2;
+
+                    memoryUsageTitle.transition()
+                        .duration(ANIMATION_DURATION)
+                        .attr("x", titleX);
+                    diskUsageTitle.transition()
+                        .duration(ANIMATION_DURATION)
+                        .attr("x", titleX);
+                    for (var i = 0; i < GPU_NUM; i++) {
+                        gpuMemoryUsageTitleList[i].transition()
+                            .duration(ANIMATION_DURATION)
+                            .attr("x", titleX);
                     }
                 });
             }
