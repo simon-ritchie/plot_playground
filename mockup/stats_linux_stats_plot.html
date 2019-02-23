@@ -23,6 +23,18 @@
                 stroke: #cccccc;
                 stroke-width: 2.5;
             }
+
+            #test-svg .axis text {
+                fill: #999999;
+                font-size: 14px;
+            }
+
+            #test-svg .axis line,
+            #test-svg .axis path {
+                fill: none;
+                stroke: #999999;
+                shape-rendering: crispEdges;
+            }
         </style>
     </head>
     <body>
@@ -30,12 +42,14 @@
             const SVG_ID = "test-svg";
             const SVG_WIDTH = 700;
             const BASIC_MARGIN = 20;
-            const SVG_UNIT_HEIGHT = 200;
-            const SVG_TOTAL_HEIGHT = SVG_UNIT_HEIGHT * 4 + BASIC_MARGIN * 5;
+            const PLOT_UNIT_HEIGHT = 200;
+            const SVG_TOTAL_HEIGHT = PLOT_UNIT_HEIGHT * 4 + BASIC_MARGIN * 5;
+            const PLOT_X = 1 + BASIC_MARGIN;
             const GPU_NUM = 2;
             const LOG_FILE_PATH = "./stats_linux_stats_plot_log.csv";
             const COLUMN_NAME_MEMORY_USAGE = "memory usage (MB)";
             const COLUMN_NAME_DISK_USAGE = "disk usage (GB)";
+            const INTERVAL_SECONDS = 1;
 
             /**
              * Gets the column name of memory usage of the GPU.
@@ -53,25 +67,33 @@
                 .attr("width", SVG_WIDTH)
                 .attr("height", SVG_TOTAL_HEIGHT)
                 .attr("id", SVG_ID);
+
+            const MEMORY_USAGE_PLOT_Y = 1 + BASIC_MARGIN;
             var memoryUsagePlotBorderRect = svg.append("rect")
                 .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
-                .attr("height", SVG_UNIT_HEIGHT - 2)
+                .attr("height", PLOT_UNIT_HEIGHT - 2)
                 .classed("outer-border-rect", true)
-                .attr("x", 1 + BASIC_MARGIN)
+                .attr("x", PLOT_X)
                 .attr("y", 1 + BASIC_MARGIN);
+
+            const DISK_USAGE_PLOT_Y = PLOT_UNIT_HEIGHT + BASIC_MARGIN * 2 + 1;
             var diskUsagePlotBorderRect = svg.append("rect")
                 .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
-                .attr("height", SVG_UNIT_HEIGHT - 2)
+                .attr("height", PLOT_UNIT_HEIGHT - 2)
                 .classed("outer-border-rect", true)
-                .attr("x", 1 + BASIC_MARGIN)
-                .attr("y", SVG_UNIT_HEIGHT + BASIC_MARGIN * 2 + 1);
+                .attr("x", PLOT_X)
+                .attr("y", DISK_USAGE_PLOT_Y);
+
+            var gpuMemoryUsagePlotYList = [];
             for (var i = 0; i < GPU_NUM; i++) {
+                var gpuMemoryUsagePlotY = PLOT_UNIT_HEIGHT * (2 + i) + BASIC_MARGIN * (3 + i) + 1;
+                gpuMemoryUsagePlotYList.push(gpuMemoryUsagePlotY);
                 svg.append("rect")
                     .attr("width", SVG_WIDTH - 2 - BASIC_MARGIN * 2)
-                    .attr("height", SVG_UNIT_HEIGHT - 2)
+                    .attr("height", PLOT_UNIT_HEIGHT - 2)
                     .classed("outer-border-rect", true)
-                    .attr("x", 1 + BASIC_MARGIN)
-                    .attr("y", SVG_UNIT_HEIGHT * (2 + i) + BASIC_MARGIN * (3 + i) + 1);
+                    .attr("x", PLOT_X)
+                    .attr("y", gpuMemoryUsagePlotY);
             }
 
             var rowConverter = function(d) {
@@ -86,15 +108,37 @@
                 return rowDict;
             }
 
+            var memoryUsageYScale = d3.scaleLinear()
+                .range([
+                    MEMORY_USAGE_PLOT_Y + PLOT_UNIT_HEIGHT - 2 - BASIC_MARGIN,
+                    MEMORY_USAGE_PLOT_Y + 1 + BASIC_MARGIN]);
+            var memoryUsageAxis = d3.axisLeft();
+            var memoryUsageAxisGroup = svg.append("g")
+                .classed("axis", true);
+
             /**
              * Read the CSV and update the value of the plot.
              */
             function update_plot_value() {
-                d3.csv(LOG_FILE_PATH, rowConverter, function(data) {
-                    
+                d3.csv(LOG_FILE_PATH, rowConverter, function(dataset) {
+                    var memoryUsageMax = d3.max(dataset, function(d) {
+                        return d.memoryUsage;
+                    });
+                    memoryUsageYScale.domain([0, memoryUsageMax]);
+                    memoryUsageAxis.scale(memoryUsageYScale)
+                        .ticks(5);
+                    memoryUsageAxisGroup.call(memoryUsageAxis);
+                    var memoryUsageAxisBBox = memoryUsageAxisGroup.node()
+                        .getBBox();
+                    memoryUsageAxisGroup
+                        .attr("transform", "translate(" + (memoryUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
                 });
             }
 
+            update_plot_value();
+            setInterval(
+                update_plot_value,
+                INTERVAL_SECONDS * 1000);
 
         </script>
     </body>

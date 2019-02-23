@@ -136,7 +136,7 @@ def _start_plot_data_updating(
 
 
 _COLUMN_NAME_MEMORY_USAGE = 'memory usage (MB)'
-_COLUMN_NAME_DISK_USGE = 'disk usage (GB)'
+_COLUMN_NAME_DISK_USAGE = 'disk usage (GB)'
 _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT = 'gpu({gpu_idx}) memory usage (MB)'
 
 
@@ -161,11 +161,11 @@ def _save_csv(
     df = pd.DataFrame(
         columns=[
             _COLUMN_NAME_MEMORY_USAGE,
-            _COLUMN_NAME_DISK_USGE,
+            _COLUMN_NAME_DISK_USAGE,
         ],
         index=np.arange(0, df_len))
     df[_COLUMN_NAME_MEMORY_USAGE] = memory_usage_deque
-    df[_COLUMN_NAME_DISK_USGE] = disk_usage_deque
+    df[_COLUMN_NAME_DISK_USAGE] = disk_usage_deque
     for i, gpu_memory_usage_deque in \
             enumerate(gpu_memory_usage_deque_list):
         column_name = _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(

@@ -203,7 +203,7 @@ def test__save_csv():
         [1, 2, 3]
     )
     assert_equal(
-        df[linux_stats_plot._COLUMN_NAME_DISK_USGE].tolist(),
+        df[linux_stats_plot._COLUMN_NAME_DISK_USAGE].tolist(),
         [4, 5, 6]
     )
     gpu_column_name_1 = linux_stats_plot.\
@@ -252,7 +252,7 @@ def test__start_plot_data_updating():
     assert_equal(len(df), 2)
     is_in = linux_stats_plot._COLUMN_NAME_MEMORY_USAGE in df.columns
     assert_true(is_in)
-    is_in = linux_stats_plot._COLUMN_NAME_DISK_USGE in df.columns
+    is_in = linux_stats_plot._COLUMN_NAME_DISK_USAGE in df.columns
     assert_true(is_in)
 
     linux_stats_plot.is_gpu_stats_disabled = pre_disabled_val
