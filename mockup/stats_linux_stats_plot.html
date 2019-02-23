@@ -40,6 +40,12 @@
                 stroke: #999999;
                 shape-rendering: crispEdges;
             }
+
+            #test-svg .value-line {
+                fill: none;
+                stroke: #6bb2f8;
+                stroke-width: 1.0;
+            }
         </style>
     </head>
     <body>
@@ -54,9 +60,22 @@
             const LOG_FILE_PATH = "./stats_linux_stats_plot_log.csv";
             const COLUMN_NAME_MEMORY_USAGE = "memory usage (MB)";
             const COLUMN_NAME_DISK_USAGE = "disk usage (GB)";
-            const INTERVAL_SECONDS = 1;
+            const INTERVAL_SECONDS = 2;
             const AXIS_TICKS = 5;
             const ANIMATION_DURATION = 300;
+
+            /**
+             * Get the bounding box width of the target d3 element.
+             *
+             * @param {Object} elem: The target d3 element.
+             *
+             * @return {int} The bounding box width.
+             */
+            function getBBoxWidth(elem) {
+                var bBox = elem.node()
+                    .getBBox();
+                return parseInt(bBox.width);
+            }
 
             /**
              * Gets the column name of memory usage of the GPU.
@@ -155,6 +174,28 @@
                 );
             }
 
+            var xScale = d3.scaleLinear();
+
+            var memoryUsageLine = d3.line()
+                .x(function(d, i) {
+                    return xScale(i);
+                })
+                .y(function(d, i) {
+                    return memoryUsageYScale(d.memoryUsage);
+                });
+            var memoryUsageLinePath = svg.append("path")
+                .classed("value-line", true);
+
+            var diskUsageLine = d3.line()
+                .x(function(d, i) {
+                    return xScale(i);
+                })
+                .y(function(d, i) {
+                    return diskUsageYScale(d.diskUsage);
+                });
+            var diskUsageLinePath = svg.append("path")
+                .classed("value-line", true);
+
             const DEFAULT_TITLE_X = PLOT_X + BASIC_MARGIN + 2;
             var memoryUsageTitle = svg.append("text")
                 .attr("x", DEFAULT_TITLE_X)
@@ -183,32 +224,72 @@
                 );
             }
 
+            var isInitialUpdate = true;
+
             /**
              * Read the CSV and update the value of the plot.
              */
             function update_plot_value() {
                 d3.csv(LOG_FILE_PATH, rowConverter, function(dataset) {
+                    dataset = addRandomValueToDataset(dataset);
                     var memoryUsageMax = d3.max(dataset, function(d) {
                         return d.memoryUsage;
                     });
                     memoryUsageYScale.domain([0, memoryUsageMax]);
                     memoryUsageAxis.scale(memoryUsageYScale);
-                    memoryUsageAxisGroup.call(memoryUsageAxis);
-                    var memoryUsageAxisBBox = memoryUsageAxisGroup.node()
-                        .getBBox();
-                    memoryUsageAxisGroup
-                        .attr("transform", "translate(" + (memoryUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
+                    if (isInitialUpdate) {
+                        memoryUsageAxisGroup.call(memoryUsageAxis);
+                    }else {
+                        memoryUsageAxisGroup
+                            .transition()
+                            .duration(ANIMATION_DURATION)
+                            .call(memoryUsageAxis);
+                    }
+                    var bBoxWidth = getBBoxWidth(memoryUsageAxisGroup);
+                    var memoryUsageAxisTransform = "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)";
+                    if (isInitialUpdate) {
+                        memoryUsageAxisGroup
+                            .attr("transform", memoryUsageAxisTransform);
+                    }else {
+                        setTimeout(function() {
+                            bBoxWidth = getBBoxWidth(memoryUsageAxisGroup);
+                            var memoryUsageAxisTransform = "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)";
+                            memoryUsageAxisGroup
+                                .transition()
+                                .duration(ANIMATION_DURATION)
+                                .attr("transform", memoryUsageAxisTransform);
+                        }, ANIMATION_DURATION + 10);
+                    }
 
                     var diskUsageMax = d3.max(dataset, function(d) {
                         return d.diskUsage;
                     });
                     diskUsageYScale.domain([0, diskUsageMax]);
                     diskUsageAxis.scale(diskUsageYScale);
-                    diskUsageAxisGroup.call(diskUsageAxis);
-                    var diskUsageAxisBBox = diskUsageAxisGroup.node()
-                        .getBBox();
-                    diskUsageAxisGroup
-                        .attr("transform", "translate(" + (diskUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
+                    if (isInitialUpdate) {
+                        diskUsageAxisGroup.call(diskUsageAxis);
+                    }else {
+                        diskUsageAxisGroup
+                            .transition()
+                            .duration(ANIMATION_DURATION)
+                            .call(diskUsageAxis);
+                    }
+                    bBoxWidth = getBBoxWidth(diskUsageAxisGroup);
+                    var diskUsageAxisTransform = "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)";
+                    if (isInitialUpdate) {
+                        diskUsageAxisGroup
+                            .attr("transform", diskUsageAxisTransform);
+                    }else {
+                        setTimeout(function() {
+                            var diskUsageAxisBBox = diskUsageAxisGroup.node()
+                                .getBBox();
+                            var diskUsageAxisTransform = "translate(" + (diskUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)";
+                            diskUsageAxisGroup
+                                .transition()
+                                .duration(ANIMATION_DURATION)
+                                .attr("transform", diskUsageAxisTransform);
+                        }, ANIMATION_DURATION + 10);
+                    }
 
                     var gpuMemoryUsageAxisBBoxList = [];
                     for (var i = 0; i < GPU_NUM; i++) {
@@ -228,28 +309,45 @@
                             attr("transform", "translate(" + (gpuMemoryUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
                     }
 
-                    var axisBBoxWidthList = [
-                        memoryUsageAxisBBox.width,
-                        diskUsageAxisBBox.width
-                    ];
-                    for (var i = 0; i < GPU_NUM; i++) {
-                        axisBBoxWidthList.push(
-                            gpuMemoryUsageAxisBBoxList[i].width
-                        );
-                    }
-                    var titleX = d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2;
+                    setTimeout(function() {
+                        var axisBBoxWidthList = [
+                            getBBoxWidth(memoryUsageAxisGroup),
+                            getBBoxWidth(diskUsageAxisGroup)
+                        ];
+                        for (var i = 0; i < GPU_NUM; i++) {
+                            axisBBoxWidthList.push(
+                                gpuMemoryUsageAxisBBoxList[i].width
+                            );
+                        }
+                        var titleX = d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2;
 
-                    memoryUsageTitle.transition()
-                        .duration(ANIMATION_DURATION)
-                        .attr("x", titleX);
-                    diskUsageTitle.transition()
-                        .duration(ANIMATION_DURATION)
-                        .attr("x", titleX);
-                    for (var i = 0; i < GPU_NUM; i++) {
-                        gpuMemoryUsageTitleList[i].transition()
+                        memoryUsageTitle.transition()
                             .duration(ANIMATION_DURATION)
                             .attr("x", titleX);
-                    }
+                        diskUsageTitle.transition()
+                            .duration(ANIMATION_DURATION)
+                            .attr("x", titleX);
+                        for (var i = 0; i < GPU_NUM; i++) {
+                            gpuMemoryUsageTitleList[i].transition()
+                                .duration(ANIMATION_DURATION)
+                                .attr("x", titleX);
+                        }
+
+                        var datasetLen = dataset.length;
+                        xScale.domain([0, datasetLen - 1])
+                            .range([titleX, SVG_WIDTH - 1 - BASIC_MARGIN * 2]);
+
+                        memoryUsageLinePath
+                            .datum(dataset)
+                            .transition()
+                            .attr("d", memoryUsageLine);
+                        diskUsageLinePath
+                            .datum(dataset)
+                            .transition()
+                            .attr("d", diskUsageLine);
+                    }, ANIMATION_DURATION + 10);
+
+                    isInitialUpdate = false;
                 });
             }
 
@@ -257,6 +355,18 @@
             setInterval(
                 update_plot_value,
                 INTERVAL_SECONDS * 1000);
+
+            function addRandomValueToDataset(dataset) {
+                var randomValue = Math.random() * 10000;
+                for (var i = 0; i < dataset.length; i++) {
+                    dataset[i]["memoryUsage"] += Math.random() * randomValue;
+                }
+                randomValue = Math.random() * 12;
+                for (var i = 0; i < dataset.length; i++) {
+                    dataset[i]["diskUsage"] += Math.random() * randomValue;
+                }
+                return dataset;
+            }
 
         </script>
     </body>
