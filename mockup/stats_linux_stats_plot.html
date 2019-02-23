@@ -196,6 +196,29 @@
             var diskUsageLinePath = svg.append("path")
                 .classed("value-line", true);
 
+            // var gpuMemoryUsageLineList = [];
+            var gpuMemoryUsageLinePathList = [];
+            for (var i = 0; i < GPU_NUM; i++) {
+                // var gpuMemoryUsageLine = d3.line()
+                //     .x(function(d, j) {
+                //         return xScale(j);
+                //     })
+                //     .y(function(d, j) {
+                //         var line = d3.select(this);
+                //         var gpuIdx = parseInt(line.attr("gpu-index"));
+                //         var gpuValue = d["gpuMemoryUsage" + gpuIdx];
+                //         console.log("gpuIdx", gpuIdx);
+                //         return gpuMemoryUsageYScaleList[gpuIdx](gpuValue);
+
+                //     });
+                // gpuMemoryUsageLine
+                //     .attr("gpu-index", String(i));
+                // gpuMemoryUsageLineList.push(gpuMemoryUsageLine);
+                var gpuMemoryUsageLinePath = svg.append("path")
+                    .classed("value-line", true);
+                gpuMemoryUsageLinePathList.push(gpuMemoryUsageLinePath);
+            }
+
             const DEFAULT_TITLE_X = PLOT_X + BASIC_MARGIN + 2;
             var memoryUsageTitle = svg.append("text")
                 .attr("x", DEFAULT_TITLE_X)
@@ -281,9 +304,8 @@
                             .attr("transform", diskUsageAxisTransform);
                     }else {
                         setTimeout(function() {
-                            var diskUsageAxisBBox = diskUsageAxisGroup.node()
-                                .getBBox();
-                            var diskUsageAxisTransform = "translate(" + (diskUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)";
+                            bBoxWidth = getBBoxWidth(diskUsageAxisGroup);
+                            var diskUsageAxisTransform = "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)";
                             diskUsageAxisGroup
                                 .transition()
                                 .duration(ANIMATION_DURATION)
@@ -291,7 +313,6 @@
                         }, ANIMATION_DURATION + 10);
                     }
 
-                    var gpuMemoryUsageAxisBBoxList = [];
                     for (var i = 0; i < GPU_NUM; i++) {
                         var gpuMemoryUsageMax = d3.max(dataset, function(d) {
                             return d["gpuMemoryUsage" + i];
@@ -299,14 +320,31 @@
                         gpuMemoryUsageYScaleList[i].domain(
                             [0, gpuMemoryUsageMax]);
                         gpuMemoryUsageAxisList[i].scale(
-                            gpuMemoryUsageYScaleList[i]);
-                        gpuMemoryUsageAxisGroupList[i].call(
-                            gpuMemoryUsageAxisList[i]);
-                        var gpuMemoryUsageAxisBBox = gpuMemoryUsageAxisGroupList[i].node()
-                            .getBBox();
-                        gpuMemoryUsageAxisBBoxList.push(gpuMemoryUsageAxisBBox);
-                        gpuMemoryUsageAxisGroupList[i].
-                            attr("transform", "translate(" + (gpuMemoryUsageAxisBBox.width + BASIC_MARGIN * 2 + 1) + ", 0)");
+                            gpuMemoryUsageYScaleList[i])
+                        if (isInitialUpdate) {
+                            gpuMemoryUsageAxisGroupList[i].call(
+                                gpuMemoryUsageAxisList[i]);
+                        }else {
+                            gpuMemoryUsageAxisGroupList[i]
+                                .transition()
+                                .duration(ANIMATION_DURATION)
+                                .call(gpuMemoryUsageAxisList[i]);
+                        }
+                        if (isInitialUpdate) {
+                            bBoxWidth = getBBoxWidth(gpuMemoryUsageAxisGroupList[i]);
+                            gpuMemoryUsageAxisGroupList[i]
+                                .attr("transform", "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)");
+                        }else {
+                            setTimeout(function() {
+                                for (var i = 0; i < GPU_NUM; i++) {
+                                    bBoxWidth = getBBoxWidth(gpuMemoryUsageAxisGroupList[i]);
+                                    gpuMemoryUsageAxisGroupList[i]
+                                        .transition()
+                                        .duration(ANIMATION_DURATION)
+                                        .attr("transform", "translate(" + (bBoxWidth + BASIC_MARGIN * 2 + 1) + ", 0)");
+                                }
+                            }, ANIMATION_DURATION + 10);
+                        }
                     }
 
                     setTimeout(function() {
@@ -316,7 +354,7 @@
                         ];
                         for (var i = 0; i < GPU_NUM; i++) {
                             axisBBoxWidthList.push(
-                                gpuMemoryUsageAxisBBoxList[i].width
+                                getBBoxWidth(gpuMemoryUsageAxisGroupList[i])
                             );
                         }
                         var titleX = d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2;
@@ -345,6 +383,20 @@
                             .datum(dataset)
                             .transition()
                             .attr("d", diskUsageLine);
+                        for (var i = 0; i < GPU_NUM; i++) {
+                            var gpuMemoryUsageLine = d3.line()
+                                .x(function(d, i) {
+                                    return xScale(i);
+                                })
+                                .y(function(d) {
+                                    var gpuValue = d["gpuMemoryUsage" + i];
+                                    return gpuMemoryUsageYScaleList[i](gpuValue);
+                                });
+                            gpuMemoryUsageLinePathList[i]
+                                .datum(dataset)
+                                .transition()
+                                .attr("d", gpuMemoryUsageLine);
+                        }
                     }, ANIMATION_DURATION + 10);
 
                     isInitialUpdate = false;
@@ -364,6 +416,12 @@
                 randomValue = Math.random() * 12;
                 for (var i = 0; i < dataset.length; i++) {
                     dataset[i]["diskUsage"] += Math.random() * randomValue;
+                }
+                for (var i = 0; i < GPU_NUM; i++) {
+                    randomValue = Math.random() * 15000;
+                    for (var j = 0; j < dataset.length; j++) {
+                        dataset[j]["gpuMemoryUsage" + i] += Math.random() * randomValue;
+                    }
                 }
                 return dataset;
             }
