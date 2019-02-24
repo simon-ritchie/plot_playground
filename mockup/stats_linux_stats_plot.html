@@ -23,6 +23,11 @@
                 font-size: 14px;
             }
 
+            #test-svg .title-bg {
+                fill: #333333;
+                opacity: 0.7;
+            }
+
             #test-svg .info {
                 fill: #999999;
                 font-size: 14px;
@@ -222,23 +227,45 @@
             }
 
             const DEFAULT_TITLE_X = PLOT_X + BASIC_MARGIN + 2;
+            var memoryUsageTitleBG = svg.append("rect");
             var memoryUsageTitle = svg.append("text")
                 .attr("x", DEFAULT_TITLE_X)
                 .attr("y", MEMORY_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
-                .text(COLUMN_NAME_MEMORY_USAGE)
+                .text(COLUMN_NAME_MEMORY_USAGE.toUpperCase())
                 .attr("dominant-baseline", "hanging")
                 .classed("title font", true);
+            var memoryUsageTitleBBox = memoryUsageTitle.node()
+                .getBBox();
+            memoryUsageTitleBG
+                .attr("width", memoryUsageTitleBBox.width)
+                .attr("height", memoryUsageTitleBBox.height)
+                .attr("x", memoryUsageTitleBBox.x)
+                .attr("y", memoryUsageTitleBBox.y)
+                .classed("title-bg", true);
 
+            var diskUsageTitleBG = svg.append("rect");
             var diskUsageTitle = svg.append("text")
                 .attr("x", DEFAULT_TITLE_X)
                 .attr("y", DISK_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
-                .text(COLUMN_NAME_DISK_USAGE)
+                .text(COLUMN_NAME_DISK_USAGE.toUpperCase())
                 .attr("dominant-baseline", "hanging")
                 .classed("title font", true);
+            var diskUsageTitleBBox = diskUsageTitle.node()
+                .getBBox();
+            diskUsageTitleBG
+                .attr("width", diskUsageTitleBBox.width)
+                .attr("height", diskUsageTitleBBox.height)
+                .attr("x", diskUsageTitleBBox.x)
+                .attr("y", diskUsageTitleBBox.y)
+                .classed("title-bg", true);
 
+            var gpuMemoryUsageTitleBGList = [];
             var gpuMemoryUsageTitleList = [];
             for (var i = 0; i < GPU_NUM; i++) {
-                var gpuColumnName = getGPUColumnName(i);
+                gpuMemoryUsageTitleBGList.push(
+                    svg.append("rect")
+                );
+                var gpuColumnName = getGPUColumnName(i).toUpperCase();
                 gpuMemoryUsageTitleList.push(
                     svg.append("text")
                         .attr("x", DEFAULT_TITLE_X)
@@ -247,6 +274,15 @@
                         .attr("dominant-baseline", "hanging")
                         .classed("title font", true)
                 );
+                var gpuMemoryUsageTitleBBox = gpuMemoryUsageTitleList[i]
+                    .node()
+                    .getBBox();
+                gpuMemoryUsageTitleBGList[i]
+                    .attr("x", gpuMemoryUsageTitleBBox.x)
+                    .attr("y", gpuMemoryUsageTitleBBox.y)
+                    .attr("width", gpuMemoryUsageTitleBBox.width)
+                    .attr("height", gpuMemoryUsageTitleBBox.height)
+                    .classed("title-bg", true);
             }
 
             var memoryUsagePlotBorderRectBBox = memoryUsagePlotBorderRect
@@ -518,6 +554,19 @@
                                 dataset[dataset.length - 1]["gpuMemoryUsage" + i]);
                             gpuMemoryUsageLastTextList[i].text(
                                 "Last: " + gpuMemoryUsageLast + "MB");
+                        }
+
+                        memoryUsageTitleBG.transition()
+                            .duration(ANIMATION_DURATION)
+                            .attr("x", titleX);
+                        diskUsageTitleBG.transition()
+                            .duration(ANIMATION_DURATION)
+                            .attr("x", titleX);
+                        for (var i = 0; i < GPU_NUM; i++) {
+                            gpuMemoryUsageTitleBGList[i]
+                                .transition()
+                                .duration(ANIMATION_DURATION)
+                                .attr("x", titleX)
                         }
 
                     }, ANIMATION_DURATION + 10);
