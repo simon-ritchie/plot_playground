@@ -325,7 +325,8 @@
                     .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
                     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
                     .classed(INFO_TEXT_CLASS, true)
-                    .text("Max: 0MB");
+                    .text("Last: 0MB");
+                gpuMemoryUsageLastTextList.push(gpuMemoryUsageLastText);
             }
 
             var isInitialUpdate = true;
@@ -482,6 +483,43 @@
                                 .transition()
                                 .attr("d", gpuMemoryUsageLine);
                         }
+
+                        var memoryUsageMin = parseInt(d3.min(dataset, function(d) {
+                            return d.memoryUsage;
+                        }));
+                        memoryUsageMinText.text("Min: " + memoryUsageMin + "MB");
+                        memoryUsageMaxText.text("Max: " + parseInt(memoryUsageMax) + "MB");
+                        var memoryUsageLast = parseInt(
+                            dataset[dataset.length - 1].memoryUsage);
+                        memoryUsageLastText.text("Last: " + memoryUsageLast + "MB");
+
+                        var diskUsageMin = parseFloat(d3.min(dataset, function(d) {
+                            return d.diskUsage;
+                        })).toFixed(2);
+                        diskUsageMinText.text("Min: " + diskUsageMin + "GB");
+                        diskUsageMaxText.text(
+                            "Max: " + parseFloat(diskUsageMax).toFixed(2) + "GB");
+                        var diskUsageLast = parseFloat(
+                            dataset[dataset.length - 1].diskUsage).toFixed(2);
+                        diskUsageLastText.text("Last: " + diskUsageLast + "GB");
+
+                        for (var i = 0; i < GPU_NUM; i++) {
+                            var gpuMemoryUsageMin = parseInt(d3.min(dataset, function(d) {
+                                return d["gpuMemoryUsage" + i];
+                            }));
+                            gpuMemoryUsageMinTextList[i].text(
+                                "Min: " + gpuMemoryUsageMin + "MB");
+                            gpuMemoryUsageMax = parseInt(d3.max(dataset, function(d) {
+                                return d["gpuMemoryUsage" + i];
+                            }));
+                            gpuMemoryUsageMaxTextList[i].text(
+                                "Max: " + gpuMemoryUsageMax + "MB");
+                            var gpuMemoryUsageLast = parseInt(
+                                dataset[dataset.length - 1]["gpuMemoryUsage" + i]);
+                            gpuMemoryUsageLastTextList[i].text(
+                                "Last: " + gpuMemoryUsageLast + "MB");
+                        }
+
                     }, ANIMATION_DURATION + 10);
 
                     isInitialUpdate = false;
