@@ -365,6 +365,42 @@
                 gpuMemoryUsageLastTextList.push(gpuMemoryUsageLastText);
             }
 
+            const CLIP_PATH_MARGIN_WIDTH = 2000;
+            svg.append("clipPath")
+                .attr("id", "test-svg-memory-usage-clip-path")
+                .append("rect")
+                .attr("x", -CLIP_PATH_MARGIN_WIDTH / 2)
+                .attr("y", memoryUsagePlotBorderRectBBox.y + 1)
+                .attr("width", memoryUsagePlotBorderRectBBox.width + CLIP_PATH_MARGIN_WIDTH)
+                .attr("height", memoryUsagePlotBorderRectBBox.height - 2);
+            memoryUsageAxisGroup
+                .style("clip-path", "url(#test-svg-memory-usage-clip-path)");
+
+            svg.append("clipPath")
+                .attr("id", "test-svg-disk-usage-clip-path")
+                .append("rect")
+                .attr("x", -CLIP_PATH_MARGIN_WIDTH / 2)
+                .attr("y", diskUsagePlotBorderRectBBox.y + 1)
+                .attr("width", diskUsagePlotBorderRectBBox.width + CLIP_PATH_MARGIN_WIDTH)
+                .attr("height", memoryUsagePlotBorderRectBBox.height - 2);
+            diskUsageAxisGroup
+                .style("clip-path", "url(#test-svg-disk-usage-clip-path)");
+
+            for (var i = 0; i < GPU_NUM; i++) {
+                gpuMemoryUsagePlotBorderRectBBox = gpuMemoryUsagePlotBorderRectList[i]
+                    .node()
+                    .getBBox();
+                svg.append("clipPath")
+                    .attr("id", "test-svg-gpu-memory-usage-clip-path-" + i)
+                    .append("rect")
+                    .attr("x", -CLIP_PATH_MARGIN_WIDTH / 2)
+                    .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + 1)
+                    .attr("width", gpuMemoryUsagePlotBorderRectBBox.width + CLIP_PATH_MARGIN_WIDTH)
+                    .attr("height", gpuMemoryUsagePlotBorderRectBBox.height - 2);
+                gpuMemoryUsageAxisGroupList[i].style(
+                    "clip-path", "url(#test-svg-gpu-memory-usage-clip-path-" + i + ")");
+            }
+
             var isInitialUpdate = true;
 
             /**
