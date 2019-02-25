@@ -21,6 +21,7 @@ import multiprocessing as mp
 import subprocess as sp
 from collections import deque
 import os
+import sys
 
 import pandas as pd
 import numpy as np
@@ -51,23 +52,28 @@ except ImportError:
     print(info_msg)
 
 
+INTERVAL_SECONDS = 1
+PATH_CSS_TEMPLATE = 'stats/linux_stats_plot.css'
+PATH_JS_TEMPLATE = 'stats/linux_stats_plot.js'
+
+
 def display_plot(
-        interval_seconds=1, buffer_size=600,
-        log_dir_path='./log_plotplayground_stats/'):
+        buffer_size=600,
+        log_dir_path='./log_plotplayground_stats/',
+        svg_id=''):
     """
     Display plots of memory usage, disk usage, GPU information
     etc on Jupyter. Values ​​are updated at regular intervals.
 
     Parameters
     ----------
-    interval_seconds : int, default 1
-        Update interval in seconds. Note: Since command execution
-        time etc. are not considered, it is basically longer than
-        this value.
     buffer_size : int, default 600
         Buffer size to handle in the plot.
     log_dir_path : str, default './log_plotplayground_stats/'
         Directory where the log is saved.
+    svg_id : str, default ''
+        ID to set for SVG element. When an empty value is specified,
+        a unique character string is generated and used.
 
     Notes
     -----
@@ -76,20 +82,59 @@ def display_plot(
     - Depending on the environment, memory usage and disk usage
         will be somewhat different values.
     """
+    if svg_id == '':
+        svg_id = d3_helper.make_svg_id()
+    parent_pid = int(os.getpid())
     process = mp.Process(
         target=_start_plot_data_updating,
         kwargs={
-            'interval_seconds': interval_seconds,
+            'interval_seconds': INTERVAL_SECONDS,
             'buffer_size': buffer_size,
             'log_dir_path': log_dir_path,
+            'parent_pid': parent_pid,
         })
     process.deamon = True
     process.start()
-    pass
+
+    log_file_path = _get_log_file_path(log_dir_path=log_dir_path)
+    while not os.path.exists(log_file_path):
+        time.sleep(1)
+
+    css_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_CSS_TEMPLATE)
+    css_param = {
+        'svg_id': svg_id,
+    }
+    css_template_str = d3_helper.apply_css_param_to_template(
+        css_template_str=css_template_str,
+        css_param=css_param)
+
+    js_template_str = d3_helper.read_template_str(
+        template_file_path=PATH_JS_TEMPLATE)
+    gpu_num = _get_gpu_num()
+    js_param = {
+        'svg_id': svg_id,
+        'gpu_num': gpu_num,
+        'csv_log_file_path': log_file_path,
+        'js_helper_func_get_b_box_width': d3_helper.read_template_str(
+            template_file_path=js_helper_template_path.GET_B_BOX_WIDTH),
+    }
+    js_template_str = d3_helper.apply_js_param_to_template(
+        js_template_str=js_template_str,
+        js_param=js_param)
+
+    svg_height = 200 * (2 + gpu_num) + 20 * (3 + gpu_num)
+    html_str = d3_helper.exec_d3_js_script_on_jupyter(
+        js_script=js_template_str,
+        css_str=css_template_str,
+        svg_id=svg_id,
+        svg_width=850,
+        svg_height=svg_height,
+    )
 
 
 def _start_plot_data_updating(
-        interval_seconds, buffer_size, log_dir_path):
+        interval_seconds, buffer_size, log_dir_path, parent_pid):
     """
     Start updating the plot data.
 
@@ -103,12 +148,14 @@ def _start_plot_data_updating(
         Buffer size to handle in the plot.
     log_dir_path : str
         Directory where the log is saved.
+    parent_pid : int
+        The parent process id.
     """
     os.makedirs(log_dir_path, exist_ok=True)
     log_file_path = _get_log_file_path(
         log_dir_path=log_dir_path
     )
-    _remove_log_file(log_file_path=log_file_path)
+    # _remove_log_file(log_file_path=log_file_path)
     gpu_num = _get_gpu_num()
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
@@ -119,6 +166,8 @@ def _start_plot_data_updating(
             deque([], maxlen=buffer_size)
         )
     while True:
+        _exit_if_parent_process_has_died()
+
         memory_usage = _get_memory_usage()
         memory_usage_deque.append(memory_usage)
         disk_usage_gb = _get_disk_usage()
@@ -132,7 +181,26 @@ def _start_plot_data_updating(
             gpu_memory_usage_deque_list=gpu_memory_usage_deque_list,
             log_file_path=log_file_path
         )
-        time.sleep(interval_seconds)
+        # time.sleep(interval_seconds)
+
+
+def _exit_if_parent_process_has_died(parent_pid):
+    """
+    If there is no parent process, stop the child process.
+
+    Parameters
+    ----------
+    parent_pid : int
+        The Parent process id.
+    """
+    is_parent_process_alive = False
+    for process in psutil.process_iter():
+        process_info_dict = process.as_dict(attrs=['pid'])
+        if int(process_info_dict['pid']) == parent_pid:
+            is_parent_process_alive = True
+            break
+    if not is_parent_process_alive:
+        sys.exit()
 
 
 _COLUMN_NAME_MEMORY_USAGE = 'memory usage (MB)'

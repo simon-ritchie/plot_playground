@@ -1,0 +1,59 @@
+/**
+Python Parameters
+-----------------
+--svg_id-- : str
+    ID of the SVG element.
+*/
+
+#--svg_id-- {
+    background-color: #333333;
+}
+
+#--svg_id-- .font {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+}
+
+#--svg_id-- .outer-border-rect {
+    fill: none;
+    stroke: #999999;
+    stroke-width: 1px;
+}
+
+#--svg_id-- .title {
+    fill: #999999;
+    font-size: 14px;
+}
+
+#--svg_id-- .title-bg {
+    fill: #333333;
+    opacity: 0.7;
+}
+
+#--svg_id-- .info {
+    fill: #999999;
+    font-size: 14px;
+}
+
+#--svg_id-- .line {
+    fill: none;
+    stroke: #cccccc;
+    stroke-width: 2.5;
+}
+
+#--svg_id-- .axis text {
+    fill: #999999;
+    font-size: 14px;
+}
+
+#--svg_id-- .axis line,
+#--svg_id-- .axis path {
+    fill: none;
+    stroke: #999999;
+    shape-rendering: crispEdges;
+}
+
+#--svg_id-- .value-line {
+    fill: none;
+    stroke: #6bb2f8;
+    stroke-width: 1.0;
+}

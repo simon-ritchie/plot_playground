@@ -18,6 +18,7 @@ import multiprocessing as mp
 import subprocess as sp
 import xml.etree.ElementTree as ET
 from datetime import datetime
+import re
 
 from win10toast import ToastNotifier
 import nose
@@ -112,7 +113,7 @@ def run_nose_command(module_name):
     for module_name in target_module_list:
         nose_command = 'nosetests'
         nose_command += ' %s' % module_name
-        nose_command += ' --with-xunit --xunit-file={xml_path} -s -v'.format(
+        nose_command += ' --with-xunit --xunit-file={xml_path} -s -v --nologcapture'.format(
             xml_path=xml_path
         )
         print('nose command: %s' % nose_command)
@@ -161,7 +162,6 @@ def _append_failed_info():
     error_str_list = []
     with open(LOG_FILE_PATH_TEST_INFO, 'r') as f:
         test_xml = f.read()
-        print(test_xml)
         error_splited_str_list = test_xml.split('end captured logging')
         for error_str in error_splited_str_list:
             error_str = error_str.split('begin captured logging')[0]

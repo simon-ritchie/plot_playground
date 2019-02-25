@@ -257,3 +257,29 @@ def test__start_plot_data_updating():
 
     linux_stats_plot.is_gpu_stats_disabled = pre_disabled_val
     linux_stats_plot._remove_log_file(log_file_path=log_file_path)
+
+
+def test__exit_if_parent_process_has_died():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__exit_if_parent_process_has_died --skip_jupyter 1
+    """
+    parent_pid = os.getpid()
+    kwargs = {'parent_pid': parent_pid}
+    process = mp.Process(
+        target=linux_stats_plot._exit_if_parent_process_has_died,
+        kwargs=kwargs
+    )
+    process.start()
+    assert_true(process.is_alive())
+    process.terminate()
+
+    kwargs['parent_pid'] = -1
+    process = mp.Process(
+        target=linux_stats_plot._exit_if_parent_process_has_died,
+        kwargs=kwargs
+    )
+    process.start()
+    time.sleep(10)
+    assert_false(process.is_alive())
