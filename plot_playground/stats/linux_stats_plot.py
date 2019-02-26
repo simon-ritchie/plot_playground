@@ -22,6 +22,7 @@ import subprocess as sp
 from collections import deque
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -55,6 +56,7 @@ except ImportError:
 INTERVAL_SECONDS = 1
 PATH_CSS_TEMPLATE = 'stats/linux_stats_plot.css'
 PATH_JS_TEMPLATE = 'stats/linux_stats_plot.js'
+_is_displayed = False
 
 
 def display_plot(
@@ -81,7 +83,18 @@ def display_plot(
         not be acquired correctly in some cases.
     - Depending on the environment, memory usage and disk usage
         will be somewhat different values.
+    - This function can be executed only once after starting
+        the kernel.
+
+    Raises
+    ------
+    Exception
+        If this function is executed more than once.
     """
+    global _is_displayed
+    if _is_displayed:
+        raise Exception('This function can be executed only once after starting the kernel.')
+
     if svg_id == '':
         svg_id = d3_helper.make_svg_id()
     parent_pid = int(os.getpid())
@@ -128,9 +141,11 @@ def display_plot(
         js_script=js_template_str,
         css_str=css_template_str,
         svg_id=svg_id,
-        svg_width=850,
+        svg_width=950,
         svg_height=svg_height,
     )
+
+    _is_displayed = True
 
 
 def _start_plot_data_updating(
@@ -155,7 +170,6 @@ def _start_plot_data_updating(
     log_file_path = _get_log_file_path(
         log_dir_path=log_dir_path
     )
-    # _remove_log_file(log_file_path=log_file_path)
     gpu_num = _get_gpu_num()
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
@@ -165,8 +179,9 @@ def _start_plot_data_updating(
         gpu_memory_usage_deque_list.append(
             deque([], maxlen=buffer_size)
         )
+    pre_dt = datetime.now()
     while True:
-        _exit_if_parent_process_has_died()
+        _exit_if_parent_process_has_died(parent_pid=parent_pid)
 
         memory_usage = _get_memory_usage()
         memory_usage_deque.append(memory_usage)
@@ -181,7 +196,12 @@ def _start_plot_data_updating(
             gpu_memory_usage_deque_list=gpu_memory_usage_deque_list,
             log_file_path=log_file_path
         )
-        # time.sleep(interval_seconds)
+
+        current_dt = datetime.now()
+        timedelta = current_dt - pre_dt
+        if timedelta.total_seconds() < 1:
+            time.sleep(interval_seconds)
+        pre_dt = current_dt
 
 
 def _exit_if_parent_process_has_died(parent_pid):
@@ -365,19 +385,6 @@ def _exec_gpustat_command():
         return ''
     command_result = sp.check_output('gpustat').decode('utf-8')
     return command_result
-
-
-def _remove_log_file(log_file_path):
-    """
-    Delete the log file if it exists.
-
-    Parameters
-    ----------
-    log_file_path : str
-        The path of the log file.
-    """
-    if os.path.exists(log_file_path):
-        os.remove(log_file_path)
 
 
 def _get_log_file_path(log_dir_path):

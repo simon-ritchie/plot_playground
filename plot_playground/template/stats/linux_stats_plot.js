@@ -162,65 +162,6 @@ for (var i = 0; i < GPU_NUM; i++) {
     gpuMemoryUsageLinePathList.push(gpuMemoryUsageLinePath);
 }
 
-const DEFAULT_TITLE_X = PLOT_X + BASIC_MARGIN + 2;
-var memoryUsageTitleBG = svg.append("rect");
-var memoryUsageTitle = svg.append("text")
-    .attr("x", DEFAULT_TITLE_X)
-    .attr("y", MEMORY_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
-    .text(COLUMN_NAME_MEMORY_USAGE.toUpperCase())
-    .attr("dominant-baseline", "hanging")
-    .classed("title font", true);
-var memoryUsageTitleBBox = memoryUsageTitle.node()
-    .getBBox();
-memoryUsageTitleBG
-    .attr("width", memoryUsageTitleBBox.width)
-    .attr("height", memoryUsageTitleBBox.height)
-    .attr("x", memoryUsageTitleBBox.x)
-    .attr("y", memoryUsageTitleBBox.y)
-    .classed("title-bg", true);
-
-var diskUsageTitleBG = svg.append("rect");
-var diskUsageTitle = svg.append("text")
-    .attr("x", DEFAULT_TITLE_X)
-    .attr("y", DISK_USAGE_PLOT_Y + 1 + BASIC_MARGIN)
-    .text(COLUMN_NAME_DISK_USAGE.toUpperCase())
-    .attr("dominant-baseline", "hanging")
-    .classed("title font", true);
-var diskUsageTitleBBox = diskUsageTitle.node()
-    .getBBox();
-diskUsageTitleBG
-    .attr("width", diskUsageTitleBBox.width)
-    .attr("height", diskUsageTitleBBox.height)
-    .attr("x", diskUsageTitleBBox.x)
-    .attr("y", diskUsageTitleBBox.y)
-    .classed("title-bg", true);
-
-var gpuMemoryUsageTitleBGList = [];
-var gpuMemoryUsageTitleList = [];
-for (var i = 0; i < GPU_NUM; i++) {
-    gpuMemoryUsageTitleBGList.push(
-        svg.append("rect")
-    );
-    var gpuColumnName = getGPUColumnName(i).toUpperCase();
-    gpuMemoryUsageTitleList.push(
-        svg.append("text")
-            .attr("x", DEFAULT_TITLE_X)
-            .attr("y", gpuMemoryUsagePlotYList[i] + 1 + BASIC_MARGIN)
-            .text(gpuColumnName)
-            .attr("dominant-baseline", "hanging")
-            .classed("title font", true)
-    );
-    var gpuMemoryUsageTitleBBox = gpuMemoryUsageTitleList[i]
-        .node()
-        .getBBox();
-    gpuMemoryUsageTitleBGList[i]
-        .attr("x", gpuMemoryUsageTitleBBox.x)
-        .attr("y", gpuMemoryUsageTitleBBox.y)
-        .attr("width", gpuMemoryUsageTitleBBox.width)
-        .attr("height", gpuMemoryUsageTitleBBox.height)
-        .classed("title-bg", true);
-}
-
 var memoryUsagePlotBorderRectBBox = memoryUsagePlotBorderRect
     .node()
     .getBBox();
@@ -228,21 +169,27 @@ const INFO_TEXT_X = memoryUsagePlotBorderRectBBox.x + memoryUsagePlotBorderRectB
 const INFO_TEXT_LINE_HEIGHT = 21;
 const INFO_TEXT_CLASS = "info font";
 const INFO_TEXT_DOMINANT_BASELINE = "hanging";
-var memoryUsageMinText = svg.append("text")
+var memoryUsageTitle = svg.append("text")
     .attr("x", INFO_TEXT_X)
     .attr("y", memoryUsagePlotBorderRectBBox.y)
+    .text(COLUMN_NAME_MEMORY_USAGE.toUpperCase())
+    .attr("dominant-baseline", "hanging")
+    .classed(INFO_TEXT_CLASS, true);
+var memoryUsageMinText = svg.append("text")
+    .attr("x", INFO_TEXT_X)
+    .attr("y", memoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Min: 0MB");
 var memoryUsageMaxText = svg.append("text")
     .attr("x", INFO_TEXT_X)
-    .attr("y", memoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
+    .attr("y", memoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Max: 0MB");
 var memoryUsageLastText = svg.append("text")
     .attr("x", INFO_TEXT_X)
-    .attr("y", memoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
+    .attr("y", memoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 3)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Last: 0MB");
@@ -250,35 +197,52 @@ var memoryUsageLastText = svg.append("text")
 var diskUsagePlotBorderRectBBox = diskUsagePlotBorderRect
     .node()
     .getBBox();
-var diskUsageMinText = svg.append("text")
+var diskUsageTitle = svg.append("text")
     .attr("x", INFO_TEXT_X)
     .attr("y", diskUsagePlotBorderRectBBox.y)
+    .text(COLUMN_NAME_DISK_USAGE.toUpperCase())
+    .attr("dominant-baseline", "hanging")
+    .classed(INFO_TEXT_CLASS, true);
+var diskUsageMinText = svg.append("text")
+    .attr("x", INFO_TEXT_X)
+    .attr("y", diskUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Min: 0GB");
 var diskUsageMaxText = svg.append("text")
     .attr("x", INFO_TEXT_X)
-    .attr("y", diskUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
+    .attr("y", diskUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Max: 0GB");
 var diskUsageLastText = svg.append("text")
     .attr("x", INFO_TEXT_X)
-    .attr("y", diskUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
+    .attr("y", diskUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 3)
     .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
     .classed(INFO_TEXT_CLASS, true)
     .text("Last: 0GB");
 
+var gpuMemoryUsageTitleList = [];
 var gpuMemoryUsageMinTextList = [];
 var gpuMemoryUsageMaxTextList = [];
 var gpuMemoryUsageLastTextList = [];
 for (var i = 0; i < GPU_NUM; i++) {
+
     var gpuMemoryUsagePlotBorderRectBBox = gpuMemoryUsagePlotBorderRectList[i]
         .node()
         .getBBox();
+    var gpuColumnName = getGPUColumnName(i).toUpperCase();
+    gpuMemoryUsageTitleList.push(
+        svg.append("text")
+            .attr("x", INFO_TEXT_X)
+            .attr("y", gpuMemoryUsagePlotBorderRectBBox.y)
+            .text(gpuColumnName)
+            .attr("dominant-baseline", "hanging")
+            .classed(INFO_TEXT_CLASS, true)
+    );
     var gpuMemoryUsageMinText = svg.append("text")
         .attr("x", INFO_TEXT_X)
-        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y)
+        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
         .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
         .classed(INFO_TEXT_CLASS, true)
         .text("Min: 0MB");
@@ -286,7 +250,7 @@ for (var i = 0; i < GPU_NUM; i++) {
 
     var gpuMemoryUsageMaxText = svg.append("text")
         .attr("x", INFO_TEXT_X)
-        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT)
+        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
         .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
         .classed(INFO_TEXT_CLASS, true)
         .text("Max: 0MB");
@@ -294,7 +258,7 @@ for (var i = 0; i < GPU_NUM; i++) {
 
     var gpuMemoryUsageLastText = svg.append("text")
         .attr("x", INFO_TEXT_X)
-        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 2)
+        .attr("y", gpuMemoryUsagePlotBorderRectBBox.y + INFO_TEXT_LINE_HEIGHT * 3)
         .attr("dominant-baseline", INFO_TEXT_DOMINANT_BASELINE)
         .classed(INFO_TEXT_CLASS, true)
         .text("Last: 0MB");
@@ -350,6 +314,7 @@ function update_plot_value() {
     d3.csv(LOG_FILE_PATH, rowConverter, function(error, dataset) {
         if (error) {
             console.log(error);
+            setTimeout(update_plot_value, 100);
             return;
         }
         var memoryUsageMax = d3.max(dataset, function(d) {
@@ -454,23 +419,12 @@ function update_plot_value() {
                     getBBoxWidth(gpuMemoryUsageAxisGroupList[i])
                 );
             }
-            var titleX = d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2;
-
-            memoryUsageTitle.transition()
-                .duration(ANIMATION_DURATION)
-                .attr("x", titleX);
-            diskUsageTitle.transition()
-                .duration(ANIMATION_DURATION)
-                .attr("x", titleX);
-            for (var i = 0; i < GPU_NUM; i++) {
-                gpuMemoryUsageTitleList[i].transition()
-                    .duration(ANIMATION_DURATION)
-                    .attr("x", titleX);
-            }
 
             var datasetLen = dataset.length;
             xScale.domain([0, datasetLen - 1])
-                .range([titleX, PLOT_UNIT_WIDTH - 1 - BASIC_MARGIN * 2]);
+                .range([
+                    d3.max(axisBBoxWidthList) + PLOT_X + BASIC_MARGIN * 2,
+                    PLOT_UNIT_WIDTH - 1 - BASIC_MARGIN * 2]);
 
             memoryUsageLinePath
                 .datum(dataset)
@@ -529,19 +483,6 @@ function update_plot_value() {
                     dataset[dataset.length - 1]["gpuMemoryUsage" + i]);
                 gpuMemoryUsageLastTextList[i].text(
                     "Last: " + gpuMemoryUsageLast + "MB");
-            }
-
-            memoryUsageTitleBG.transition()
-                .duration(ANIMATION_DURATION)
-                .attr("x", titleX);
-            diskUsageTitleBG.transition()
-                .duration(ANIMATION_DURATION)
-                .attr("x", titleX);
-            for (var i = 0; i < GPU_NUM; i++) {
-                gpuMemoryUsageTitleBGList[i]
-                    .transition()
-                    .duration(ANIMATION_DURATION)
-                    .attr("x", titleX)
             }
 
         }, ANIMATION_DURATION + 10);
