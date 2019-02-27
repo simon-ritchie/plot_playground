@@ -184,11 +184,23 @@ def _start_plot_data_updating(
         _exit_if_parent_process_has_died(parent_pid=parent_pid)
 
         memory_usage = _get_memory_usage()
+        memory_usage_deque = _fill_deque_by_initial_value(
+            deque_obj=memory_usage_deque,
+            initial_value=memory_usage,
+            buffer_size=buffer_size)
         memory_usage_deque.append(memory_usage)
         disk_usage_gb = _get_disk_usage()
+        disk_usage_deque = _fill_deque_by_initial_value(
+            deque_obj=disk_usage_deque, initial_value=disk_usage_gb,
+            buffer_size=buffer_size)
         disk_usage_deque.append(disk_usage_gb)
         for i in range(gpu_num):
             gpu_memory_usage_mb = _get_gpu_memory_usage(gpu_idx=i)
+            gpu_memory_usage_deque_list[i] = _fill_deque_by_initial_value(
+                deque_obj=gpu_memory_usage_deque_list[i],
+                initial_value=gpu_memory_usage_mb,
+                buffer_size=buffer_size
+            )
             gpu_memory_usage_deque_list[i].append(gpu_memory_usage_mb)
         _save_csv(
             memory_usage_deque=memory_usage_deque,
@@ -202,6 +214,32 @@ def _start_plot_data_updating(
         if timedelta.total_seconds() < 1:
             time.sleep(interval_seconds)
         pre_dt = current_dt
+
+
+def _fill_deque_by_initial_value(
+        deque_obj, initial_value, buffer_size):
+    """
+    Fill the deque object with the initial value.
+
+    Parameters
+    ----------
+    deque_obj : collections.deque
+        The deque object to add to.
+    initial_value : int or float
+        Initial value to be referenced.
+    buffer_size : int
+        Buffer size to handle in the plot.
+
+    Returns
+    -------
+    deque_obj : collections.deque
+        Deque object after adding data.
+    """
+    if len(deque_obj) != 0:
+        return deque_obj
+    while len(deque_obj) < buffer_size:
+        deque_obj.append(initial_value)
+    return deque_obj
 
 
 def _exit_if_parent_process_has_died(parent_pid):

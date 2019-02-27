@@ -268,3 +268,28 @@ def test__exit_if_parent_process_has_died():
     process.start()
     time.sleep(10)
     assert_false(process.is_alive())
+
+
+def test__fill_deque_by_initial_value():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__fill_deque_by_initial_value --skip_jupyter 1
+    """
+    buffer_size = 3
+    deque_obj = deque([100], maxlen=buffer_size)
+    deque_obj = linux_stats_plot._fill_deque_by_initial_value(
+        deque_obj=deque_obj,
+        initial_value=200,
+        buffer_size=buffer_size)
+    assert_equal(len(deque_obj), 1)
+
+    deque_obj = deque([], maxlen=buffer_size)
+    deque_obj = linux_stats_plot._fill_deque_by_initial_value(
+        deque_obj=deque_obj,
+        initial_value=200,
+        buffer_size=buffer_size
+    )
+    assert_equal(len(deque_obj), 3)
+    for value in deque_obj:
+        assert_equal(value, 200)
