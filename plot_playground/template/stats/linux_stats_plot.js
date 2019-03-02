@@ -23,7 +23,7 @@ const COLUMN_NAME_MEMORY_USAGE = "memory usage (MB)";
 const COLUMN_NAME_DISK_USAGE = "disk usage (GB)";
 const INTERVAL_SECONDS = 2;
 const AXIS_TICKS = 5;
-const ANIMATION_DURATION = 300;
+const ANIMATION_DURATION = 200;
 
 {js_helper_func_get_b_box_width}
 
