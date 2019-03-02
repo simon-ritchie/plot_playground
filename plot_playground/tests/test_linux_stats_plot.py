@@ -34,29 +34,8 @@ def test__get_log_file_path():
     """
     log_file_path = linux_stats_plot._get_log_file_path(
         log_dir_path='./log/')
-    is_in = 'log/' in log_file_path
-    assert_true(is_in)
+    assert_true(log_file_path.startswith('./log/'))
     assert_true(log_file_path.endswith('.csv'))
-
-    pre_func = linux_stats_plot.os.getcwd
-
-    def get_starts_with_slash_dir():
-        return '/test/'
-
-    linux_stats_plot.os.getcwd = get_starts_with_slash_dir
-    log_file_path = linux_stats_plot._get_log_file_path(
-        log_dir_path='./log/')
-    assert_true(log_file_path.startswith('/test/log/'))
-
-    def get_starts_with_c_dir():
-        return 'C:\\Users\\test\\'
-
-    linux_stats_plot.os.getcwd = get_starts_with_c_dir
-    log_file_path = linux_stats_plot._get_log_file_path(
-        log_dir_path='log/')
-    assert_true(log_file_path.startswith('log/'))
-
-    linux_stats_plot.os.getcwd = pre_func
 
 
 def test__exec_gpustat_command():
