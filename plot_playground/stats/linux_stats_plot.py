@@ -116,7 +116,11 @@ def display_plot(
     process.start()
 
     log_file_path = _get_log_file_path(log_dir_path=log_dir_path)
+    count = 0
     while not os.path.exists(log_file_path):
+        count += 1
+        if count > 60:
+            break
         time.sleep(1)
 
     css_template_str = d3_helper.read_template_str(
@@ -207,6 +211,7 @@ def _start_plot_data_updating(
     save_error_to_file : bool, default False
         Boolean value as to whether to save error contents to file.
     """
+    _update_gpu_disabled_bool()
 
     os.makedirs(log_dir_path, exist_ok=True)
     _set_error_setting(
@@ -260,6 +265,19 @@ def _start_plot_data_updating(
         if timedelta.total_seconds() < 1:
             time.sleep(interval_seconds)
         pre_dt = current_dt
+
+
+def _update_gpu_disabled_bool():
+    """
+    Updates the boolean value of whether gpu stats is disabled.
+    When Linux environment and gpu stats are installed, and GPU
+    can not be detected, True will be set to that boolean.
+    """
+    global is_gpu_stats_disabled
+    try:
+        _exec_gpustat_command()
+    except Exception:
+        is_gpu_stats_disabled = True
 
 
 ERR_FILE_NAME = 'error.log'

@@ -437,3 +437,33 @@ def display_test_plot():
         log_dir_path=TMP_TEST_LOG_DIR,
         svg_id=settings.TEST_SVG_ELEM_ID)
     return plot_meta
+
+
+def test__update_gpu_disabled_bool():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__update_gpu_disabled_bool --skip_jupyter 1
+    """
+    pre_bool = linux_stats_plot.is_gpu_stats_disabled
+    pre_func = linux_stats_plot._exec_gpustat_command
+
+    linux_stats_plot.is_gpu_stats_disabled = False
+
+    def raise_error():
+        raise Exception()
+
+    linux_stats_plot._exec_gpustat_command = raise_error
+    linux_stats_plot._update_gpu_disabled_bool()
+    assert_true(linux_stats_plot.is_gpu_stats_disabled)
+
+    def pass_func():
+        pass
+
+    linux_stats_plot._exec_gpustat_command = pass_func
+    linux_stats_plot.is_gpu_stats_disabled = False
+    linux_stats_plot._update_gpu_disabled_bool()
+    assert_false(linux_stats_plot.is_gpu_stats_disabled)
+
+    linux_stats_plot.is_gpu_stats_disabled = pre_bool
+    linux_stats_plot._exec_gpustat_command = pre_func
