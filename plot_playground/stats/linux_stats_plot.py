@@ -99,6 +99,7 @@ def display_plot(
     global _is_displayed
     if _is_displayed:
         raise Exception('This function can be executed only once after starting the kernel.')
+    _update_gpu_disabled_bool()
 
     if svg_id == '':
         svg_id = d3_helper.make_svg_id()
@@ -211,7 +212,6 @@ def _start_plot_data_updating(
     save_error_to_file : bool, default False
         Boolean value as to whether to save error contents to file.
     """
-    _update_gpu_disabled_bool()
 
     os.makedirs(log_dir_path, exist_ok=True)
     _set_error_setting(
