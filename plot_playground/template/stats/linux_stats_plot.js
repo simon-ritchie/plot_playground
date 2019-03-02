@@ -421,6 +421,9 @@ function update_plot_value() {
         }
 
         setTimeout(function() {
+            if (!dataset) {
+                return;
+            }
             var axisBBoxWidthList = [
                 getBBoxWidth(memoryUsageAxisGroup),
                 getBBoxWidth(diskUsageAxisGroup)
