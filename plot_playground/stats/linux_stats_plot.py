@@ -61,7 +61,7 @@ _is_displayed = False
 
 def display_plot(
         buffer_size=300,
-        log_dir_path='./log_plotplayground_stats/',
+        log_dir_path='log_plotplayground_stats/',
         svg_id=''):
     """
     Display plots of memory usage, disk usage, GPU information
@@ -71,7 +71,7 @@ def display_plot(
     ----------
     buffer_size : int, default 600
         Buffer size to handle in the plot.
-    log_dir_path : str, default './log_plotplayground_stats/'
+    log_dir_path : str, default 'log_plotplayground_stats/'
         Directory where the log is saved.
     svg_id : str, default ''
         ID to set for SVG element. When an empty value is specified,
@@ -527,7 +527,18 @@ def _get_log_file_path(log_dir_path):
     log_file_path : str
         The path of the log file.
     """
-    log_file_path = os.path.join(
-        log_dir_path, 'log_linux_stats_plot.csv'
-    )
+    cwd = os.getcwd()
+    if log_dir_path.startswith('./'):
+        log_dir_path = log_dir_path.replace('./', '', 1)
+    if cwd.startswith('/'):
+        log_file_path = os.path.join(
+            cwd,
+            log_dir_path,
+            'log_linux_stats_plot.csv'
+        )
+    else:
+        log_file_path = os.path.join(
+            log_dir_path,
+            'log_linux_stats_plot.csv'
+        )
     return log_file_path
