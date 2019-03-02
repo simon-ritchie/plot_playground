@@ -60,7 +60,7 @@ _is_displayed = False
 
 
 def display_plot(
-        buffer_size=600,
+        buffer_size=300,
         log_dir_path='./log_plotplayground_stats/',
         svg_id=''):
     """
@@ -90,6 +90,11 @@ def display_plot(
     ------
     Exception
         If this function is executed more than once.
+
+    Returns
+    -------
+    plot_meta : plot_playground.common.d3_helper.PlotMeta
+        An object that stores the metadata of the plot.
     """
     global _is_displayed
     if _is_displayed:
@@ -113,8 +118,6 @@ def display_plot(
     log_file_path = _get_log_file_path(log_dir_path=log_dir_path)
     while not os.path.exists(log_file_path):
         time.sleep(1)
-    time.sleep(3)
-    _print_error_if_exists(log_dir_path=log_dir_path)
 
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
@@ -148,7 +151,17 @@ def display_plot(
         svg_height=svg_height,
     )
 
+    time.sleep(3)
+    _print_error_if_exists(log_dir_path=log_dir_path)
     _is_displayed = True
+
+    plot_meta = d3_helper.PlotMeta(
+        html_str=html_str,
+        js_template_str=js_template_str,
+        js_param=js_param,
+        css_template_str=css_template_str,
+        css_param=css_param)
+    return plot_meta
 
 
 def _print_error_if_exists(log_dir_path):

@@ -14,8 +14,14 @@ import sys
 from nose.tools import assert_equal, assert_true, assert_false, \
     assert_greater, assert_not_equal
 import pandas as pd
+from IPython.display import display, HTML
 
 from plot_playground.stats import linux_stats_plot
+from plot_playground.common import jupyter_helper
+from plot_playground.common import selenium_helper
+from plot_playground.common import img_helper
+from plot_playground.common import d3_helper
+from plot_playground.common import settings
 
 TMP_TEST_LOG_DIR = './log_plotplayground_stats/test/'
 
@@ -366,3 +372,55 @@ def test__print_error_if_exists():
 
     if os.path.exists(tmp_stdout_path):
         os.remove(tmp_stdout_path)
+
+
+def test_display_plot():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test_display_plot
+    """
+    source_code = """
+from plot_playground.tests.test_linux_stats_plot import display_test_plot
+display_test_plot()
+    """
+    jupyter_helper.update_ipynb_test_source_code(
+        source_code=source_code
+    )
+    jupyter_helper.open_test_jupyter_note_book()
+    jupyter_helper.run_test_code(sleep_seconds=15)
+    jupyter_helper.hide_header()
+    jupyter_helper.hide_input_cell()
+    selenium_helper.driver.set_window_size(width=1400, height=1300)
+    svg_elem = selenium_helper.driver.find_element_by_id(
+        settings.TEST_SVG_ELEM_ID
+    )
+    selenium_helper.save_target_elem_screenshot(
+        target_elem=svg_elem)
+    expected_img_path = img_helper.get_test_expected_img_path(
+        file_name='stats_linux_stats_plot_display_plot')
+    similarity = img_helper.compare_img_hist(
+        img_path_1=selenium_helper.DEFAULT_TEST_IMG_PATH,
+        img_path_2=expected_img_path)
+    assert_greater(similarity, 0.8)
+    selenium_helper.exit_webdriver()
+
+    plot_meta = display_test_plot()
+    assert_true(
+        isinstance(plot_meta, d3_helper.PlotMeta)
+    )
+
+
+def display_test_plot():
+    """
+    Display a test plot.
+
+    Returns
+    -------
+    plot_meta : plot_playground.common.d3_helper.PlotMeta
+        An object that stores the metadata of the plot.
+    """
+    plot_meta = linux_stats_plot.display_plot(
+        log_dir_path=TMP_TEST_LOG_DIR,
+        svg_id=settings.TEST_SVG_ELEM_ID)
+    return plot_meta
