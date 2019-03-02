@@ -175,8 +175,8 @@ def test__save_csv():
     os.makedirs(log_dir_path, exist_ok=True)
     log_file_path = linux_stats_plot._get_log_file_path(
         log_dir_path=log_dir_path)
-    linux_stats_plot._remove_log_file(
-        log_file_path=log_file_path)
+    if os.path.exists(log_file_path):
+        os.remove(log_file_path)
     memory_usage_deque = deque([1, 2, 3], maxlen=3)
     disk_usage_deque = deque([4, 5, 6], maxlen=3)
     gpu_memory_usage_deque_list = [
@@ -214,8 +214,8 @@ def test__save_csv():
         [8, 9, 10]
     )
 
-    linux_stats_plot._remove_log_file(
-        log_file_path=log_file_path)
+    if os.path.exists(log_file_path):
+        os.remove(log_file_path)
 
 
 def test__start_plot_data_updating():
@@ -388,13 +388,23 @@ display_test_plot()
         source_code=source_code
     )
     jupyter_helper.open_test_jupyter_note_book()
-    jupyter_helper.run_test_code(sleep_seconds=15)
+    jupyter_helper.run_test_code(sleep_seconds=10)
     jupyter_helper.hide_header()
     jupyter_helper.hide_input_cell()
     selenium_helper.driver.set_window_size(width=1400, height=1300)
-    svg_elem = selenium_helper.driver.find_element_by_id(
-        settings.TEST_SVG_ELEM_ID
-    )
+    count = 0
+    while True:
+        try:
+            svg_elem = selenium_helper.driver.find_element_by_id(
+                settings.TEST_SVG_ELEM_ID
+            )
+            break
+        except Exception:
+            count += 1
+            if count > 5:
+                break
+            time.sleep(3)
+            continue
     selenium_helper.save_target_elem_screenshot(
         target_elem=svg_elem)
     expected_img_path = img_helper.get_test_expected_img_path(
@@ -410,6 +420,8 @@ display_test_plot()
         isinstance(plot_meta, d3_helper.PlotMeta)
     )
 
+    jupyter_helper.empty_test_ipynb_code_cell()
+
 
 def display_test_plot():
     """
@@ -420,6 +432,7 @@ def display_test_plot():
     plot_meta : plot_playground.common.d3_helper.PlotMeta
         An object that stores the metadata of the plot.
     """
+    linux_stats_plot._is_displayed = False
     plot_meta = linux_stats_plot.display_plot(
         log_dir_path=TMP_TEST_LOG_DIR,
         svg_id=settings.TEST_SVG_ELEM_ID)

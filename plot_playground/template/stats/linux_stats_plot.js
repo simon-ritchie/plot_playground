@@ -304,8 +304,8 @@ for (var i = 0; i < GPU_NUM; i++) {
 var isInitialUpdate = true;
 
 /**
-    * Read the CSV and update the value of the plot.
-    */
+ * Read the CSV and update the value of the plot.
+ */
 function update_plot_value() {
     if (!windowFocused) {
         return;
@@ -314,6 +314,10 @@ function update_plot_value() {
     d3.csv(LOG_FILE_PATH, rowConverter, function(error, dataset) {
         if (error) {
             console.log(error);
+            setTimeout(update_plot_value, 100);
+            return;
+        }
+        if (!dataset) {
             setTimeout(update_plot_value, 100);
             return;
         }

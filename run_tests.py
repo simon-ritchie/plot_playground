@@ -26,6 +26,7 @@ import nose
 sys.path.append('./plot_playground/')
 from common.settings import JUPYTER_TEST_PORT
 from common import selenium_helper
+from common import jupyter_helper
 
 
 def run_jupyter_process():
@@ -236,8 +237,10 @@ if __name__ == '__main__':
         module_name=module_name)
 
     if not skip_jupyter:
+        jupyter_helper.empty_test_ipynb_code_cell()
         stop_jupyter()
         jupyter_process.terminate()
+        time.sleep(3)
     selenium_helper.kill_chromedriver_process()
 
     toast_msg = '----------------------------'
