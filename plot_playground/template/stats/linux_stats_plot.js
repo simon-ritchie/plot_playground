@@ -317,6 +317,13 @@ function update_plot_value() {
             setTimeout(update_plot_value, 100);
             return;
         }
+        if ($("#{svg_id}").length === 0) {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+                return
+            }
+        }
         var memoryUsageMax = d3.max(dataset, function(d) {
             return d.memoryUsage;
         });
@@ -492,6 +499,6 @@ function update_plot_value() {
 }
 
 update_plot_value();
-setInterval(
+var timer = setInterval(
     update_plot_value,
     INTERVAL_SECONDS * 1000);
