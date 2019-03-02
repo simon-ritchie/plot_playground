@@ -317,7 +317,7 @@ function update_plot_value() {
             setTimeout(update_plot_value, 100);
             return;
         }
-        if (!dataset) {
+        if (!dataset || dataset.length === 0) {
             setTimeout(update_plot_value, 100);
             return;
         }
@@ -421,7 +421,7 @@ function update_plot_value() {
         }
 
         setTimeout(function() {
-            if (!dataset) {
+            if (!dataset || dataset.length === 0) {
                 return;
             }
             var axisBBoxWidthList = [
