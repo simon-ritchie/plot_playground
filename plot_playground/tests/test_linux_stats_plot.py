@@ -8,12 +8,15 @@ import os
 from collections import deque
 import multiprocessing as mp
 import time
+import shutil
 
 from nose.tools import assert_equal, assert_true, assert_false, \
     assert_greater
 import pandas as pd
 
 from plot_playground.stats import linux_stats_plot
+
+TMP_TEST_LOG_DIR = './log_plotplayground_stats/test/'
 
 
 def test__get_log_file_path():
@@ -161,7 +164,7 @@ def test__save_csv():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__save_csv --skip_jupyter 1
     """
-    log_dir_path = './log_plotplayground_stats/'
+    log_dir_path = TMP_TEST_LOG_DIR
     os.makedirs(log_dir_path, exist_ok=True)
     log_file_path = linux_stats_plot._get_log_file_path(
         log_dir_path=log_dir_path)
@@ -214,11 +217,13 @@ def test__start_plot_data_updating():
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_plot_data_updating --skip_jupyter 1
     """
-    log_dir_path = './log_plotplayground_stats/'
+    log_dir_path = TMP_TEST_LOG_DIR
     os.makedirs(log_dir_path, exist_ok=True)
     log_file_path = linux_stats_plot._get_log_file_path(
         log_dir_path=log_dir_path)
-    linux_stats_plot._remove_log_file(log_file_path=log_file_path)
+    if os.path.exists(log_file_path):
+        os.remove(log_file_path)
+    parent_pid = os.getpid()
 
     pre_disabled_val = linux_stats_plot.is_gpu_stats_disabled
     linux_stats_plot.is_gpu_stats_disabled = False
@@ -228,6 +233,7 @@ def test__start_plot_data_updating():
             'interval_seconds': 1,
             'buffer_size': 2,
             'log_dir_path': log_dir_path,
+            'parent_pid': parent_pid,
         })
     process.deamon = True
     process.start()
@@ -241,7 +247,7 @@ def test__start_plot_data_updating():
     assert_true(is_in)
 
     linux_stats_plot.is_gpu_stats_disabled = pre_disabled_val
-    linux_stats_plot._remove_log_file(log_file_path=log_file_path)
+    shutil.rmtree(log_dir_path, ignore_errors=True)
 
 
 def test__exit_if_parent_process_has_died():
