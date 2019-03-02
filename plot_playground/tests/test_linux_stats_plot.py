@@ -9,9 +9,10 @@ from collections import deque
 import multiprocessing as mp
 import time
 import shutil
+import sys
 
 from nose.tools import assert_equal, assert_true, assert_false, \
-    assert_greater
+    assert_greater, assert_not_equal
 import pandas as pd
 
 from plot_playground.stats import linux_stats_plot
@@ -299,3 +300,69 @@ def test__fill_deque_by_initial_value():
     assert_equal(len(deque_obj), 3)
     for value in deque_obj:
         assert_equal(value, 200)
+
+
+def _error_func():
+    """
+    A function to generate an error and to confirm that error contents
+    are added to the file.
+    """
+    linux_stats_plot._set_error_setting(
+        log_dir_path=TMP_TEST_LOG_DIR, save_error_to_file=True)
+    raise Exception('error test.')
+
+
+def test__set_error_setting():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__set_error_setting --skip_jupyter 1
+    """
+    linux_stats_plot._set_error_setting(
+        log_dir_path=TMP_TEST_LOG_DIR,
+        save_error_to_file=False)
+    is_in = 'nose' in str(sys.stderr)
+    assert_true(is_in)
+
+    process = mp.Process(target=_error_func)
+    process.start()
+    process.join()
+
+    error_log_path = os.path.join(
+        TMP_TEST_LOG_DIR, linux_stats_plot.ERR_FILE_NAME)
+    with open(error_log_path, 'r') as f:
+        error_log = f.read()
+        assert_not_equal(error_log, '')
+
+    sys.stderr = sys.__stderr__
+
+
+def test__print_error_if_exists():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__print_error_if_exists --skip_jupyter 1
+    """
+    error_log_path = os.path.join(
+        TMP_TEST_LOG_DIR, linux_stats_plot.ERR_FILE_NAME)
+    if os.path.exists(error_log_path):
+        os.remove(error_log_path)
+    tmp_stdout_path = os.path.join(TMP_TEST_LOG_DIR, 'tmp.log')
+    if os.path.exists(tmp_stdout_path):
+        os.remove(tmp_stdout_path)
+    os.makedirs(TMP_TEST_LOG_DIR, exist_ok=True)
+    sys.stdout = open(tmp_stdout_path, 'w')
+
+    with open(error_log_path, 'w') as f:
+        f.write('test error message')
+    linux_stats_plot._print_error_if_exists(
+        log_dir_path=TMP_TEST_LOG_DIR)
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__
+    with open(tmp_stdout_path, 'r') as f:
+        printed_log = f.read()
+        is_in = 'test error message' in printed_log
+        assert_true(is_in)
+
+    if os.path.exists(tmp_stdout_path):
+        os.remove(tmp_stdout_path)

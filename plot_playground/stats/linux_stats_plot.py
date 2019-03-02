@@ -105,6 +105,7 @@ def display_plot(
             'buffer_size': buffer_size,
             'log_dir_path': log_dir_path,
             'parent_pid': parent_pid,
+            'save_error_to_file': True,
         })
     process.deamon = True
     process.start()
@@ -112,6 +113,8 @@ def display_plot(
     log_file_path = _get_log_file_path(log_dir_path=log_dir_path)
     while not os.path.exists(log_file_path):
         time.sleep(1)
+    time.sleep(3)
+    _print_error_if_exists(log_dir_path=log_dir_path)
 
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
@@ -148,8 +151,31 @@ def display_plot(
     _is_displayed = True
 
 
+def _print_error_if_exists(log_dir_path):
+    """
+    If content exists in the error log, print that error content
+    to the console.
+
+    Parameters
+    ----------
+    log_dir_path : str
+        Directory where the log is saved.
+    """
+    error_log_path = os.path.join(log_dir_path, ERR_FILE_NAME)
+    if not os.path.exists(error_log_path):
+        return
+    with open(error_log_path, 'r') as f:
+        error_log = f.read()
+    if error_log == '':
+        return
+    error_log = '---------------------------\nAn error occurred during processing. Please check the following error contents.\n%s' \
+        % error_log
+    print(error_log)
+
+
 def _start_plot_data_updating(
-        interval_seconds, buffer_size, log_dir_path, parent_pid):
+        interval_seconds, buffer_size, log_dir_path, parent_pid,
+        save_error_to_file=False):
     """
     Start updating the plot data.
 
@@ -165,11 +191,18 @@ def _start_plot_data_updating(
         Directory where the log is saved.
     parent_pid : int
         The parent process id.
+    save_error_to_file : bool, default False
+        Boolean value as to whether to save error contents to file.
     """
+
     os.makedirs(log_dir_path, exist_ok=True)
+    _set_error_setting(
+        log_dir_path=log_dir_path,
+        save_error_to_file=save_error_to_file)
     log_file_path = _get_log_file_path(
         log_dir_path=log_dir_path
     )
+
     gpu_num = _get_gpu_num()
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
@@ -214,6 +247,30 @@ def _start_plot_data_updating(
         if timedelta.total_seconds() < 1:
             time.sleep(interval_seconds)
         pre_dt = current_dt
+
+
+ERR_FILE_NAME = 'error.log'
+
+
+def _set_error_setting(
+        log_dir_path, save_error_to_file):
+    """
+    Function to set output of error.
+
+    Parameters
+    ----------
+    log_dir_path : str
+        Directory where the log is saved.
+    save_error_to_file : bool
+        Boolean value as to whether to save error contents to file.
+    """
+    error_log_path = os.path.join(log_dir_path, ERR_FILE_NAME)
+    os.makedirs(log_dir_path, exist_ok=True)
+    if os.path.exists(error_log_path):
+        os.remove(error_log_path)
+    if not save_error_to_file:
+        return
+    sys.stderr = open(error_log_path, "w")
 
 
 def _fill_deque_by_initial_value(
