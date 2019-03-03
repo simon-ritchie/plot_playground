@@ -282,7 +282,7 @@ def test__exit_if_parent_process_has_died():
         kwargs=kwargs
     )
     process.start()
-    time.sleep(10)
+    time.sleep(15)
     assert_false(process.is_alive())
 
 
@@ -391,7 +391,7 @@ display_test_plot()
         source_code=source_code
     )
     jupyter_helper.open_test_jupyter_note_book()
-    jupyter_helper.run_test_code(sleep_seconds=10)
+    jupyter_helper.run_test_code(sleep_seconds=20)
     jupyter_helper.hide_header()
     jupyter_helper.hide_input_cell()
     selenium_helper.driver.set_window_size(width=1400, height=1300)
@@ -404,7 +404,7 @@ display_test_plot()
             break
         except Exception:
             count += 1
-            if count > 5:
+            if count > 50:
                 break
             time.sleep(3)
             continue
@@ -417,11 +417,6 @@ display_test_plot()
         img_path_2=expected_img_path)
     assert_greater(similarity, 0.8)
     selenium_helper.exit_webdriver()
-
-    plot_meta = display_test_plot()
-    assert_true(
-        isinstance(plot_meta, d3_helper.PlotMeta)
-    )
 
     jupyter_helper.empty_test_ipynb_code_cell()
 
@@ -543,3 +538,19 @@ def test__start_local_server():
         log_dir_path=TMP_TEST_LOG_DIR)
     assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
     linux_stats_plot._kill_old_local_server(port=TMP_TEST_LOG_DIR)
+
+
+def test__kill_old_local_server():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_local_server --skip_jupyter 1
+    """
+    linux_stats_plot._kill_old_local_server(port=TMP_TEST_PORT)
+    linux_stats_plot._start_local_server(
+        port=TMP_TEST_PORT,
+        log_dir_path=TMP_TEST_LOG_DIR)
+    assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
+    linux_stats_plot._kill_old_local_server(
+        port=TMP_TEST_PORT)
+    assert_false(_local_server_port_exists(port=TMP_TEST_PORT))

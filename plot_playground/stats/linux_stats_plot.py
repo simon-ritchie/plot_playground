@@ -179,6 +179,15 @@ def display_plot(
 
 
 def _kill_old_local_server(port):
+    """
+    If the local server is already running on the specified port,
+    stop it.
+
+    Parameters
+    ----------
+    port : int
+        Target port number.
+    """
     print(datetime.now(), 'Starting old process cleanup...')
     attrs = ['connections', 'name', 'pid', 'status']
     for process in psutil.process_iter():
