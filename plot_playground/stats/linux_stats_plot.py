@@ -25,6 +25,7 @@ import sys
 from datetime import datetime
 import http.server
 import socketserver
+import socket
 
 import pandas as pd
 import numpy as np
@@ -208,7 +209,10 @@ def _get_local_server_log_file_url(
     local_server_log_file_url : str
         The URL of the log on the local server.
     """
-    local_server_log_file_url = 'http://localhost:{port}/{log_dir_path}log_linux_stats_plot.csv'.format(
+    host = socket.gethostname()
+    ip = socket.gethostbyname(host)
+    local_server_log_file_url = 'http://{ip}:{port}/{log_dir_path}log_linux_stats_plot.csv'.format(
+        ip=ip,
         port=port,
         log_dir_path=log_dir_path,
     )
