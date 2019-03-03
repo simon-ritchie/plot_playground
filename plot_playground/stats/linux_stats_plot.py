@@ -107,6 +107,15 @@ def display_plot(
         raise Exception('This function can be executed only once after starting the kernel.')
     _update_gpu_disabled_bool()
     _kill_old_local_server(port=port)
+
+    # 
+    if log_dir_path.startswith('./'):
+        log_dir_path = log_dir_path.replace('./', '', 1)
+    log_dir_path = log_dir_path.replace('\\', '/')
+    if not log_dir_path.endswith('/'):
+        log_dir_path += '/'
+    # 
+
     _start_local_server(
         port=port, log_dir_path=log_dir_path)
 
@@ -132,6 +141,10 @@ def display_plot(
         if count > 60:
             break
         time.sleep(1)
+    local_server_log_file_url = _get_local_server_log_file_url(
+        log_dir_path=log_dir_path,
+        port=port
+    )
 
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
@@ -148,7 +161,7 @@ def display_plot(
     js_param = {
         'svg_id': svg_id,
         'gpu_num': gpu_num,
-        'csv_log_file_path': log_file_path,
+        'csv_log_file_path': local_server_log_file_url,
         'js_helper_func_get_b_box_width': d3_helper.read_template_str(
             template_file_path=js_helper_template_path.GET_B_BOX_WIDTH),
     }
@@ -176,6 +189,30 @@ def display_plot(
         css_template_str=css_template_str,
         css_param=css_param)
     return plot_meta
+
+
+def _get_local_server_log_file_url(
+        log_dir_path, port):
+    """
+    Get the URL of the log on the local server.
+
+    Parameters
+    ----------
+    log_dir_path : str
+        Directory where the log will be saved.
+    port : int
+        The port number of the local server for bridging Python and js.
+
+    Returns
+    -------
+    local_server_log_file_url : str
+        The URL of the log on the local server.
+    """
+    local_server_log_file_url = 'http://localhost:{port}/{log_dir_path}log_linux_stats_plot.csv'.format(
+        port=port,
+        log_dir_path=log_dir_path,
+    )
+    return local_server_log_file_url
 
 
 def _kill_old_local_server(port):
@@ -256,8 +293,18 @@ def _start_other_process_local_server(
     log_path = os.path.join(log_dir_path, local_server_log_file_name)
     log_file = open(log_path, 'w')
     sys.stderr = log_file
-    Handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer(('', port), Handler) as httpd:
+
+    class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
+        """
+        A request handler class to allow access to this local server
+        from the front end of another port (e.g., Jupyter).
+        """
+
+        def end_headers(self):
+            self.send_header('Access-Control-Allow-Origin', '*')
+            http.server.SimpleHTTPRequestHandler.end_headers(self)
+
+    with socketserver.TCPServer(('', port), CORSRequestHandler) as httpd:
         httpd.serve_forever()
 
 

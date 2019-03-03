@@ -247,7 +247,14 @@ def test__start_plot_data_updating():
         })
     process.deamon = True
     process.start()
-    time.sleep(25)
+    count = 0
+    while True:
+        if os.path.exists(log_file_path):
+            break
+        count += 1
+        if count > 40:
+            raise Exception('There is a possibility that generation of the log file has failed.')
+        time.sleep(3)
     process.terminate()
     df = pd.read_csv(log_file_path)
     assert_equal(len(df), 2)
@@ -523,7 +530,7 @@ def test__start_other_process_local_server():
         time.sleep(1)
     assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
 
-    process.terminate()
+    linux_stats_plot._kill_old_local_server(port=TMP_TEST_PORT)
 
 
 def test__start_local_server():
@@ -537,14 +544,15 @@ def test__start_local_server():
         port=TMP_TEST_PORT,
         log_dir_path=TMP_TEST_LOG_DIR)
     assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
-    linux_stats_plot._kill_old_local_server(port=TMP_TEST_LOG_DIR)
+    linux_stats_plot._kill_old_local_server(port=TMP_TEST_PORT)
+    assert_false(_local_server_port_exists(port=TMP_TEST_PORT))
 
 
 def test__kill_old_local_server():
     """
     Test Command
     ------------
-    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_local_server --skip_jupyter 1
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__kill_old_local_server --skip_jupyter 1
     """
     linux_stats_plot._kill_old_local_server(port=TMP_TEST_PORT)
     linux_stats_plot._start_local_server(
@@ -554,3 +562,19 @@ def test__kill_old_local_server():
     linux_stats_plot._kill_old_local_server(
         port=TMP_TEST_PORT)
     assert_false(_local_server_port_exists(port=TMP_TEST_PORT))
+
+
+def test__get_local_server_log_file_url():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__get_local_server_log_file_url --skip_jupyter 1
+    """
+    local_server_log_file_url = \
+        linux_stats_plot._get_local_server_log_file_url(
+            log_dir_path='test/',
+            port=100)
+    assert_equal(
+        local_server_log_file_url,
+        'http://localhost:100/test/log_linux_stats_plot.csv'
+    )

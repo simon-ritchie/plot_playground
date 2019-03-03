@@ -314,11 +314,9 @@ function update_plot_value() {
     d3.csv(LOG_FILE_PATH, rowConverter, function(error, dataset) {
         if (error) {
             console.log(error);
-            setTimeout(update_plot_value, 100);
             return;
         }
         if (!dataset || dataset.length === 0) {
-            setTimeout(update_plot_value, 100);
             return;
         }
         if ($("#{svg_id}").length === 0) {
