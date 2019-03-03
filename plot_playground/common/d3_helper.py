@@ -45,12 +45,13 @@ def read_template_str(template_file_path):
     if not os.path.exists(file_path):
         err_msg = 'Template file not found : %s' % file_path
         raise Exception(err_msg)
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         template_str = f.read()
     template_str = re.sub(re.compile('/\*.*?\*/', re.DOTALL) , '', template_str)
     template_str = repr(template_str)[1:-1]
     template_str = template_str.replace('\\n', '\n')
     template_str = template_str.replace('\\\\', '\\')
+    template_str = template_str.replace("\\'", "'")
     return template_str
 
 
