@@ -467,3 +467,12 @@ def test__update_gpu_disabled_bool():
 
     linux_stats_plot.is_gpu_stats_disabled = pre_bool
     linux_stats_plot._exec_gpustat_command = pre_func
+
+
+def test__start_other_process_local_server():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_other_process_local_server --skip_jupyter 1
+    """
+    

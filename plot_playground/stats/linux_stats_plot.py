@@ -23,6 +23,8 @@ from collections import deque
 import os
 import sys
 from datetime import datetime
+import http.server
+import socketserver
 
 import pandas as pd
 import numpy as np
@@ -62,7 +64,8 @@ _is_displayed = False
 def display_plot(
         buffer_size=300,
         log_dir_path='./log_plotplayground_stats/',
-        svg_id=''):
+        svg_id='',
+        port=18282):
     """
     Display plots of memory usage, disk usage, GPU information
     etc on Jupyter. Values ​​are updated at regular intervals.
@@ -72,11 +75,14 @@ def display_plot(
     buffer_size : int, default 600
         Buffer size to handle in the plot.
     log_dir_path : str, default './log_plotplayground_stats/'
-        Directory where the log is saved.
+        Directory where the log will be saved.
     svg_id : str, default ''
         ID to set for SVG element. When an empty value is specified,
         a unique character string is generated and used.
-
+    port : int, default 18282
+        The port number of the local server for bridging Python and js.
+        If this port was used in an old process, the process
+        will be stopped once.
     Notes
     -----
     - In some cloud kernels (e.g., Azure Notebooks), disk usage may
@@ -100,6 +106,9 @@ def display_plot(
     if _is_displayed:
         raise Exception('This function can be executed only once after starting the kernel.')
     _update_gpu_disabled_bool()
+    _kill_old_local_server(port=port)
+    _start_local_server(
+        port=port, log_dir_path=log_dir_path)
 
     if svg_id == '':
         svg_id = d3_helper.make_svg_id()
@@ -169,6 +178,69 @@ def display_plot(
     return plot_meta
 
 
+def _kill_old_local_server(port):
+    print(datetime.now(), 'Starting old process cleanup...')
+    attrs = ['connections', 'name', 'pid', 'status']
+    for i, process in enumerate(psutil.process_iter()):
+        process_dict = process.as_dict(attrs=attrs)
+        connections_str = str(process_dict['connections'])
+        is_in = str(port) in connections_str
+        if not is_in:
+            continue
+        if process_dict['name'] != 'python.exe':
+            continue
+        if process_dict['status'] != 'running':
+            continue
+        process.kill()
+
+
+def _start_local_server(port, log_dir_path):
+    print(datetime.now(), 'Starting local server process...')
+    dt_str = datetime.now().strftime('%Y%m%d%H%M%S')
+    local_server_log_file_name = 'local_server_%s.log' % dt_str
+    process = mp.Process(
+        target=_start_other_process_local_server,
+        kwargs={
+            'port': port,
+            'log_dir_path': log_dir_path,
+            'local_server_log_file_name': local_server_log_file_name,
+        })
+    process.deamon = True
+    process.start()
+    log_path = os.path.join(log_dir_path, local_server_log_file_name)
+    while not os.path.exists(log_path):
+        time.sleep(1)
+    with open(log_path, 'r') as f:
+        log = f.read()
+        if log == '':
+            return
+        err_msg = 'An error occurred while starting the local server. Please check the following error.'
+        err_msg += '\n%s' % log
+        raise Exception(err_msg)
+
+
+def _start_other_process_local_server(
+        port, log_dir_path, local_server_log_file_name):
+    """
+    Start the local server (used for separating processes).
+
+    Parameters
+    ----------
+    port : int
+        The port number of the local server for bridging Python and js.
+    log_dir_path : str, default './log_plotplayground_stats/'
+        Directory where the log will be saved.
+    local_server_log_file_name : str
+        Log file name for the local server.
+    """
+    log_path = os.path.join(log_dir_path, local_server_log_file_name)
+    log_file = open(log_path, 'w')
+    sys.stderr = log_file
+    Handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(('', port), Handler) as httpd:
+        httpd.serve_forever()
+
+
 def _print_error_if_exists(log_dir_path):
     """
     If content exists in the error log, print that error content
@@ -177,7 +249,7 @@ def _print_error_if_exists(log_dir_path):
     Parameters
     ----------
     log_dir_path : str
-        Directory where the log is saved.
+        Directory where the log will be saved.
     """
     error_log_path = os.path.join(log_dir_path, ERR_FILE_NAME)
     if not os.path.exists(error_log_path):
@@ -206,7 +278,7 @@ def _start_plot_data_updating(
     buffer_size : int
         Buffer size to handle in the plot.
     log_dir_path : str
-        Directory where the log is saved.
+        Directory where the log will be saved.
     parent_pid : int
         The parent process id.
     save_error_to_file : bool, default False
@@ -291,7 +363,7 @@ def _set_error_setting(
     Parameters
     ----------
     log_dir_path : str
-        Directory where the log is saved.
+        Directory where the log will be saved.
     save_error_to_file : bool
         Boolean value as to whether to save error contents to file.
     """
@@ -520,7 +592,7 @@ def _get_log_file_path(log_dir_path):
     Parameters
     ----------
     log_dir_path : str
-        Directory where the log is saved.
+        Directory where the log will be saved.
 
     Returns
     -------
