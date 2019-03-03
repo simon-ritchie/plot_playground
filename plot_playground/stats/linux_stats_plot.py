@@ -195,6 +195,16 @@ def _kill_old_local_server(port):
 
 
 def _start_local_server(port, log_dir_path):
+    """
+    Start local server for bridge between Python and js.
+
+    Parameters
+    ----------
+    port : int
+        The port number of the local server for bridging Python and js.
+    log_dir_path : str
+        Directory where the log will be saved.
+    """
     print(datetime.now(), 'Starting local server process...')
     os.makedirs(log_dir_path, exist_ok=True)
     dt_str = datetime.now().strftime('%Y%m%d%H%M%S')

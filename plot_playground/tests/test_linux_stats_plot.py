@@ -529,3 +529,17 @@ def test__start_other_process_local_server():
     assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
 
     process.terminate()
+
+
+def test__start_local_server():
+    """
+    Test Command
+    ------------
+    $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_local_server --skip_jupyter 1
+    """
+    linux_stats_plot._kill_old_local_server(port=TMP_TEST_PORT)
+    linux_stats_plot._start_local_server(
+        port=TMP_TEST_PORT,
+        log_dir_path=TMP_TEST_LOG_DIR)
+    assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
+    linux_stats_plot._kill_old_local_server(port=TMP_TEST_LOG_DIR)
