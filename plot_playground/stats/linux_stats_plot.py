@@ -196,6 +196,7 @@ def _kill_old_local_server(port):
 
 def _start_local_server(port, log_dir_path):
     print(datetime.now(), 'Starting local server process...')
+    os.makedirs(log_dir_path, exist_ok=True)
     dt_str = datetime.now().strftime('%Y%m%d%H%M%S')
     local_server_log_file_name = 'local_server_%s.log' % dt_str
     process = mp.Process(
