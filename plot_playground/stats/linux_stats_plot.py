@@ -181,7 +181,7 @@ def display_plot(
 def _kill_old_local_server(port):
     print(datetime.now(), 'Starting old process cleanup...')
     attrs = ['connections', 'name', 'pid', 'status']
-    for i, process in enumerate(psutil.process_iter()):
+    for process in psutil.process_iter():
         process_dict = process.as_dict(attrs=attrs)
         connections_str = str(process_dict['connections'])
         is_in = str(port) in connections_str

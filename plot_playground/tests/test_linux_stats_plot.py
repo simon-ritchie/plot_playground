@@ -10,11 +10,13 @@ import multiprocessing as mp
 import time
 import shutil
 import sys
+from datetime import datetime
 
 from nose.tools import assert_equal, assert_true, assert_false, \
     assert_greater, assert_not_equal
 import pandas as pd
 from IPython.display import display, HTML
+import psutil
 
 from plot_playground.stats import linux_stats_plot
 from plot_playground.common import jupyter_helper
@@ -24,6 +26,7 @@ from plot_playground.common import d3_helper
 from plot_playground.common import settings
 
 TMP_TEST_LOG_DIR = './log_plotplayground_stats/test/'
+TMP_TEST_PORT = 18283
 
 
 def test__get_log_file_path():
@@ -469,10 +472,60 @@ def test__update_gpu_disabled_bool():
     linux_stats_plot._exec_gpustat_command = pre_func
 
 
+def _local_server_port_exists(port):
+    """
+    Gets a boolean as to whether or not a local server exists
+    in the target port.
+
+    Parameters
+    ----------
+    port : int
+        The port number to be checked.
+
+    Returns
+    -------
+    result : bool
+        If it exists, True will be set.
+    """
+    attrs = ['connections', 'name', 'pid', 'status']
+    for process in psutil.process_iter():
+        process_dict = process.as_dict(attrs=attrs)
+        connections_str = str(process_dict['connections'])
+        is_in = str(port) in connections_str
+        if not is_in:
+            continue
+        if process_dict['name'] != 'python.exe':
+            continue
+        if process_dict['status'] != 'running':
+            continue
+        return True
+    return False
+
+
 def test__start_other_process_local_server():
     """
     Test Command
     ------------
     $ python run_tests.py --module_name plot_playground.tests.test_linux_stats_plot:test__start_other_process_local_server --skip_jupyter 1
     """
-    
+    linux_stats_plot._kill_old_local_server(
+        port=TMP_TEST_PORT)
+    assert_false(_local_server_port_exists(port=TMP_TEST_PORT))
+
+    dt_str = datetime.now().strftime('%Y%m%d%H%M%S')
+    local_server_log_file_name = 'local_server_%s.log' % dt_str
+    process = mp.Process(
+        target=linux_stats_plot._start_other_process_local_server,
+        kwargs={
+            'port': TMP_TEST_PORT,
+            'log_dir_path': TMP_TEST_LOG_DIR,
+            'local_server_log_file_name': local_server_log_file_name,
+        })
+    process.start()
+    log_path = os.path.join(
+        TMP_TEST_LOG_DIR, local_server_log_file_name)
+    while not os.path.exists(log_path):
+        time.sleep(1)
+    assert_true(_local_server_port_exists(port=TMP_TEST_PORT))
+
+    process.terminate()
