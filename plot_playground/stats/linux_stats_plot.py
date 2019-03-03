@@ -66,7 +66,8 @@ def display_plot(
         buffer_size=300,
         log_dir_path='./log_plotplayground_stats/',
         svg_id='',
-        port=18282):
+        port=18282,
+        use_https=False):
     """
     Display plots of memory usage, disk usage, GPU information
     etc on Jupyter. Values ​​are updated at regular intervals.
@@ -84,6 +85,12 @@ def display_plot(
         The port number of the local server for bridging Python and js.
         If this port was used in an old process, the process
         will be stopped once.
+    use_https : bool, default False
+        Instead of specifying an HTTP URL, use HTTPS URL to load data.
+        In Kaggle Kernel etc., if you do not specify True, you get
+        js error. Please specify False in an environment such
+        as local PC.
+
     Notes
     -----
     - In some cloud kernels (e.g., Azure Notebooks), disk usage may
@@ -144,7 +151,8 @@ def display_plot(
         time.sleep(1)
     local_server_log_file_url = _get_local_server_log_file_url(
         log_dir_path=log_dir_path,
-        port=port
+        port=port,
+        use_https=use_https,
     )
 
     css_template_str = d3_helper.read_template_str(
@@ -193,7 +201,7 @@ def display_plot(
 
 
 def _get_local_server_log_file_url(
-        log_dir_path, port):
+        log_dir_path, port, use_https):
     """
     Get the URL of the log on the local server.
 
@@ -203,15 +211,24 @@ def _get_local_server_log_file_url(
         Directory where the log will be saved.
     port : int
         The port number of the local server for bridging Python and js.
+    use_https : bool
+        Instead of specifying an HTTP URL, use HTTPS URL to load data.
+        In Kaggle Kernel etc., if you do not specify True, you get
+        js error.
 
     Returns
     -------
     local_server_log_file_url : str
         The URL of the log on the local server.
     """
+    if use_https:
+        url_prefix = 'https'
+    else:
+        url_prefix = 'http'
     host = socket.gethostname()
     ip = socket.gethostbyname(host)
-    local_server_log_file_url = 'http://{ip}:{port}/{log_dir_path}log_linux_stats_plot.csv'.format(
+    local_server_log_file_url = '{url_prefix}://{ip}:{port}/{log_dir_path}log_linux_stats_plot.csv'.format(
+        url_prefix=url_prefix,
         ip=ip,
         port=port,
         log_dir_path=log_dir_path,
