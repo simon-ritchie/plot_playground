@@ -1,14 +1,28 @@
 """
 Module that handles monitoring plots such as memory usage, disk size,
 GPU memory and so on.
+
+Notes
+-----
+The following libraries are required.
+    - $ pip install psutil==5.5.1
+    - $ pip install gpustat==0.5.0
+It will not be installed by default as installation time will be long.
+Please install it manually when you need to use this plot.
+(Prioritizes convenience on time-limited cloud kernel of those
+who do not use this plot)
+
 This basically supports only Linux environment such as Ubuntu.
 """
 
+import time
 import traceback
-import json
+import multiprocessing as mp
+import subprocess as sp
 from collections import deque
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -38,20 +52,27 @@ except ImportError:
     info_msg += '\nThe GPU information plot has been disabled.'
     print(info_msg)
 
+
+INTERVAL_SECONDS = 1
 PATH_CSS_TEMPLATE = 'stats/linux_stats_plot.css'
 PATH_JS_TEMPLATE = 'stats/linux_stats_plot.js'
-deque_dict = {}
+_is_displayed = False
 
 
-def display_plot(buffer_size=300, svg_id=''):
+def display_plot(
+        buffer_size=300,
+        log_dir_path='./log_plotplayground_stats/',
+        svg_id=''):
     """
     Display plots of memory usage, disk usage, GPU information
     etc on Jupyter. Values ​​are updated at regular intervals.
 
     Parameters
     ----------
-    buffer_size : int, default 300
+    buffer_size : int, default 600
         Buffer size to handle in the plot.
+    log_dir_path : str, default './log_plotplayground_stats/'
+        Directory where the log is saved.
     svg_id : str, default ''
         ID to set for SVG element. When an empty value is specified,
         a unique character string is generated and used.
@@ -62,16 +83,46 @@ def display_plot(buffer_size=300, svg_id=''):
         not be acquired correctly in some cases.
     - Depending on the environment, memory usage and disk usage
         will be somewhat different values.
+    - This function can be executed only once after starting
+        the kernel.
+
+    Raises
+    ------
+    Exception
+        If this function is executed more than once.
 
     Returns
     -------
     plot_meta : plot_playground.common.d3_helper.PlotMeta
         An object that stores the metadata of the plot.
     """
+    global _is_displayed
+    if _is_displayed:
+        raise Exception('This function can be executed only once after starting the kernel.')
     _update_gpu_disabled_bool()
+
     if svg_id == '':
         svg_id = d3_helper.make_svg_id()
-    _initialize_deque(svg_id=svg_id, buffer_size=buffer_size)
+    parent_pid = int(os.getpid())
+    process = mp.Process(
+        target=_start_plot_data_updating,
+        kwargs={
+            'interval_seconds': INTERVAL_SECONDS,
+            'buffer_size': buffer_size,
+            'log_dir_path': log_dir_path,
+            'parent_pid': parent_pid,
+            'save_error_to_file': True,
+        })
+    process.deamon = True
+    process.start()
+
+    log_file_path = _get_log_file_path(log_dir_path=log_dir_path)
+    count = 0
+    while not os.path.exists(log_file_path):
+        count += 1
+        if count > 60:
+            break
+        time.sleep(1)
 
     css_template_str = d3_helper.read_template_str(
         template_file_path=PATH_CSS_TEMPLATE)
@@ -88,6 +139,7 @@ def display_plot(buffer_size=300, svg_id=''):
     js_param = {
         'svg_id': svg_id,
         'gpu_num': gpu_num,
+        'csv_log_file_path': log_file_path,
         'js_helper_func_get_b_box_width': d3_helper.read_template_str(
             template_file_path=js_helper_template_path.GET_B_BOX_WIDTH),
     }
@@ -104,6 +156,10 @@ def display_plot(buffer_size=300, svg_id=''):
         svg_height=svg_height,
     )
 
+    time.sleep(3)
+    _print_error_if_exists(log_dir_path=log_dir_path)
+    _is_displayed = True
+
     plot_meta = d3_helper.PlotMeta(
         html_str=html_str,
         js_template_str=js_template_str,
@@ -113,37 +169,58 @@ def display_plot(buffer_size=300, svg_id=''):
     return plot_meta
 
 
-class Deques():
+def _print_error_if_exists(log_dir_path):
+    """
+    If content exists in the error log, print that error content
+    to the console.
 
-    def __init__(
-            self, svg_id, buffer_size, memory_usage_deque,
-            disk_usage_deque, gpu_memory_usage_deque_list):
-        """
-        A class that holds each deque object and metadata.
-        The same value as the argument is set to the attribute.
-
-        Parameters
-        ----------
-        svg_id : str
-            ID to set for SVG element.
-        buffer_size : int
-            Buffer size to handle in the plot.
-        memory_usage_deque : collections.deque
-            The deque object that holds memory usage.
-        disk_usage_deque : collections.deque
-            The deque object that holds disk usage.
-        gpu_memory_usage_deque_list : list of deque
-            List of deque holding GPU memory usage.
-        """
-        self.svg_id = svg_id
-        self.buffer_size = buffer_size
-        self.memory_usage_deque = memory_usage_deque
-        self.disk_usage_deque = disk_usage_deque
-        self.gpu_memory_usage_deque_list = gpu_memory_usage_deque_list
+    Parameters
+    ----------
+    log_dir_path : str
+        Directory where the log is saved.
+    """
+    error_log_path = os.path.join(log_dir_path, ERR_FILE_NAME)
+    if not os.path.exists(error_log_path):
+        return
+    with open(error_log_path, 'r') as f:
+        error_log = f.read()
+    if error_log == '':
+        return
+    error_log = '---------------------------\nAn error occurred during processing. Please check the following error contents.\n%s' \
+        % error_log
+    print(error_log)
 
 
-def _initialize_deque(svg_id, buffer_size):
-    global deque_dict
+def _start_plot_data_updating(
+        interval_seconds, buffer_size, log_dir_path, parent_pid,
+        save_error_to_file=False):
+    """
+    Start updating the plot data.
+
+    Parameters
+    ----------
+    interval_seconds : int
+        Update interval in seconds. Note: Since command execution
+        time etc. are not considered, it is basically longer than
+        this value.
+    buffer_size : int
+        Buffer size to handle in the plot.
+    log_dir_path : str
+        Directory where the log is saved.
+    parent_pid : int
+        The parent process id.
+    save_error_to_file : bool, default False
+        Boolean value as to whether to save error contents to file.
+    """
+
+    os.makedirs(log_dir_path, exist_ok=True)
+    _set_error_setting(
+        log_dir_path=log_dir_path,
+        save_error_to_file=save_error_to_file)
+    log_file_path = _get_log_file_path(
+        log_dir_path=log_dir_path
+    )
+
     gpu_num = _get_gpu_num()
     memory_usage_deque = deque([], maxlen=buffer_size)
     disk_usage_deque = deque([], maxlen=buffer_size)
@@ -153,86 +230,163 @@ def _initialize_deque(svg_id, buffer_size):
         gpu_memory_usage_deque_list.append(
             deque([], maxlen=buffer_size)
         )
-    deques = Deques(
-        svg_id=svg_id,
-        buffer_size=buffer_size,
-        memory_usage_deque=memory_usage_deque,
-        disk_usage_deque=disk_usage_deque,
-        gpu_memory_usage_deque_list=gpu_memory_usage_deque_list)
-    deque_dict[svg_id] = deques
+    pre_dt = datetime.now()
+    while True:
+        _exit_if_parent_process_has_died(parent_pid=parent_pid)
 
-
-def get_dataset(svg_id):
-
-    global deque_dict
-    deques = deque_dict[svg_id]
-    gpu_num = _get_gpu_num()
-
-    memory_usage = _get_memory_usage()
-    deques.memory_usage_deque = _fill_deque_by_initial_value(
-        deque_obj=deques.memory_usage_deque,
-        initial_value=memory_usage,
-        buffer_size=deques.buffer_size)
-    deques.memory_usage_deque.append(memory_usage)
-
-    disk_usage_gb = _get_disk_usage()
-    deques.disk_usage_deque = _fill_deque_by_initial_value(
-            deque_obj=deques.disk_usage_deque,
-            initial_value=disk_usage_gb,
-            buffer_size=deques.buffer_size)
-    deques.disk_usage_deque.append(disk_usage_gb)
-
-    for i in range(gpu_num):
-        gpu_memory_usage_mb = _get_gpu_memory_usage(gpu_idx=i)
-        deques.gpu_memory_usage_deque_list[i] = \
-            _fill_deque_by_initial_value(
-                deque_obj=deques.gpu_memory_usage_deque_list[i],
+        memory_usage = _get_memory_usage()
+        memory_usage_deque = _fill_deque_by_initial_value(
+            deque_obj=memory_usage_deque,
+            initial_value=memory_usage,
+            buffer_size=buffer_size)
+        memory_usage_deque.append(memory_usage)
+        disk_usage_gb = _get_disk_usage()
+        disk_usage_deque = _fill_deque_by_initial_value(
+            deque_obj=disk_usage_deque, initial_value=disk_usage_gb,
+            buffer_size=buffer_size)
+        disk_usage_deque.append(disk_usage_gb)
+        for i in range(gpu_num):
+            gpu_memory_usage_mb = _get_gpu_memory_usage(gpu_idx=i)
+            gpu_memory_usage_deque_list[i] = _fill_deque_by_initial_value(
+                deque_obj=gpu_memory_usage_deque_list[i],
                 initial_value=gpu_memory_usage_mb,
-                buffer_size=deques.buffer_size)
-        deques.gpu_memory_usage_deque_list[i].append(
-            gpu_memory_usage_mb
+                buffer_size=buffer_size
+            )
+            gpu_memory_usage_deque_list[i].append(gpu_memory_usage_mb)
+        _save_csv(
+            memory_usage_deque=memory_usage_deque,
+            disk_usage_deque=disk_usage_deque,
+            gpu_memory_usage_deque_list=gpu_memory_usage_deque_list,
+            log_file_path=log_file_path
         )
 
-    dataset = _make_dataset(deques=deques)
-    return json.dumps(dataset)
+        current_dt = datetime.now()
+        timedelta = current_dt - pre_dt
+        if timedelta.total_seconds() < 1:
+            time.sleep(interval_seconds)
+        pre_dt = current_dt
 
 
-_COLUMN_NAME_MEMORY_USAGE = 'memoryUsage'
-_COLUMN_NAME_DISK_USAGE = 'diskUsage'
-_COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT = 'gpuMemoryUsage{gpu_idx}'
-
-
-def _make_dataset(deques):
+def _update_gpu_disabled_bool():
     """
-    Make a datasets to handle on Jupyter.
+    Updates the boolean value of whether gpu stats is disabled.
+    When Linux environment and gpu stats are installed, and GPU
+    can not be detected, True will be set to that boolean.
+    """
+    global is_gpu_stats_disabled
+    try:
+        _exec_gpustat_command()
+    except Exception:
+        is_gpu_stats_disabled = True
+
+
+ERR_FILE_NAME = 'error.log'
+
+
+def _set_error_setting(
+        log_dir_path, save_error_to_file):
+    """
+    Function to set output of error.
 
     Parameters
     ----------
-    deques : Deques
-        An object that stores data to be referred to.
+    log_dir_path : str
+        Directory where the log is saved.
+    save_error_to_file : bool
+        Boolean value as to whether to save error contents to file.
+    """
+    error_log_path = os.path.join(log_dir_path, ERR_FILE_NAME)
+    os.makedirs(log_dir_path, exist_ok=True)
+    if os.path.exists(error_log_path):
+        os.remove(error_log_path)
+    if not save_error_to_file:
+        return
+    sys.stderr = open(error_log_path, "w")
+
+
+def _fill_deque_by_initial_value(
+        deque_obj, initial_value, buffer_size):
+    """
+    Fill the deque object with the initial value.
+
+    Parameters
+    ----------
+    deque_obj : collections.deque
+        The deque object to add to.
+    initial_value : int or float
+        Initial value to be referenced.
+    buffer_size : int
+        Buffer size to handle in the plot.
 
     Returns
     -------
-    dataset : list of dicts
-        A multidimensional list dataset.
+    deque_obj : collections.deque
+        Deque object after adding data.
     """
-    data_len = len(deques.memory_usage_deque)
-    dataset = []
-    gpu_num = _get_gpu_num()
-    for i in range(data_len):
-        data_dict = {}
-        data_dict[_COLUMN_NAME_MEMORY_USAGE] = \
-            deques.memory_usage_deque[i]
-        data_dict[_COLUMN_NAME_DISK_USAGE] = deques.disk_usage_deque[i]
-        for j, gpu_memory_usage_deque in \
-                enumerate(deques.gpu_memory_usage_deque_list):
-            column_name = _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(
-                gpu_idx=j
-            )
-            data_dict[column_name] = gpu_memory_usage_deque[i]
+    if len(deque_obj) != 0:
+        return deque_obj
+    while len(deque_obj) < buffer_size:
+        deque_obj.append(initial_value)
+    return deque_obj
 
-        dataset.append(data_dict)
-    return dataset
+
+def _exit_if_parent_process_has_died(parent_pid):
+    """
+    If there is no parent process, stop the child process.
+
+    Parameters
+    ----------
+    parent_pid : int
+        The Parent process id.
+    """
+    is_parent_process_alive = False
+    for process in psutil.process_iter():
+        process_info_dict = process.as_dict(attrs=['pid'])
+        if int(process_info_dict['pid']) == parent_pid:
+            is_parent_process_alive = True
+            break
+    if not is_parent_process_alive:
+        sys.exit()
+
+
+_COLUMN_NAME_MEMORY_USAGE = 'memory usage (MB)'
+_COLUMN_NAME_DISK_USAGE = 'disk usage (GB)'
+_COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT = 'gpu({gpu_idx}) memory usage (MB)'
+
+
+def _save_csv(
+        memory_usage_deque, disk_usage_deque,
+        gpu_memory_usage_deque_list, log_file_path):
+    """
+    Save the acquired data as a CSV for plotting.
+
+    Parameters
+    ----------
+    memory_usage_deque : collections.deque
+        The deque object containing the memory usage value.
+    disk_usage_deque : collections.deque
+        The deque object containing the disk usage value.
+    gpu_memory_usage_deque_list : list of collections.deque
+        A list of deque objects containing memory usage of the GPU.
+    log_file_path : str
+        The file path of the log.
+    """
+    df_len = len(memory_usage_deque)
+    df = pd.DataFrame(
+        columns=[
+            _COLUMN_NAME_MEMORY_USAGE,
+            _COLUMN_NAME_DISK_USAGE,
+        ],
+        index=np.arange(0, df_len))
+    df[_COLUMN_NAME_MEMORY_USAGE] = memory_usage_deque
+    df[_COLUMN_NAME_DISK_USAGE] = disk_usage_deque
+    for i, gpu_memory_usage_deque in \
+            enumerate(gpu_memory_usage_deque_list):
+        column_name = _COLUMN_NAME_GPU_MEMORY_USAGE_FORMAT.format(
+            gpu_idx=i
+        )
+        df[column_name] = gpu_memory_usage_deque
+    df.to_csv(log_file_path, index=False, encoding='utf-8')
 
 
 def _get_gpu_memory_usage(gpu_idx):
@@ -292,32 +446,6 @@ def _get_disk_usage():
     return disk_usage_gb
 
 
-def _fill_deque_by_initial_value(
-        deque_obj, initial_value, buffer_size):
-    """
-    Fill the deque object with the initial value.
-
-    Parameters
-    ----------
-    deque_obj : collections.deque
-        The deque object to add to.
-    initial_value : int or float
-        Initial value to be referenced.
-    buffer_size : int
-        Buffer size to handle in the plot.
-
-    Returns
-    -------
-    deque_obj : collections.deque
-        Deque object after adding data.
-    """
-    if len(deque_obj) != 0:
-        return deque_obj
-    while len(deque_obj) < buffer_size:
-        deque_obj.append(initial_value)
-    return deque_obj
-
-
 def _get_memory_usage():
     """
     Get current memory usage (rss total).
@@ -332,39 +460,6 @@ def _get_memory_usage():
         memory_usage += process.memory_info().rss
     memory_usage = int(memory_usage / 1048576)
     return memory_usage
-
-
-def _update_gpu_disabled_bool():
-    """
-    Updates the boolean value of whether gpu stats is disabled.
-    When Linux environment and gpu stats are installed, and GPU
-    can not be detected, True will be set to that boolean.
-    """
-    global is_gpu_stats_disabled
-    try:
-        _exec_gpustat_command()
-    except Exception:
-        is_gpu_stats_disabled = True
-
-
-def _exec_gpustat_command():
-    """
-    Execute the command of the gpustat library and obtain the result.
-
-    Returns
-    -------
-    command_result : str
-        String of command execution result. The string changes
-        under each condition as follows.
-        - If gpustat is disabled: An empty character will be returned.
-        - If there is no GPU: 'Error on querying NVIDIA devices. Use --debug flag for details'
-        - If GPU exists more than one: '28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n'
-    """
-    global is_gpu_stats_disabled
-    if is_gpu_stats_disabled:
-        return ''
-    command_result = sp.check_output('gpustat').decode('utf-8')
-    return command_result
 
 
 def _get_gpu_num():
@@ -396,3 +491,44 @@ def _get_gpu_num():
             continue
         gpu_num += 1
     return gpu_num
+
+
+def _exec_gpustat_command():
+    """
+    Execute the command of the gpustat library and obtain the result.
+
+    Returns
+    -------
+    command_result : str
+        String of command execution result. The string changes
+        under each condition as follows.
+        - If gpustat is disabled: An empty character will be returned.
+        - If there is no GPU: 'Error on querying NVIDIA devices. Use --debug flag for details'
+        - If GPU exists more than one: '28cb5cca2ca4  Wed Feb 20 07:04:22 2019\n[0] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n[1] Tesla K80        | 31'C,   0 % |     0 / 11441 MB |\n'
+    """
+    global is_gpu_stats_disabled
+    if is_gpu_stats_disabled:
+        return ''
+    command_result = sp.check_output('gpustat').decode('utf-8')
+    return command_result
+
+
+def _get_log_file_path(log_dir_path):
+    """
+    Get the path of the log file.
+
+    Parameters
+    ----------
+    log_dir_path : str
+        Directory where the log is saved.
+
+    Returns
+    -------
+    log_file_path : str
+        The path of the log file.
+    """
+    log_file_path = os.path.join(
+        log_dir_path,
+        'log_linux_stats_plot.csv'
+    )
+    return log_file_path
