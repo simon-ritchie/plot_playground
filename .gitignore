@@ -20,3 +20,4 @@
 /plot_playground/plot_playground.egg-info/top_level.txt
 *-checkpoint.ipynb
 /log_plotplayground_stats
+/plot_playground/tests/log_plotplayground_stats
