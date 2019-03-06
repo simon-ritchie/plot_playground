@@ -35,6 +35,14 @@ $ pip install plot_playground
 
 \>\> [More detail and document](https://nbviewer.jupyter.org/github/simon-ritchie/plot_playground/blob/master/documents/storytelling_slope_plot/document.html)
 
+# Linux stats plot
+
+- You can plot Ubuntu's memory usage, disk usage, and GPU memory usage on the notebook.
+- Supported local machine and Kaggle Kernel, not supported Colaboratory, Azure Notebooks, etc.
+- It will be updated in real time, and not block the execution of other cells.
+
+![linux stats plot](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/stats_linux_stats_plot.png)
+
 # Colaboratory and Kaggle Kernel
 
 PlotPlayground also supports Google Colaboratory and Kaggle Kernel. Even in these environments you can install with the pip command.
