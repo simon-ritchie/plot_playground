@@ -51,6 +51,8 @@ Notes: **To use it on Kaggle Kernel, you need to switch the menu setting to "Int
 
 ![img](https://github.com/simon-ritchie/plot_playground/blob/master/documents/readme/on_kaggle_kernel.png)
 
+\>\> [More detail and document (Kaggle Kernel)](https://www.kaggle.com/simonritchie/plotplayground-linux-stats-plot-examplel)
+
 # Testing
 
 Please use Windows10 to run the test.
